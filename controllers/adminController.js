@@ -1,5 +1,5 @@
 const Order = require('../models/Order');
-// const Stock = require('../models/stock');
+// const Stock = require('../models/Stock');
 const Buyer = require('../models/Buyer');
 const Seller = require('../models/Seller');
 const Payment = require('../models/Payment');
