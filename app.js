@@ -23,25 +23,31 @@ connectDB();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
-// ✅ Body parser for form and JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(methodOverride('_method'));
 
 // -------------------- SESSION & FLASH --------------------
-
-
 app.use(session({
   secret: process.env.SESSION_SECRET || 'yourSecret',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // ✅ Set this in Render
-    ttl: 24 * 60 * 60 // Optional: 1 day session
+    mongoUrl: process.env.MONGO_URI, // ✅ Ensure this is set in Render
+    ttl: 24 * 60 * 60
   })
 }));
 
+// ✅ Connect-flash must come AFTER session
+app.use(flash());
+
+// ✅ Flash Messages for Views
+app.use((req, res, next) => {
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  next();
+});
 
 // ✅ Helmet with Custom Content Security Policy
 const { contentSecurityPolicy } = helmet;
@@ -60,18 +66,10 @@ app.use(
   })
 );
 
-
 // ✅ Sanitize user input
 app.use((req, res, next) => {
   if (req.body) mongoSanitize.sanitize(req.body);
   if (req.params) mongoSanitize.sanitize(req.params);
-  next();
-});
-
-// ✅ Flash Messages for Views
-app.use((req, res, next) => {
-  res.locals.error = req.flash('error');
-  res.locals.success = req.flash('success');
   next();
 });
 
