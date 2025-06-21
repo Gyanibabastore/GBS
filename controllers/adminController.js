@@ -540,10 +540,10 @@ exports.markDelivered = async (req, res) => {
 
 exports.getBuyerDetails = async (req, res) => {
   try {
-    const { slug } = req.params;
+    const { id } = req.params;
     const selectedMonth = req.query.month || '';
 
-    const buyer = await Buyer.findOne({ slug }).lean();
+    const buyer = await Buyer.findById(id).lean();
     if (!buyer) {
       return res.status(404).render('error/404', { msg: 'Buyer not found' });
     }
