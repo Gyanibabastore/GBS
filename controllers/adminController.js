@@ -1,10 +1,9 @@
 const Order = require('../models/Order');
-// const Stock = require('../models/stock');
+
 const Buyer = require('../models/Buyer');
 const Seller = require('../models/Seller');
 const Payment = require('../models/Payment');
-// const Device = require('../models/Device');
-// const OutForDelivery=require('../models/OutForDelivery');
+
 const Deal = require('../models/Deal');
 const moment = require('moment');
 
@@ -16,7 +15,7 @@ const moment = require('moment');
 
 
 
-const Stock = require('../models/stock'); // Adjust path as needed
+const Stock = require('../models/Stock'); // Adjust path as needed
 
 
 
