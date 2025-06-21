@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Out for Delivery - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/admin/ofd.css" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+  <div class="container py-4">
+    <h2 class="mb-4">📦 Out for Delivery</h2>
+
+    <!-- Summary Count -->
+    <div class="summary-bar d-flex justify-content-between mb-3">
+      <div><strong>Delivered:</strong> <span id="deliveredCount"><%= deliveredCount %></span></div>
+      <div><strong>Pending:</strong> <span id="pendingCount"><%= pendingCount %></span></div>
+    </div>
+
+    <!-- Delivery Cards -->
+    <% deliveries.forEach(function(delivery, index) { %>
+      <div 
+        class="delivery-card p-3 border rounded mb-3 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
+        data-id="<%= delivery.id %>" 
+        data-buyer="<%= delivery.buyer %>" 
+        data-tracking="<%= delivery.trackingId %>"
+      >
+        <h5>Buyer: <%= delivery.buyer %></h5>
+        <p class="mb-1"><strong>Brand:</strong> <%= delivery.brand %></p>
+        <p class="mb-1"><strong>Model:</strong> <%= delivery.model %></p>
+        <p class="mb-1"><strong>Variant:</strong> <%= delivery.variant %></p>
+        <p class="mb-1"><strong>Color:</strong> <%= delivery.color %></p>
+        <p class="mb-1"><strong>Pincode:</strong> <%= delivery.pincode %></p>
+        <p class="mb-1"><strong>Tracking ID:</strong> <%= delivery.trackingId %></p>
+        <p class="mb-1"><strong>Mobile:</strong> <%= delivery.mobile %></p>
+        <p class="mb-2"><strong>OTP:</strong> <%= delivery.otp %></p>
+
+        <div class="form-check form-switch">
+          <input class="form-check-input delivery-toggle" type="checkbox" id="deliverySwitch<%= index %>" <%= delivery.delivered ? 'checked disabled' : '' %>>
+          <label class="form-check-label" for="deliverySwitch<%= index %>">Delivered</label>
+        </div>
+      </div>
+    <% }); %>
+
+    <!-- Modal for verification -->
+    <div class="modal fade" id="verifyModal" tabindex="-1" aria-labelledby="verifyModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="verifyModalLabel">Verify Delivery</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="verifyBody">
+            <!-- Dynamic content inserted here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" id="confirmDelivery">Yes, Delivered</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin/ofd.js"></script>
+</body>
+</html>

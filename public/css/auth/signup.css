@@ -1,0 +1,142 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.signup-container {
+  background: #fff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+}
+
+.signup-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+}
+
+.signup-container input,
+.signup-container button {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.signup-container input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.signup-container button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  font-weight: 600;
+  width: 100%;
+}
+
+.signup-container button:hover {
+  background-color: #218838;
+}
+
+.role-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.role-buttons button {
+  width: 48%;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+}
+
+.role-buttons button.active {
+  background-color: #0056b3;
+}
+
+.email-otp-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.email-otp-wrapper input[type="email"] {
+  flex: 4;
+}
+
+.email-otp-wrapper button {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.email-otp-wrapper button:hover {
+  background-color: #0056b3;
+}
+
+#otpSection {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#otpSection input {
+  flex: 2;
+}
+
+#otpSection button {
+  flex: 1;
+}
+
+.resend-info {
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+  display: none;
+}
+
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: -8px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.login-link p {
+  font-size: 14px;
+  color: #555;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

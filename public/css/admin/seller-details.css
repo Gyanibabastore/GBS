@@ -1,0 +1,48 @@
+    body {
+      background-image: url('https://images.unsplash.com/photo-1581090700227-1e8e8d2d53db');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.95);
+      min-height: 100vh;
+      padding: 30px;
+      border-radius: 10px;
+    }
+
+    .seller-info-card {
+      background: linear-gradient(135deg, #ff6f61, #f06595);
+      color: white;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .device-card {
+      background-color: #fdfdfd;
+      border-left: 6px solid #20c997;
+      transition: transform 0.3s ease;
+    }
+
+    .device-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .filter-bar {
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    canvas {
+      max-height: 300px;
+    }

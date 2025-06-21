@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Forgot Password</title>
+  <link rel="stylesheet" href="/css/auth/forgot.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Forgot Password</h2>
+    <form id="forgotForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <select id="role" required>
+        <option value="">Select Role</option>
+        <option value="buyer">Buyer</option>
+        <option value="seller">Seller</option>
+      </select>
+      <button type="button" id="sendBtn">Send OTP</button>
+      <button type="button" id="resendBtn" disabled>Resend OTP (<span id="countdown">60</span>s)</button>
+
+      <input type="text" id="otp" placeholder="Enter OTP" style="display:none;" />
+      <button type="button" id="verifyBtn" style="display:none;">Verify OTP</button>
+
+      <input type="password" id="newPassword" placeholder="New Password" style="display:none;" />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" style="display:none;" />
+      <div class="password-check" id="passwordStrength"></div>
+      <button type="submit" id="resetBtn" style="display:none;">Reset Password</button>
+    </form>
+
+    <div id="loader">
+      <div class="spinner"></div>
+      <p>Sending OTP...</p>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <script src="/js/auth/forgot.js"></script>
+</body>
+</html>

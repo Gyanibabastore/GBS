@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buyer Details - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="/css/admin/buyer-details.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="overlay">
+    <div class="container py-4">
+      <a href="/buyers" class="btn btn-outline-dark mb-3">⬅ Back to Buyer List</a>
+      <h2 class="mb-4">Buyer Details: <%= buyer.name %></h2>
+
+      <!-- Buyer Info -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card buyer-info-card w-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= buyer.name %></h5>
+              <p class="card-text">📱 Mobile: <%= buyer.mobile %></p>
+              <p class="card-text">📧 Email: <%= buyer.email %></p>
+              <p class="card-text">💳 UPI ID: <%= buyer.upi %></p>
+              <div class="row mt-4">
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💸 Due Amount</h6>
+                   <a href="/admin/buyer-payment/<%= buyer._id %>/"> <p class="mb-0 fw-bold">₹<%= buyer.dueAmount %></p></a>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💰 Total Earnings</h6>
+                    <p class="mb-0 fw-bold">₹<%= buyer.totalEarning %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="row filter-bar">
+        <div class="col-md-4">
+          <label for="monthSelect" class="form-label">Select Month</label>
+          <select id="monthSelect" class="form-select" data-buyer-slug="<%= buyer.slug %>">
+            <% monthOptions.forEach(month => { %>
+              <option value="<%= month %>" <%= selectedMonth === month ? "selected" : "" %>><%= month %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="row">
+        <% buyer.orders.forEach(order => { %>
+          <div class="col-md-4 mb-3">
+            <div class="card order-card" style="border-left: 5px solid <%= order.colorCode %>;">
+              <div class="card-body">
+                <h5 class="card-title"><%= order.brand %></h5>
+                <h2 class="card-title"><%= order.deviceName %></h2>
+                <p class="card-text">📦 Variant: <%= order.variant %></p>
+                <p class="card-text">🎨 Color: <%= order.color %></p>
+                <p class="card-text">🛒 dilivered date: <%= order.deliveryDate%></p>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+     <!-- Charts -->
+<style>
+  .small-chart {
+    max-width: 100%;
+    width: 250px; /* approx 25% of full width */
+    margin: 0 auto;
+  }
+</style>
+
+<div class="row mt-4">
+  <!-- Pie Chart: Out for Delivery by Brand -->
+  <div class="col-lg-4 col-md-5 mb-4 d-flex justify-content-center align-items-center">
+    <div class="card p-3 w-100 text-center">
+      <h5>📦 Out for Delivery (Brand Wise)</h5>
+      <canvas id="outForDeliveryPie" class="small-chart"></canvas>
+    </div>
+  </div>
+
+  <!-- Bar Chart: Total Orders by Brand -->
+  <div class="col-lg-8 col-md-7 mb-4">
+    <div class="card p-3">
+      <h5 class="text-center">📊 Total Orders (Brand Wise)</h5>
+      <canvas id="totalOrdersBar"></canvas>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+  </div>
+<script>
+  const deliveryPieLabels = <%- JSON.stringify(pieChartLabels) %>;
+  const deliveryPieData = <%- JSON.stringify(pieChartData) %>;
+  const totalOrderBarLabels = <%- JSON.stringify(barChartLabels) %>;
+  const totalOrderBarData = <%- JSON.stringify(barChartData) %>;
+</script>
+
+
+<script src="/js/admin/buyer-details.js"></script>
+
+  <!-- <script src="/js/admin/buyer-details.js"></script> -->
+</body>
+</html>

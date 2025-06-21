@@ -1,0 +1,16 @@
+#otpSection {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#otpSection.show {
+  display: block;
+  opacity: 1;
+  margin-top: 10px;
+}
+
+#submitBtn.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}

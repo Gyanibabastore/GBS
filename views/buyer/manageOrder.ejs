@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Orders - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/buyer/manageOrders.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container py-5">
+    <h2 class="mb-4">📦 Manage Your Orders</h2>
+    <button class="btn btn-primary mb-4" id="toggle-pending-btn">Show Pending Orders</button>
+
+    <div id="product-list" class="row">
+      <% for (let i = 0; i < products.length; i++) {
+        const product = products[i];
+        const qty = quantities[i] || 1;
+      %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 mb-4">
+          <img src="<%= product.imageUrl %>" class="card-img-top rounded" alt="<%= product.deviceName %>" />
+          <div class="card-body">
+            <h5 class="card-title"><%= product.deviceName %></h5>
+            <p>
+              Brand: <%= product.brand %><br />
+              Variant: <%= product.variant %><br />
+              Booking Amount: ₹<%= product.bookingAmount %><br />
+              Return Amount: ₹<%= product.returnAmount %><br />
+              Margin: ₹<%= product.margin %>
+            </p>
+            <div class="cart-actions">
+              <div class="quantity-controls btn-group">
+                <button type="button" class="btn btn-outline-secondary qty-decrease" data-index="<%= i %>">-</button>
+                <span id="qty-<%= i %>" class="btn btn-light"><%= qty %></span>
+                <button type="button" class="btn btn-outline-secondary qty-increase" data-index="<%= i %>">+</button>
+              </div>
+
+              <form action="/buyer/<%= buyerId %>/orders" method="POST" class="mt-3 order-form" data-index="<%= i %>">
+                <input type="hidden" name="deviceName" value="<%= product.deviceName %>" />
+                <input type="hidden" name="brand" value="<%= product.brand %>" />
+                <input type="hidden" name="variant" value="<%= product.variant %>" />
+                <input type="hidden" name="color" value="<%= product.color %>" />
+                <input type="hidden" name="bookingAmount" value="<%= product.bookingAmount %>" />
+                <input type="hidden" name="returnAmount" value="<%= product.returnAmount %>" />
+                <input type="hidden" name="margin" value="<%= product.margin %>" />
+                <input type="hidden" name="imageUrl" value="<%= product.imageUrl %>" />
+                <input type="hidden" name="quantity" id="form-qty-<%= i %>" value="<%= qty %>" />
+                <button type="submit" class="btn btn-success">Update Order</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <div id="pending-orders" style="display: none;">
+      <h3 class="mt-5">🕒 Pending Orders</h3>
+      <ul class="list-group mt-3">
+        <% for (let j = 0; j < pendingOrders.length; j++) { %>
+          <li class="list-group-item">
+            <%= new Date(pendingOrders[j].date).toLocaleDateString() %>:
+            <%= pendingOrders[j].title || 'Unknown Product' %> x
+            <%= pendingOrders[j].quantity || 1 %>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+  <script src="/js/buyer/manageOrders.js"></script>
+</body>
+</html>

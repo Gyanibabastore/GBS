@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seller Details - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/css/admin/seller-details.css" />
+  <style>
+    .small-chart {
+      max-width: 100%;
+      width: 250px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="container py-4">
+      <a href="/sellers" class="btn btn-outline-dark mb-3">⬅ Back to Seller List</a>
+      <h2 class="mb-4">Seller Details: <%= seller.name %></h2>
+
+      <!-- Seller Info -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card seller-info-card w-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= seller.name %></h5>
+              <p class="card-text">📱 Mobile: <%= seller.mobile %></p>
+              <p class="card-text">📧 Email: <%= seller.email %></p>
+              <p class="card-text">💳 UPI ID: <%= seller.upiId %></p>
+              <div class="row mt-4">
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💸 Advance Amount</h6>
+                    <a href="/admin/seller-payment/<%= seller._id %>"><p class="mb-0 fw-bold">₹<%= seller.advance %></p></a>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💰 Total Earnings</h6>
+                    <p class="mb-0 fw-bold">₹<%= seller.totalEarnings %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="row filter-bar">
+        <div class="col-md-4">
+          <label for="monthSelect" class="form-label">Select Month</label>
+          <select id="monthSelect" class="form-select">
+            <% months.forEach(function(month) { %>
+              <option value="<%= month.value %>" <%= month.value === selectedMonth ? 'selected' : '' %>><%= month.label %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+    
+      
+      <!-- Charts -->
+      <div class="row mt-4">
+        <div class="col-lg-4 col-md-5 mb-4 d-flex justify-content-center align-items-center">
+          <div class="card p-3 w-100 text-center">
+            <h5>📦 Out for Delivery (Brand Wise)</h5>
+            <canvas id="outForDeliveryPie" class="small-chart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-8 col-md-7 mb-4">
+          <div class="card p-3">
+            <h5 class="text-center">📊 Total Orders (Brand Wise)</h5>
+            <canvas id="totalOrdersBar"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Section -->
+      <div class="row mt-5">
+        <h4>📋 Orders</h4>
+        <% devices.forEach(function(device) { %>
+  <div class="col-md-6 mb-3">
+    <div class="card border-start border-4 <%= device.status === 'sold' ? 'border-success' : 'border-warning' %>">
+      <div class="card-body">
+        <h5 class="card-title"><%= device.name %></h5>
+        <p class="card-text">📅 Order Date: <%= device.orderDate %></p>
+        <p class="card-text">🧾 Variant: <%= device.variant %>, 🎨 Color: <%= device.color %></p>
+        <p class="card-text">🏷️ Brand: <%= device.brand %></p>
+        <p class="card-text">🏷️ Booking Amount: ₹<%= device.bookingAmount %></p>
+        <p class="card-text fw-bold">Status:
+          <span class="<%= device.status === 'sold' ? 'text-success' : 'text-warning' %>">
+            <%= device.status %>
+          </span>
+        </p>
+
+        <% if (device.isOutForDelivery && String(device.sellerId) === String(seller._id)) { %>
+          <form method="POST" action="/admin/orders/mark-sold?sellerId=<%= seller._id %>">
+            <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmount %>" />
+            <button class="btn btn-sm btn-primary">✅ Mark All Delivered as Sold</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+<% }); %>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/admin/seller-details.js"></script>
+  <script>
+    window.chartData = {
+      pie: {
+        labels: <%- JSON.stringify(pieChartLabels) %>,
+        data: <%- JSON.stringify(pieChartData) %>
+      },
+      bar: {
+        labels: <%- JSON.stringify(barChartLabels) %>,
+        data: <%- JSON.stringify(barChartData) %>
+      }
+    };
+  </script>
+</body>
+</html>

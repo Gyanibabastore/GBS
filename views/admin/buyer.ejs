@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyers - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin/buyers.css">
+</head>
+<body>
+  <div class="overlay">
+    <div class="container">
+      <a href="/dashboard" class="btn btn-warning mb-3">⬅ Back to Dashboard</a>
+      <h2 class="text-center mb-4">Buyers</h2>
+
+      <!-- Unified Search Box -->
+      <div class="mb-4">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search by Name or Mobile">
+      </div>
+
+      <!-- Buyer Cards -->
+      <div id="buyerList">
+        <% buyers.forEach((buyer, index) => { %>
+          <div class="mb-3">
+            <div class="card buyer-card" style="border-left-color: <%= buyer.color %>;">
+              <div class="card-body">
+                <h5 class="card-title"><%= buyer.name %></h5>
+                <p class="card-text mb-1">Mobile: <%= buyer.mobile %></p>
+                <p class="card-text mb-1">Email: <%= buyer.email %></p>
+                <p class="card-text">UPI: <%= buyer.upi %></p>
+                <a href="/admin/buyer-details/<%= buyer.id %>" class="btn btn-info btn-sm">View Details</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- External JS only -->
+  <script src="/js/admin/buyers.js"></script>
+</body>
+</html>

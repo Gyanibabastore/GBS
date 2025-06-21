@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="/css/buyer/edit-profile.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container mt-5">
+    <h2 class="mb-4">Edit Buyer Profile</h2>
+    
+    <form id="editProfileForm" class="card p-4 shadow">
+      <input type="hidden" name="buyerId" value="<%= buyer._id %>">
+
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" value="<%= buyer.name %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="<%= buyer.email %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Mobile</label>
+        <input type="text" name="mobile" class="form-control" value="<%= buyer.mobile %>" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">UPI</label>
+        <input type="text" name="upi" class="form-control" value="<%= buyer.upi %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Address</label>
+        <textarea name="address" class="form-control" rows="2" required><%= buyer.address %></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Pincode</label>
+        <input type="text" name="pincode" class="form-control" value="<%= buyer.pincode %>" required>
+      </div>
+
+      <!-- OTP Section -->
+      <div id="otpSection">
+        <label class="form-label">Enter OTP</label>
+        <input type="text" name="otp" class="form-control" placeholder="Enter OTP">
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn btn-warning mt-3">Send OTP</button>
+      <a href="/buyer/<%= buyer._id %>/profile" class="btn btn-secondary ms-2 mt-3">Cancel</a>
+    </form>
+  </div>
+
+  <script src="/js/buyer/edit-profile.js"></script>
+</body>
+</html>

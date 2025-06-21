@@ -1,0 +1,32 @@
+    body {
+      background-image: url('https://images.unsplash.com/photo-1581091012184-5c8f3ec8464b');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      color: white;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.75);
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .table thead {
+      background-color: #343a40;
+      color: white;
+    }
+
+    canvas {
+      max-height: 300px;
+    }
+
+    .total-summary {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #ffc107;
+    }
+
+    .back-btn {
+      margin-bottom: 20px;
+    }

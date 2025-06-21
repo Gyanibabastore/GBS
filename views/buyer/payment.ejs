@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment History - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/buyer/paymentHistory.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <h2 class="mb-4">💰 Payment History</h2>
+
+    <!-- Summary Cards -->
+    <div class="summary mb-4 d-flex gap-4">
+      <div class="summary-card">
+        <h5>Total Earning</h5>
+        <h3>₹<%= totalEarning %></h3>
+      </div>
+      <div class="summary-card">
+        <h5>Total Due</h5>
+        <h3>₹<%= totalDue %></h3>
+      </div>
+    </div>
+
+    <!-- Filter by Date -->
+    <div class="filter-bar mb-4">
+      <input 
+        type="date" 
+        class="form-control w-auto" 
+        onchange="filterByDate(this.value)"
+        value="<%= selectedDate ? selectedDate : '' %>"
+      />
+    </div>
+
+    <!-- No Payments Message -->
+    <% if (payments.length === 0) { %>
+      <div class="alert alert-info">No payments found for selected date.</div>
+    <% } %>
+
+    <!-- Payment Cards -->
+    <div class="row" id="payment-cards">
+      <% payments.forEach(function(payment) { %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card">
+            <img src="<%= payment.image %>" class="card-img-top" alt="Proof Image" />
+            <div class="card-body">
+              <h5 class="card-title">Received From: <%= payment.receivedFromName %></h5>
+              <p>Amount: ₹<%= payment.amount %></p>
+              <p>Payment Mode: <%= payment.mode %></p>
+              <p>Date: <%= payment.date.toLocaleDateString('en-IN') %></p>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <script src="/js/buyer/paymentHistory.js"></script>
+</body>
+</html>

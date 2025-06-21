@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Orders - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/buyer/myorders.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container py-5">
+  <h2 class="mb-4">📦 My Orders</h2>
+
+  <div class="controls d-flex gap-3 mb-4">
+    <input
+      type="text"
+      class="form-control search-box"
+      placeholder="Search by model..."
+      id="searchBox"
+    />
+    <select class="form-select status-filter" id="statusFilter">
+      <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+      <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+      <option value="canceled" <%= defaultStatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
+    </select>
+  </div>
+
+  <div id="orders-container">
+    <% orders.forEach(order => { %>
+      <div
+        class="card p-3 mb-3 <%= order.status !== defaultStatus ? 'd-none' : '' %>"
+        data-model="<%= order.deviceModel.toLowerCase() %>"
+        data-status="<%= order.status %>"
+      >
+        <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid" />
+        <div class="card-body">
+          <h5><strong>Device:</strong> <%= order.deviceModel %>, <%= order.variant %>, <%= order.color %></h5>
+          <p><strong>Order Date:</strong> <%= order.orderDate %></p>
+          <p><strong>Booking Amount:</strong> ₹<%= order.bookingAmount %></p>
+          <p><strong>Return Amount:</strong> ₹<%= order.returnAmount %></p>
+          <p><strong>Margin:</strong> ₹<%= order.margin %></p>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<script src="/js/buyer/order.js"></script>
+</body>
+</html>

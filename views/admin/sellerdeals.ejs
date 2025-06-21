@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Stocks</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/admin/sellerdeals.css" rel="stylesheet" />
+
+  <!-- ✅ Load script in head with defer (important for Helmet) -->
+  <script src="/js/admin/sellerdeals.js" defer></script>
+</head>
+<body>
+<div class="container py-5">
+  <h2 class="mb-4">📦 Manage Stocks</h2>
+
+  <div id="product-list" class="row">
+    <% for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+    %>
+    <div class="col-md-6 col-lg-4">
+      <div class="card p-3 mb-4">
+        <img src="<%= product.imageUrl %>" class="card-img-top rounded" alt="<%= product.deviceName %>" />
+        <div class="card-body">
+          <h5 class="card-title"><%= product.deviceName %></h5>
+          <p>
+            Brand: <%= product.brand %><br />
+            Variant: <%= product.variant %><br />
+            Color: <%= product.color %><br />
+            Return Amount: ₹<%= product.returnAmount %><br />
+            Status:
+            <% if (product.deal) { %>
+              <span class="badge bg-success">Active</span>
+            <% } else { %>
+              <span class="badge bg-secondary">Inactive</span>
+            <% } %>
+          </p>
+
+          <div class="mb-3">
+            <label for="margin-<%= i %>" class="form-label">Add Margin (₹)</label>
+            <input type="number" id="margin-<%= i %>" class="form-control" value="<%= product.bookingAmountSeller ? product.bookingAmountSeller - product.returnAmount : '' %>">
+          </div>
+
+          <div class="form-check form-switch">
+            <input class="form-check-input deal-toggle" type="checkbox"
+              data-index="<%= i %>"
+              data-stockid="<%= product._id %>"
+              data-return="<%= product.returnAmount %>"
+              <%= product.deal ? 'checked' : '' %>>
+            <label class="form-check-label">Toggle Stock</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+</body>
+</html>

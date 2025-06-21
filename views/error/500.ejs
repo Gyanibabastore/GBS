@@ -1,0 +1,54 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>505 - Server Error</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+    .error-box {
+      text-align: center;
+      animation: zoomIn 0.6s ease;
+    }
+    .error-code {
+      font-size: 120px;
+      font-weight: bold;
+    }
+    .message {
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+    .btn-home {
+      background: #fff;
+      color: #302b63;
+      font-weight: bold;
+      border-radius: 25px;
+      padding: 10px 25px;
+      transition: all 0.3s;
+    }
+    .btn-home:hover {
+      background-color: #f0f0f0;
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="error-box">
+    <div class="error-code">505</div>
+    <div class="message"><%= typeof msg !== 'undefined' ? msg : 'Server error occurred. Please try again later.' %></div>
+    <a href="/" class="btn btn-home">Back to Home</a>
+  </div>
+</body>
+</html>

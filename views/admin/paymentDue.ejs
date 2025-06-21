@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Due Payment - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/admin/paymentdue.css">
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="mb-4">💸 Payment Due Summary (Paid to Buyers)</h2>
+
+    <!-- Filter Section -->
+    <div class="row filter-section">
+      <div class="col-md-4 mb-3">
+        <label for="filterDate" class="form-label">Select Date</label>
+        <input type="date" class="form-control" id="filterDate" value="<%= filterDate || '' %>">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label for="filterMonth" class="form-label">Select Month</label>
+        <select id="filterMonth" class="form-select">
+          <% months.forEach(month => { %>
+            <option value="<%= month %>" <%= month === filterMonth ? 'selected' : '' %>><%= month %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card summary-card text-center">
+          <h5>Total Payment Due</h5>
+          <p class="display-6 fw-bold">₹<%= totalDue.toLocaleString() %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Cards -->
+    <div class="row g-4">
+      <% payments.forEach(payment => { %>
+        <div class="col-md-6">
+          <div class="card p-3">
+            <img src="<%= payment.proofImage || 'https://source.unsplash.com/400x200/?invoice,receipt' %>" class="transaction-img mb-3" alt="Proof" />
+            <div class="card-body">
+              <h5 class="card-title">Buyer: <%= payment.buyerName %></h5>
+              <p class="card-text">
+                💰 ₹<%= payment.amount.toLocaleString() %><br />
+                📅 <%= payment.date %><br />
+                💳 <%= payment.mode %><br />
+                📱 Reference: <%= payment.reference %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <script src="/js/admin/paymentdue.js"></script>
+</body>
+</html>

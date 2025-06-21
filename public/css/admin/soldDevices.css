@@ -1,0 +1,33 @@
+    body {
+      background-image: url('https://images.unsplash.com/photo-1581091012184-5c8f3ec8464b');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      color: white;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.75);
+      min-height: 100vh;
+      padding: 30px;
+    }
+
+    .filter-bar {
+      margin-bottom: 20px;
+    }
+
+    .table thead {
+      background-color: #343a40;
+      color: white;
+    }
+
+    canvas {
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+    }
+#brandBarChart {
+    height: 350px !important;
+    max-height: 400px;
+    width: 100%;
+  }

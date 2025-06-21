@@ -1,0 +1,38 @@
+
+    body {
+      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .card img {
+      width: 120px;
+      height: auto;
+      border-radius: 10px;
+    }
+    .card-body {
+      flex: 1;
+    }
+    h2 {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    .search-box {
+      width: 50%;
+    }
+    .status-filter {
+      width: 200px;
+    }
+  

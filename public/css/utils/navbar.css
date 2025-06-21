@@ -1,0 +1,91 @@
+
+    .navbar {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #ffffff !important;
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease;
+    }
+    .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Make sure it stays above other elements */
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+
+    .navbar-brand:hover {
+      transform: scale(1.05);
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    .nav-link, .ofd-button {
+      font-weight: 600;
+      color: #ffffff !important;
+    }
+
+    .ofd-button {
+      background-color: #ffc107;
+      border-radius: 30px;
+      padding: 6px 20px;
+      text-decoration: none;
+      transition: all 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .ofd-button:hover {
+      background-color: #e0a800;
+      color: #fff !important;
+      box-shadow: 0 0 10px #ffc107;
+    }
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ffffff;
+    }
+
+    .dropdown-menu {
+      background-color: #2c5364;
+      border: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(5px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .dropdown-item {
+      color: #ffffff;
+    }
+
+    .dropdown-item:hover {
+      background-color: #1a2b38;
+    }
+
+    .dropdown-divider {
+      border-color: rgba(255, 255, 255, 0.2);
+    } 

@@ -1,0 +1,39 @@
+
+    body {
+      background: url('https://images.unsplash.com/photo-1581093588401-8406c558a71e') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .card {
+      border-radius: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .quantity-controls button {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .cart-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #pending-orders {
+      display: none;
+    }
+.quantity-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.quantity-controls .btn {
+  min-width: 40px;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Available Stock - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="/css/admin/availableStock.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="overlay">
+    <div class="container">
+      <a href="/dashboard" class="btn btn-warning mb-3">⬅ Back to Dashboard</a>
+      <h2 class="text-center mb-4">Available Stock - Category Wise</h2>
+
+      <div class="table-responsive mb-4">
+        <table class="table table-striped table-dark">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Variant</th>
+              <th>Color</th>
+              <th>Quantity In Stock</th>
+            </tr>
+          </thead>
+          <tbody id="stockTable">
+            <% stockData.forEach(item => { %>
+              <tr>
+                <td><%= item.brand %></td>
+                <td><%= item.model %></td>
+                <td><%= item.variant %></td>
+                <td><%= item.color %></td>
+                <td><%= item.quantity %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header text-dark">Stock Quantity by Brand</div>
+        <div class="card-body bg-white">
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Safe JSON injection -->
+  <script id="stockDataScript" type="application/json">
+    <%- JSON.stringify(stockData) %>
+  </script>
+
+  <!-- External JS only -->
+  <script src="/js/admin/availableStock.js"></script>
+</body>
+</html>
