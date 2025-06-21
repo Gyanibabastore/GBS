@@ -11,6 +11,7 @@ const flash = require('connect-flash');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 require('dotenv').config();
+const MongoStore = require('connect-mongo');
 
 const connectDB = require('./config/db');
 const app = express();
@@ -29,12 +30,18 @@ app.use(cookieParser());
 app.use(methodOverride('_method'));
 
 // -------------------- SESSION & FLASH --------------------
+
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'yourSecret',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI, // ✅ Set this in Render
+    ttl: 24 * 60 * 60 // Optional: 1 day session
+  })
 }));
-app.use(flash());
+
 
 // ✅ Helmet with Custom Content Security Policy
 const { contentSecurityPolicy } = helmet;
