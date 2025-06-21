@@ -1,14 +1,11 @@
-// controllers/buyerController.js
+
 
 const Buyer = require('../models/Buyer');
 const Order = require('../models/Order');
-// const Device = require('../models/Device');     // if you're storing device separately
+  
 const Deal = require('../models/Deal');
 const Payment = require('../models/Payment');
-// const mongoose = require('mongoose');
-// const OutForDelivery = require('../models/OutForDelivery');
-// const Order = require('../models/Order');
-// const Device = require('../models/Device');
+
 exports.getBuyerDashboard = async (req, res) => {
   try {
     const buyerId = req.params.buyerId;
