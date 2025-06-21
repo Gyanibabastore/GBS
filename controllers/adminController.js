@@ -15,7 +15,7 @@ const moment = require('moment');
 
 
 
-const Stock = require('../models/stock'); // Adjust path as needed
+const Stock = require('../models/Stock'); // Adjust path as needed
 
 
 
