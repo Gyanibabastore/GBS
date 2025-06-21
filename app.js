@@ -1,5 +1,6 @@
 // ✅ APP.JS for GYANIBABA STORE
 // Setup Express, Middleware, Routes, MongoDB Connection
+process.traceDeprecation = true;
 
 const express = require('express');
 const path = require('path');
