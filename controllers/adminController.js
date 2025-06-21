@@ -90,7 +90,6 @@ exports.getDashboard = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Dashboard loading failed.' });
   }
 };
-
 exports.getTotalOrders = async (req, res) => {
   try {
     const { month, date } = req.query;

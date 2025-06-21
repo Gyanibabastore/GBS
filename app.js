@@ -52,20 +52,31 @@ app.use((req, res, next) => {
 
 // ✅ Helmet with Custom Content Security Policy
 const { contentSecurityPolicy } = helmet;
+
 app.use(
-  contentSecurityPolicy({
+  helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'", // required for EJS inlined <script>
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com" // required for jsPDF
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'", // required for Bootstrap styles
+        "https://cdn.jsdelivr.net"
+      ],
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
-    }
+    },
   })
 );
+
 
 // ✅ Sanitize user input
 app.use((req, res, next) => {
