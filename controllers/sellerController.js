@@ -1,7 +1,7 @@
 const Seller = require('../models/Seller');
 const Buyer = require('../models/Buyer');
 const Order = require('../models/Order');
-const Stock = require('../models/stock');
+const Stock = require('../models/Stock');
 const Payment = require('../models/Payment');
 const mongoose = require('mongoose');
 
