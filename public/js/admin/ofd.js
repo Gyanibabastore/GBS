@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Tracking ID:</strong> ${card.getAttribute('data-tracking')}</p>
                 <p>Are you sure you want to mark this order as <strong>delivered</strong>?</p>
               `;
-              e.target.checked = false; // Reset until confirmed
+              e.target.checked = false; // Reset toggle until confirmed
               verifyModal.show();
             }
           } catch (innerErr) {
@@ -56,41 +56,25 @@ document.addEventListener('DOMContentLoaded', () => {
           },
           body: JSON.stringify({ id: currentDeliveryId })
         })
-        .then(async (res) => {
-          const contentType = res.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await res.json();
+          .then(async (res) => {
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              const data = await res.json();
 
-            if (data.message?.toLowerCase().includes('marked as delivered')) {
-              const card = document.querySelector(`.delivery-card[data-id="${currentDeliveryId}"]`);
-              if (card) {
-                const toggle = card.querySelector('.delivery-toggle');
-                toggle.checked = true;
-                toggle.disabled = true;
-                card.classList.add('disabled-card');
+              if (data.message?.toLowerCase().includes('marked as delivered')) {
+                // ✅ Refresh the page to reflect the update
+                window.location.reload();
+              } else {
+                alert(data.message || 'Unable to mark as delivered.');
               }
-
-              const deliveredCountElem = document.getElementById('deliveredCount');
-              const pendingCountElem = document.getElementById('pendingCount');
-
-              if (deliveredCountElem && pendingCountElem) {
-                deliveredCountElem.textContent = parseInt(deliveredCountElem.textContent || '0') + 1;
-                pendingCountElem.textContent = parseInt(pendingCountElem.textContent || '0') - 1;
-              }
-
-              currentDeliveryId = null;
-              verifyModal.hide();
             } else {
-              alert(data.message || 'Unable to mark as delivered.');
+              throw new Error('Invalid response format from server');
             }
-          } else {
-            throw new Error('Invalid response format from server');
-          }
-        })
-        .catch(err => {
-          console.error("🔥 Server fetch error:", err);
-          alert("Server error occurred while marking as delivered.");
-        });
+          })
+          .catch(err => {
+            console.error("🔥 Server fetch error:", err);
+            alert("Server error occurred while marking as delivered.");
+          });
 
       } catch (confirmErr) {
         console.error("🔴 Confirm button error:", confirmErr);
