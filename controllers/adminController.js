@@ -468,33 +468,21 @@ exports.getAllDeliveries = async (req, res) => {
 exports.markDelivered = async (req, res) => {
   try {
     const { id } = req.body;
-    if (!id) {
-      const msg = 'Order ID is required';
-      return req.xhr
-        ? res.status(400).json({ message: msg })
-        : res.redirect('back');
-    }
+    if (!id) return res.status(400).json({ message: 'Order ID is required' });
 
     const order = await Order.findById(id);
-    if (!order) {
-      const msg = 'Order not found';
-      return req.xhr
-        ? res.status(404).json({ message: msg })
-        : res.redirect('back');
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
     if (order.status === 'delivered') {
-      const msg = 'Order is already marked as delivered';
-      return req.xhr
-        ? res.status(200).json({ message: msg })
-        : res.redirect('back');
+      return res.status(200).json({ message: 'Order is already marked as delivered' });
     }
 
-    // Update order status
+    // Update status
     order.status = 'delivered';
     order.deal = false;
     order.deliveryDate = new Date();
     order.outForDelivery.status = 'delivered';
+
     const returned = order.returnAmount;
     const margin = order.margin;
     await order.save();
@@ -505,6 +493,7 @@ exports.markDelivered = async (req, res) => {
       });
     }
 
+    // Update stock
     const stockKey = {
       brand: order.brand,
       deviceName: order.deviceName,
@@ -529,17 +518,11 @@ exports.markDelivered = async (req, res) => {
       });
     }
 
-    const msg = 'Order marked as delivered and stock updated';
-    return req.xhr
-      ? res.status(200).json({ message: msg })
-      : res.redirect('back');
+    return res.status(200).json({ message: 'Order marked as delivered and stock updated' });
 
   } catch (err) {
     console.error('Error in markDelivered:', err);
-    const msg = 'Internal server error while marking delivered.';
-    return req.xhr
-      ? res.status(500).json({ message: msg })
-      : res.status(500).render('error/500', { msg });
+    return res.status(500).json({ message: 'Internal server error while marking delivered.' });
   }
 };
 
