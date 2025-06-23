@@ -275,9 +275,13 @@ console.log("RENDERING DROPDOWN DATA:", {
   }
 };
 // Post Out For Delivery Request
+// Out For Delivery - POST
 exports.postOutForDelivery = async (req, res) => {
   try {
-    const { name, brand, model, variant, color, pincode, otp, trackingId, mobileLast4 } = req.body;
+    const {
+      name, brand, model, variant, color, pincode, otp, trackingId, mobileLast4
+    } = req.body;
+
     const buyerId = req.user.id;
 
     const order = await Order.findOne({
@@ -290,19 +294,21 @@ exports.postOutForDelivery = async (req, res) => {
     });
 
     if (!order) {
-      req.flash('error', 'No matching pending order found.');
-      return res.redirect('/buyer/out-for-delivery');
+      req.flash('error', 'No matching pending order found');
+      return res.status(404).redirect('/buyer/out-for-delivery');
     }
 
     if (order.outForDelivery?.trackingId === trackingId) {
-      req.flash('error', 'This Tracking ID is already used.');
+      req.flash('error', 'This tracking ID is already used');
       return res.redirect('/buyer/out-for-delivery');
     }
 
     order.orderName = name;
     order.status = 'out-for-delivery';
     order.outForDelivery = {
-      name, pincode, otp,
+      name,
+      pincode,
+      otp,
       tracking: trackingId,
       last4Digit: mobileLast4,
       status: 'out-for-delivery',
@@ -310,15 +316,14 @@ exports.postOutForDelivery = async (req, res) => {
     };
 
     await order.save();
-    req.flash('success', 'Order sent out for delivery successfully.');
+    req.flash('success', 'Order marked as out for delivery');
     res.redirect('/buyer/out-for-delivery');
 
   } catch (err) {
     console.error('Post OFD Error:', err);
-    res.status(500).render('error/500', { msg: 'Something went wrong during delivery process.' });
+    res.status(500).render('error/500', { msg: 'Something went wrong while updating order' });
   }
 };
-
 // Get Deals Page
 exports.getDeals = async (req, res) => {
   try {
