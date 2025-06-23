@@ -51,6 +51,8 @@ app.use((req, res, next) => {
 });
 
 // ✅ Helmet with Custom Content Security Policy
+
+
 const { contentSecurityPolicy } = helmet;
 
 app.use(
@@ -68,7 +70,7 @@ app.use(
         "'unsafe-inline'", // required for Bootstrap styles
         "https://cdn.jsdelivr.net"
       ],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "https:", "*"], // ✅ allow all image sources
       fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
@@ -76,6 +78,7 @@ app.use(
     },
   })
 );
+
 
 
 // ✅ Sanitize user input

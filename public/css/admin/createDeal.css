@@ -19,3 +19,20 @@
       padding: 10px;
       border-radius: 10px;
     }
+
+    .card:hover {
+  transform: translateY(-4px);
+}
+
+.card-title {
+  font-size: 1.1rem;
+}
+
+.card-body {
+  padding: 1.2rem;
+}
+
+.form-switch .form-check-input {
+  width: 2.5em;
+  height: 1.3em;
+}

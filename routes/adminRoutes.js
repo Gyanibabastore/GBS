@@ -26,6 +26,7 @@ router.get('/sellerdeals', protect, isAdmin, adminController.rendersellerdealsPa
 // router.post('/deal/toggle', protect,isAdmin,adminController.toggleDealStatus);
 
 router.post('/deal/activate', protect,isAdmin,adminController.activateDeal);
+router.post('/deals/toggle/:id', protect,isAdmin,adminController.toggleDealStatus);
 // Payment routes
 router.get('/addpayment', protect, isAdmin, adminController.renderAddPayment);
 router.post('/:id/payments', protect, isAdmin, (req, res, next) => {

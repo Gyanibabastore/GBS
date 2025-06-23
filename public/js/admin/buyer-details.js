@@ -1,79 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
-  try {
-    const orderCards = document.querySelectorAll('.order-card');
-    if (!orderCards.length) throw new Error("No order cards found.");
-
-    const labels = [];
-    const data = [];
-    const bgColors = [];
-
-    orderCards.forEach(card => {
-      try {
-        const title = card.querySelector('.card-title')?.textContent || "Unknown";
-        const qtyText = card.querySelector('.card-text:nth-child(4)')?.textContent || "";
-        const qty = parseInt(qtyText.split(':')[1]?.trim()) || 0;
-        const color = card.style.borderLeftColor || (card.style.borderLeft?.split(" ")[2]) || "#007bff";
-
-        labels.push(title);
-        data.push(qty);
-        bgColors.push(color);
-      } catch (innerErr) {
-        console.warn("Error parsing individual card:", innerErr);
-      }
+  // Handle Month Change
+  const monthSelect = document.getElementById('monthSelect');
+  if (monthSelect) {
+    monthSelect.addEventListener('change', () => {
+      const selectedMonth = monthSelect.value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('month', selectedMonth);
+      window.location.href = url.toString();
     });
-
-    const ctx = document.getElementById('orderChart')?.getContext('2d');
-    if (!ctx) throw new Error("Order chart canvas not found.");
-    
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Order Quantity',
-          data,
-          backgroundColor: bgColors
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
-
-    // Month filter handler
-    const monthSelect = document.getElementById('monthSelect');
-    if (monthSelect) {
-      monthSelect.addEventListener('change', function () {
-        const selectedMonth = this.value;
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('month', selectedMonth);
-        window.location.href = currentUrl.toString();
-      });
-    }
-  } catch (err) {
-    console.error("🔥 Error loading order chart:", err);
-    alert("⚠️ Error rendering order chart. Please try again or contact support.");
   }
 
-  // Pie Chart - Out for Delivery
+  // Pie Chart: Out for Delivery
   try {
-    const pieCtx = document.getElementById("outForDeliveryPie")?.getContext("2d");
-    if (!pieCtx) throw new Error("Out for Delivery pie chart canvas not found.");
-    
-    if (!window.deliveryPieLabels || !window.deliveryPieData) {
-      throw new Error("Pie chart data not found.");
-    }
-
+    const pieCtx = document.getElementById("outForDeliveryPie").getContext("2d");
     new Chart(pieCtx, {
       type: "pie",
       data: {
-        labels: deliveryPieLabels,
+        labels: pieChartLabels,
         datasets: [{
           label: "Out for Delivery",
-          data: deliveryPieData,
+          data: pieChartData,
           backgroundColor: [
             "#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1", "#17a2b8"
           ]
@@ -87,26 +33,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   } catch (err) {
-    console.error("🔥 Pie chart error:", err);
-    alert("⚠️ Failed to render Out for Delivery chart.");
+    console.error("Pie chart rendering error:", err);
   }
 
-  // Bar Chart - Total Orders by Brand
+  // Bar Chart: Total Orders
   try {
-    const barCtx = document.getElementById("totalOrdersBar")?.getContext("2d");
-    if (!barCtx) throw new Error("Total orders bar chart canvas not found.");
-
-    if (!window.totalOrderBarLabels || !window.totalOrderBarData) {
-      throw new Error("Total orders bar chart data missing.");
-    }
-
+    const barCtx = document.getElementById("totalOrdersBar").getContext("2d");
     new Chart(barCtx, {
       type: "bar",
       data: {
-        labels: totalOrderBarLabels,
+        labels: barChartLabels,
         datasets: [{
           label: "Total Orders",
-          data: totalOrderBarData,
+          data: barChartData,
           backgroundColor: "#007bff"
         }]
       },
@@ -121,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   } catch (err) {
-    console.error("🔥 Bar chart error:", err);
-    alert("⚠️ Failed to render Total Orders chart.");
+    console.error("Bar chart rendering error:", err);
   }
 });

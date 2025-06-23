@@ -217,17 +217,27 @@ exports.getSoldDevices = async (req, res) => {
 
 exports.getAvailableStock = async (req, res) => {
   try {
+    console.log('📦 Fetching all stock entries from DB...');
     const allStocks = await Stock.find().lean();
+    console.log(`✅ Total stocks fetched: ${allStocks.length}`);
+
     const stockMap = new Map();
     const brandTotals = {};
 
     for (let stock of allStocks) {
       const key = `${stock.brand}-${stock.deviceName}-${stock.variant}-${stock.color}`;
-      const soldCount = Array.isArray(stock.soldAt) ? stock.soldAt.length : 0;
-      const available = stock.availableCount - soldCount;
-      if (available <= 0) continue;
+      const available = stock.availableCount || 0;
+
+      console.log(`🔍 Processing: ${key}`);
+      console.log(`   ➤ availableCount (raw): ${available}`);
+
+      if (available <= 0) {
+        console.log(`❌ Skipping ${key} - No available stock`);
+        continue;
+      }
 
       if (!stockMap.has(key)) {
+        console.log(`🆕 Adding new key to stockMap: ${key}`);
         stockMap.set(key, {
           brand: stock.brand,
           model: stock.deviceName,
@@ -238,21 +248,30 @@ exports.getAvailableStock = async (req, res) => {
       }
 
       stockMap.get(key).quantity += available;
+      console.log(`   ➕ Updated quantity: ${stockMap.get(key).quantity}`);
+
       brandTotals[stock.brand] = (brandTotals[stock.brand] || 0) + available;
+      console.log(`   🏷️ Brand total so far: ${brandTotals[stock.brand]}`);
     }
 
+    const stockDataArray = Array.from(stockMap.values());
+
+    console.log('📊 Final grouped stock data:', stockDataArray);
+    console.log('📈 Chart Labels:', Object.keys(brandTotals));
+    console.log('📉 Chart Values:', Object.values(brandTotals));
+
     res.render('admin/availableStock', {
-      stockData: Array.from(stockMap.values()),
+      stockData: stockDataArray,
       chartLabels: Object.keys(brandTotals),
       chartValues: Object.values(brandTotals)
     });
+
   } catch (err) {
-    console.error(err);
+    console.error('❌ Error in getAvailableStock:', err);
     req.flash('error', 'Could not load available stock.');
     res.status(500).render('error/500', { msg: 'Available stock loading failed.' });
   }
 };
-
 
 
 
@@ -269,7 +288,7 @@ const getColor = (i) => {
   const colors = ['#007bff', '#28a745', '#dc3545', '#17a2b8', '#ffc107', '#6f42c1', '#fd7e14'];
   return colors[i % colors.length];
 };
-// buyer controller
+
 exports.getAllBuyers = async (req, res) => {
   try {
     const buyers = await Buyer.find().sort({ createdAt: -1 });
@@ -291,7 +310,7 @@ exports.getAllBuyers = async (req, res) => {
   }
 };
 
-// seller controller
+
 exports.getAllSellers = async (req, res) => {
   try {
     const sellers = await Seller.find().sort({ createdAt: -1 });
@@ -577,18 +596,29 @@ exports.getBuyerDetails = async (req, res) => {
       });
     }
 
-    const transformedOrders = deliveredOrders.map(order => {
-      const date = new Date(order.deliveryDate);
-      const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getFullYear()).slice(-2)}`;
-      return {
-        brand: order.brand || 'N/A',
-        deviceName: order.deviceName,
-        variant: order.variant || 'N/A',
-        color: order.color || 'N/A',
-        deliveryDate: formattedDate,
-        colorCode: order.colorCode || '#007bff',
-      };
+    // Group delivered orders by brand+device+variant+color
+    const groupedMap = new Map();
+    deliveredOrders.forEach(order => {
+      const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}`;
+      const colorCode = order.colorCode || '#007bff';
+const image = order.imageUrl || '/images/default-phone.png'; // fallback if no image
+
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          brand: order.brand || 'N/A',
+          deviceName: order.deviceName,
+          variant: order.variant || 'N/A',
+          color: order.color || 'N/A',
+          colorCode,
+          count: 1,
+          image
+        });
+      } else {
+        groupedMap.get(key).count += 1;
+      }
     });
+
+    const transformedOrders = Array.from(groupedMap.values());
 
     const brandCountMap = {};
     [...deliveredOrders, ...outForDeliveryOrders].forEach(order => {
@@ -626,6 +656,7 @@ exports.getBuyerDetails = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error loading buyer details.' });
   }
 };
+
 
 
 
@@ -829,12 +860,32 @@ exports.getSellerPaymentDetails = async (req, res) => {
 
 exports.renderDealsPage = async (req, res) => {
   try {
-    res.render('admin/createDeal');
+    const allDeals = await Deal.find().lean(); // fetch all, not just active
+    res.render('admin/createDeal', { deals: allDeals });
   } catch (err) {
     console.error('Failed to render deals page:', err);
     res.status(500).render('error/500', { msg: 'Failed to load create deal page' });
   }
 };
+
+
+exports.toggleDealStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deal = await Deal.findById(id);
+
+    if (!deal) return res.status(404).json({ success: false, message: 'Deal not found' });
+
+    deal.status = deal.status === 'active' ? 'inactive' : 'active';
+    await deal.save();
+
+    res.json({ success: true, newStatus: deal.status });
+  } catch (err) {
+    console.error('Failed to toggle deal status:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 
 exports.createDeal = async (req, res) => {
 try {
@@ -948,24 +999,15 @@ exports.rendersellerdealsPage = async (req, res) => {
     console.log('✅ All stocks fetched:', allStocks.length);
 
     const modelMap = new Map();
+    let totalAvailableCount = 0; // 🔹 track total availableCount
 
     for (const stock of allStocks) {
+      totalAvailableCount += stock.availableCount || 0; // ✅ add available count
+
       const key = `${stock.brand}|${stock.deviceName}|${stock.variant}|${stock.color}`;
       console.log('🔍 Processing stock key:', key);
 
       if (!modelMap.has(key)) {
-        console.log('🆕 Adding to modelMap:', {
-          brand: stock.brand,
-          deviceName: stock.deviceName,
-          variant: stock.variant,
-          color: stock.color,
-          imageUrl: stock.imageUrl,
-          returnAmount: stock.returnAmount,
-          bookingAmountSeller: stock.bookingAmountSeller,
-          deal: stock.deal,
-          _id: stock._id
-        });
-
         modelMap.set(key, {
           brand: stock.brand,
           deviceName: stock.deviceName,
@@ -981,17 +1023,19 @@ exports.rendersellerdealsPage = async (req, res) => {
         console.log('⚠️ Duplicate model key skipped:', key);
       }
     }
-   
-    const products = Array.from(modelMap.values());
-    console.log('📦 Final products being rendered:', products);
 
+    const products = Array.from(modelMap.values());
     console.log('📦 Final grouped products to render:', products.length);
-    res.render('admin/sellerdeals', { products });
+    console.log('📊 Total Available Count:', totalAvailableCount);
+
+    // ✅ Pass totalAvailableCount to the EJS view
+    res.render('admin/sellerdeals', { products, totalAvailableCount });
   } catch (err) {
     console.error('❌ Error loading seller deals:', err);
     res.status(500).render('error/500', { msg: 'Error loading seller deals' });
   }
 };
+
 
 exports.activateDeal = async (req, res) => {
   try {

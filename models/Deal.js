@@ -58,7 +58,7 @@ const dealSchema = new mongoose.Schema({
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User' // Admin or seller who created it
+    ref: 'Admin' // Admin or seller who created it
   },
   createdAt: {
     type: Date,

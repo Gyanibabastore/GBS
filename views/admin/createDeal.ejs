@@ -171,6 +171,51 @@
     <button type="submit" class="btn btn-primary w-100">Create Deal</button>
   </form>
 </div>
+ <% if (deals.length > 0) { %>
+  <div class="mt-5">
+    <h4 class="mb-4 text-center text-secondary">💼 All Deals (Active & Inactive)</h4>
+    <div class="row g-4">
+      <% deals.forEach(deal => { %>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-lg border-0 position-relative" style="transition: transform 0.2s ease;">
+            <img src="<%= deal.imageUrl %>" class="card-img-top rounded-top" style="object-fit: cover; height: 200px;" alt="Model Image">
+            <div class="card-body">
+              <h5 class="card-title fw-bold"> <%= deal.brand %>&nbsp;<%= deal.deviceName %> - <%= deal.variant %></h5>
+              <p class="text-muted mb-1">Brand: <strong><%= deal.brand %></strong></p>
+              <p class="mb-1">Color: <%= deal.color %> | Card: <%= deal.cardWorking %></p>
+              <p class="mb-1">Booking: ₹<%= deal.bookingAmount %> | Return: ₹<%= deal.returnAmount %></p>
+              <p class="mb-2">Margin: ₹<%= deal.margin %></p>
+              <p class="mb-3">
+                <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary">🔗 Buy Now</a>
+              </p>
+
+              <!-- Toggle -->
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="form-check form-switch">
+                  <input 
+                    class="form-check-input toggle-status" 
+                    type="checkbox" 
+                    data-id="<%= deal._id %>" 
+                    id="toggle-<%= deal._id %>"
+                    <%= deal.status === 'active' ? 'checked' : '' %>
+                  >
+                  <label class="form-check-label ms-2" for="toggle-<%= deal._id %>">
+                    <%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %>
+                  </label>
+                </div>
+                <span class="badge <%= deal.status === 'active' ? 'bg-success' : 'bg-danger' %>">
+                  <%= deal.status %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+<% } %>
+
+
 
 <script src="/js/admin/createDeal.js"></script>
 </body>
