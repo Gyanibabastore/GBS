@@ -77,83 +77,10 @@ exports.getBuyerOrders = async (req, res) => {
   }
 };
 
-// Out For Delivery - GET
-exports.getOutForDelivery = async (req, res) => {
-  try {
-    const buyerId = req.user.id;
-     const buyer = await Buyer.findById(buyerId).lean();
-    const orders = await Order.find({ buyerId, status: 'out-for-delivery' }).lean();
-    const brands = await Deal.distinct("brand");
-    const models = await Deal.distinct("deviceName");
-    const variants = await Deal.distinct("variant");
-    const pincodes = await Deal.distinct("pincode");
-    const colors = await Deal.distinct("color");
 
-    res.render('buyer/ofd', {
-      deliveries: orders,
-      brands,
-      models,
-      variants,
-      pincodes,
-      colors,
-      buyer
-    });
 
-  } catch (err) {
-    console.error('Out-for-delivery error:', err);
-    res.status(500).render('error/500', { msg: 'Could not load deliveries' });
-  }
-};
 
-// Out For Delivery - POST
-exports.postOutForDelivery = async (req, res) => {
-  try {
-    const {
-      name, brand, model, variant, color, pincode, otp, trackingId, mobileLast4
-    } = req.body;
 
-    const buyerId = req.user.id;
-
-    const order = await Order.findOne({
-      buyerId,
-      brand,
-      deviceName: model,
-      variant,
-      color,
-      status: 'pending'
-    });
-
-    if (!order) {
-      req.flash('error', 'No matching pending order found');
-      return res.status(404).redirect('/buyer/out-for-delivery');
-    }
-
-    if (order.outForDelivery?.trackingId === trackingId) {
-      req.flash('error', 'This tracking ID is already used');
-      return res.redirect('/buyer/out-for-delivery');
-    }
-
-    order.orderName = name;
-    order.status = 'out-for-delivery';
-    order.outForDelivery = {
-      name,
-      pincode,
-      otp,
-      tracking: trackingId,
-      last4Digit: mobileLast4,
-      status: 'out-for-delivery',
-      assignedAt: new Date()
-    };
-
-    await order.save();
-    req.flash('success', 'Order marked as out for delivery');
-    res.redirect('/buyer/out-for-delivery');
-
-  } catch (err) {
-    console.error('Post OFD Error:', err);
-    res.status(500).render('error/500', { msg: 'Something went wrong while updating order' });
-  }
-};
 
 
 
@@ -296,34 +223,57 @@ exports.updateBuyerOrder = async (req, res) => {
   }
 };
 
-// Get Out For Delivery Page
 exports.getOutForDelivery = async (req, res) => {
   try {
-    const orders = await Order.find({ buyerId: req.user.id, status: 'out-for-delivery' });
-    const brands = await Deal.distinct("brand");
-    const models = await Deal.distinct("deviceName");
-    const variants = await Deal.distinct("variant");
-    const pincodes = await Deal.distinct("pincode");
-    const colors = await Deal.distinct("color");
- const buyer = await Buyer.findById(req.user.id).lean(); // ✅ Add this line
+    console.log("hiii");
+    const buyerId = req.user.id;
+    const buyer = await Buyer.findById(buyerId).lean();
+    const orders = await Order.find({ buyerId, status: 'out-for-delivery' }).lean();
 
-    res.render('buyer/ofd', {
-      deliveries: orders,
-      brands,
-      models,
-      variants,
-      pincodes,
-      colors,
-      buyer // ✅ Pass buyer to EJS for navbar etc.
+    // 🔽 Add this part if not already added
+    const deals = await Deal.find({}).lean();
+    const groupedData = {};
+
+    deals.forEach(deal => {
+      if (!groupedData[deal.brand]) {
+        groupedData[deal.brand] = {
+          models: new Set(),
+          variants: new Set(),
+          colors: new Set(),
+          pincodes: new Set(),
+        };
+      }
+
+      groupedData[deal.brand].models.add(deal.deviceName);
+      groupedData[deal.brand].variants.add(deal.variant);
+      groupedData[deal.brand].colors.add(deal.color);
+      groupedData[deal.brand].pincodes.add(deal.pincode);
     });
 
+    // Convert Sets to Arrays
+    for (const brand in groupedData) {
+      groupedData[brand].models = Array.from(groupedData[brand].models);
+      groupedData[brand].variants = Array.from(groupedData[brand].variants);
+      groupedData[brand].colors = Array.from(groupedData[brand].colors);
+      groupedData[brand].pincodes = Array.from(groupedData[brand].pincodes);
+    }
+console.log("RENDERING DROPDOWN DATA:", {
+  brands: Object.keys(groupedData),
+  dropdownMap: groupedData
+});
+    // ✅ Fix is here: Pass dropdownMap into render
+    res.render('buyer/ofd', {
+      deliveries: orders,
+      brands: Object.keys(groupedData),
+      dropdownMap: groupedData, // ✅ THIS IS MANDATORY
+      buyer
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).render('error/500', { msg: 'Error fetching delivery data' });
+    console.error('Out-for-delivery error:', err);
+    res.status(500).render('error/500', { msg: 'Could not load deliveries' });
   }
 };
-
 // Post Out For Delivery Request
 exports.postOutForDelivery = async (req, res) => {
   try {

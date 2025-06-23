@@ -9,75 +9,69 @@
 </head>
 <body>
 
-  <%- include('../partials/navbar') %> 
-<div class="container py-5">
-  <h2 class="mb-4">🚚 Out for Delivery</h2>
+  <%- include('../partials/navbar') %>
 
-  <div id="delivery-list">
-    <% deliveries.forEach(function(delivery) { %>
-      <div class="card p-3 mb-3">
-        <div class="card-body">
-          <h5><strong>Device:</strong> <%= delivery.brand %> - <%= delivery.deviceName %>, <%= delivery.variant %>, <%= delivery.color %></h5>
-          <p><strong>Customer Name:</strong> <%= delivery.outForDelivery?.name || 'N/A' %></p>
-          <p><strong>Tracking:</strong> <%= delivery.outForDelivery?.tracking || 'N/A' %></p>
-          <p><strong>Pincode:</strong> <%= delivery.outForDelivery?.pincode || 'N/A' %></p>
-          <p><strong>OTP:</strong> <%= delivery.outForDelivery?.otp || 'N/A' %></p>
-          <p><strong>Mobile Last 4:</strong> <%= delivery.outForDelivery?.last4Digit || 'N/A' %></p>
-          <p><strong>Status:</strong> <%= delivery.outForDelivery?.status || delivery.status || 'N/A' %></p>
+  <div class="container py-5">
+    <h2 class="mb-4">🚚 Out for Delivery</h2>
+
+    <div id="delivery-list">
+      <% deliveries.forEach(function(delivery) { %>
+        <div class="card p-3 mb-3">
+          <div class="card-body">
+            <h5><strong>Device:</strong> <%= delivery.brand %> - <%= delivery.deviceName %>, <%= delivery.variant %>, <%= delivery.color %></h5>
+            <p><strong>Customer Name:</strong> <%= delivery.outForDelivery?.name || 'N/A' %></p>
+            <p><strong>Tracking:</strong> <%= delivery.outForDelivery?.tracking || 'N/A' %></p>
+            <p><strong>Pincode:</strong> <%= delivery.outForDelivery?.pincode || 'N/A' %></p>
+            <p><strong>OTP:</strong> <%= delivery.outForDelivery?.otp || 'N/A' %></p>
+            <p><strong>Mobile Last 4:</strong> <%= delivery.outForDelivery?.last4Digit || 'N/A' %></p>
+            <p><strong>Status:</strong> <%= delivery.outForDelivery?.status || delivery.status || 'N/A' %></p>
+          </div>
         </div>
-      </div>
-    <% }) %>
+      <% }) %>
+    </div>
+
+    <button class="out-btn" id="toggleExpandBtn">+ Out for Delivery</button>
+
+    <form class="expand-card" id="expand-card" action="/buyer/out-for-delivery" method="POST" style="display: none;">
+      <h5 class="mb-3">📋 Add Out for Delivery Entry</h5>
+      <input type="text" class="form-control" placeholder="Name" name="name" required />
+
+      <select class="form-control" name="brand" id="brandSelect" required>
+        <option selected disabled>Select Brand</option>
+        <% brands.forEach(function(brand) { %>
+          <option value="<%= brand %>"><%= brand %></option>
+        <% }) %>
+      </select>
+
+      <select class="form-control" name="model" required>
+        <option selected disabled>Select Model</option>
+      </select>
+
+      <select class="form-control" name="variant" required>
+        <option selected disabled>Select Variant</option>
+      </select>
+
+      <select class="form-control" name="color" required>
+        <option selected disabled>Select Color</option>
+      </select>
+
+      <select class="form-control" name="pincode" required>
+        <option selected disabled>Select Pincode</option>
+      </select>
+
+      <input type="text" class="form-control" placeholder="OTP" name="otp" required />
+      <input type="text" class="form-control" placeholder="Tracking ID" name="trackingId" required />
+      <input type="text" class="form-control" placeholder="Mobile Last 4 Digit" name="mobileLast4" required />
+
+      <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
+    </form>
   </div>
 
-  <button class="out-btn" id="toggleExpandBtn">+ Out for Delivery</button>
+  <!-- Safely inject dropdownMap -->
+  <script>
+    const dropdownMap = <%- JSON.stringify(dropdownMap || {}) %>;
+  </script>
 
-  <form class="expand-card" id="expand-card" action="/buyer/out-for-delivery" method="POST" style="display: none;">
-    <h5 class="mb-3">📋 Add Out for Delivery Entry</h5>
-    <input type="text" class="form-control" placeholder="Name" name="name" required />
-    
-    <select class="form-control" name="brand" required>
-      <option selected disabled>Select Brand</option>
-      <% brands.forEach(function(brand) { %>
-        <option value="<%= brand %>"><%= brand %></option>
-      <% }) %>
-    </select>
-
-    <select class="form-control" name="model" required>
-      <option selected disabled>Select Model</option>
-      <% models.forEach(function(model) { %>
-        <option value="<%= model %>"><%= model %></option>
-      <% }) %>
-    </select>
-
-    <select class="form-control" name="variant" required>
-      <option selected disabled>Select Variant</option>
-      <% variants.forEach(function(variant) { %>
-        <option value="<%= variant %>"><%= variant %></option>
-      <% }) %>
-    </select>
-
-    <select class="form-control" name="color" required>
-      <option selected disabled>Select Color</option>
-      <% colors.forEach(function(color) { %>
-        <option value="<%= color %>"><%= color %></option>
-      <% }) %>
-    </select>
-
-    <select class="form-control" name="pincode" required>
-      <option selected disabled>Select Pincode</option>
-      <% pincodes.forEach(function(pin) { %>
-        <option value="<%= pin %>"><%= pin %></option>
-      <% }) %>
-    </select>
-
-    <input type="text" class="form-control" placeholder="OTP" name="otp" required />
-    <input type="text" class="form-control" placeholder="Tracking ID" name="trackingId" required />
-    <input type="text" class="form-control" placeholder="Mobile Last 4 Digit" name="mobileLast4" required />
-
-    <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
-  </form>
-</div>
-
-<script src="/js/buyer/outForDelivery.js"></script>
+  <script src="/js/buyer/outForDelivery.js"></script>
 </body>
 </html>

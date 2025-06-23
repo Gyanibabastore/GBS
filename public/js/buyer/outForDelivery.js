@@ -12,4 +12,38 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // === Dynamic Dropdowns Based on Brand ===
+  const brandSelect = document.querySelector("select[name='brand']");
+  const modelSelect = document.querySelector("select[name='model']");
+  const variantSelect = document.querySelector("select[name='variant']");
+  const colorSelect = document.querySelector("select[name='color']");
+  const pincodeSelect = document.querySelector("select[name='pincode']");
+
+  function populateOptions(selectElement, options) {
+    selectElement.innerHTML = '<option selected disabled>Select</option>';
+    options.forEach(opt => {
+      const option = document.createElement("option");
+      option.value = opt;
+      option.textContent = opt;
+      selectElement.appendChild(option);
+    });
+  }
+
+  brandSelect.addEventListener("change", () => {
+    const selectedBrand = brandSelect.value;
+    const data = dropdownMap[selectedBrand];
+
+    if (data) {
+      populateOptions(modelSelect, data.models);
+      populateOptions(variantSelect, data.variants);
+      populateOptions(colorSelect, data.colors);
+      populateOptions(pincodeSelect, data.pincodes);
+    } else {
+      populateOptions(modelSelect, []);
+      populateOptions(variantSelect, []);
+      populateOptions(colorSelect, []);
+      populateOptions(pincodeSelect, []);
+    }
+  });
 });
