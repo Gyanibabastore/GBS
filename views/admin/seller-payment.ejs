@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Seller Payment Received - Gyanibaba Store</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
   <link rel="stylesheet" href="/css/admin/seller-payment.css"/>
 </head>
 <body>
+   <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
   <div class="container">
+    <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
     <h2 class="mb-4 text-success">💰 Payment Received from Seller - <%= seller.name %></h2>
 
 
@@ -38,7 +38,7 @@
         Name: <strong><%= seller.name %></strong><br>
         Mobile: <strong><%= seller.mobile %></strong><br>
         Email: <strong><%= seller.email %></strong><br>
-        UPI ID: <strong><%= seller.upiId %></strong>
+        UPI ID: <strong><%= seller.upi %></strong>
       </p>
     </div>
 

@@ -26,4 +26,6 @@ router.post('/admin/login', authController.adminlogincontroller);
 //logout
 router.get('/buyer/logout', authController.buyerlogout);
 
+router.get('/admin/logout', authController.adminlogout);
+
 module.exports = router;

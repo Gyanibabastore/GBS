@@ -231,3 +231,20 @@ exports.buyerlogout = async (req, res) => {
     res.status(500).send('Logout failed');
   }
 };
+
+
+exports.adminlogout = async (req, res) => {
+  try {
+    req.session.destroy(err => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).send('Failed to log out');
+      }
+      res.clearCookie('connect.sid'); // optional: clear session cookie
+      res.redirect('/auth/admin/login');   // redirect to login or home page
+    });
+  } catch (error) {
+    console.error('Logout failed:', error);
+    res.status(500).send('Logout failed');
+  }
+};

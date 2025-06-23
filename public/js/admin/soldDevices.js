@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: window.brandLabels,
+        labels: window.brandLabels, // now includes "Brand - DeviceName"
         datasets: [{
           label: 'Devices Sold',
           data: window.brandData,
@@ -34,14 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
           legend: { display: false },
           title: {
             display: true,
-            text: 'Brand-wise Devices Sold',
+            text: 'Sold Devices (Brand + Model)',
             font: { size: 18 }
+          },
+          tooltip: {
+            callbacks: {
+              title: ctx => ctx[0].label,
+              label: ctx => `Sold: ${ctx.raw}`
+            }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
             ticks: { stepSize: 1 }
+          },
+          x: {
+            ticks: {
+              autoSkip: false,
+              maxRotation: 45,
+              minRotation: 20
+            }
           }
         }
       }

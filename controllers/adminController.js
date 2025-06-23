@@ -61,14 +61,20 @@ exports.getDashboard = async (req, res) => {
 
     allStocks.forEach(stock => {
       const brand = stock.brand || 'Unknown';
-      soldBrandCount[brand] = (soldBrandCount[brand] || 0) + stock.soldCount;
-      availableBrandCount[brand] = (availableBrandCount[brand] || 0) + stock.availableCount;
+      const device = stock.deviceName || 'Unknown Device';
+      const label = `${brand} - ${device}`;
+
+      soldBrandCount[label] = (soldBrandCount[label] || 0) + stock.soldCount;
+      availableBrandCount[label] = (availableBrandCount[label] || 0) + stock.availableCount;
     });
 
-    const barChartData = Array.from(new Set([...Object.keys(soldBrandCount), ...Object.keys(availableBrandCount)])).map(brand => ({
-      brand,
-      sold: soldBrandCount[brand] || 0,
-      available: availableBrandCount[brand] || 0
+    const barChartData = Array.from(new Set([
+      ...Object.keys(soldBrandCount),
+      ...Object.keys(availableBrandCount)
+    ])).map(label => ({
+      label,
+      sold: soldBrandCount[label] || 0,
+      available: availableBrandCount[label] || 0
     }));
 
     res.render('admin/dashboard', {
@@ -80,16 +86,20 @@ exports.getDashboard = async (req, res) => {
       totalOrderValue,
       totalDue,
       outForDeliveryCount,
-      soldBrandData: Object.entries(soldBrandCount).map(([brand, count]) => ({ brand, count })),
-      availableBrandData: Object.entries(availableBrandCount).map(([brand, count]) => ({ brand, count })),
+      soldBrandData: Object.entries(soldBrandCount).map(([label, count]) => ({ label, count })),
+      availableBrandData: Object.entries(availableBrandCount).map(([label, count]) => ({ label, count })),
       barChartData
     });
+
   } catch (err) {
     console.error(err);
     req.flash('error', 'Dashboard loading failed.');
     res.status(500).render('error/500', { msg: 'Dashboard loading failed.' });
   }
 };
+
+
+
 exports.getTotalOrders = async (req, res) => {
   try {
     const { month, date } = req.query;
@@ -129,15 +139,20 @@ exports.getTotalOrders = async (req, res) => {
     }
 
     const ordersList = Array.from(deviceMap.values());
+
+    // ✅ Brand + Model wise sold
     const soldBrandMap = {};
     for (let item of ordersList) {
-      soldBrandMap[item.brand] = (soldBrandMap[item.brand] || 0) + item.sold;
+      const key = `${item.brand} - ${item.model}`;
+      soldBrandMap[key] = (soldBrandMap[key] || 0) + item.sold;
     }
     const soldBrandData = Object.entries(soldBrandMap).map(([brand, count]) => ({ brand, count }));
 
+    // ✅ Brand + Model wise available
     const availableBrandMap = {};
     for (let item of ordersList) {
-      availableBrandMap[item.brand] = (availableBrandMap[item.brand] || 0) + item.available;
+      const key = `${item.brand} - ${item.model}`;
+      availableBrandMap[key] = (availableBrandMap[key] || 0) + item.available;
     }
     const availableBrandData = Object.entries(availableBrandMap).map(([brand, count]) => ({ brand, count }));
 
@@ -154,6 +169,7 @@ exports.getTotalOrders = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Order page loading failed.' });
   }
 };
+
 
 exports.getSoldDevices = async (req, res) => {
   try {
@@ -175,7 +191,7 @@ exports.getSoldDevices = async (req, res) => {
 
     const stocks = await Stock.find(match).lean();
     const deviceMap = new Map();
-    const brandWiseSold = {};
+    const brandDeviceWiseSold = {}; // 🔄 changed to brand + device
 
     for (let stock of stocks) {
       if (!stock.soldAt || !Array.isArray(stock.soldAt)) continue;
@@ -197,14 +213,16 @@ exports.getSoldDevices = async (req, res) => {
         }
 
         deviceMap.get(key).quantitySold += 1;
-        brandWiseSold[stock.brand] = (brandWiseSold[stock.brand] || 0) + 1;
+
+        const label = `${stock.brand} - ${stock.deviceName}`;
+        brandDeviceWiseSold[label] = (brandDeviceWiseSold[label] || 0) + 1;
       }
     }
 
     res.render('admin/soldDevice', {
       soldDevices: Array.from(deviceMap.values()),
-      brandBarLabels: Object.keys(brandWiseSold),
-      brandBarData: Object.values(brandWiseSold),
+      brandBarLabels: Object.keys(brandDeviceWiseSold),
+      brandBarData: Object.values(brandDeviceWiseSold),
       selectedDate: soldDate || '',
       selectedMonth: soldMonth || ''
     });
@@ -215,6 +233,7 @@ exports.getSoldDevices = async (req, res) => {
   }
 };
 
+
 exports.getAvailableStock = async (req, res) => {
   try {
     console.log('📦 Fetching all stock entries from DB...');
@@ -222,7 +241,7 @@ exports.getAvailableStock = async (req, res) => {
     console.log(`✅ Total stocks fetched: ${allStocks.length}`);
 
     const stockMap = new Map();
-    const brandTotals = {};
+    const labelTotals = {}; // Now label = brand + device
 
     for (let stock of allStocks) {
       const key = `${stock.brand}-${stock.deviceName}-${stock.variant}-${stock.color}`;
@@ -250,20 +269,21 @@ exports.getAvailableStock = async (req, res) => {
       stockMap.get(key).quantity += available;
       console.log(`   ➕ Updated quantity: ${stockMap.get(key).quantity}`);
 
-      brandTotals[stock.brand] = (brandTotals[stock.brand] || 0) + available;
-      console.log(`   🏷️ Brand total so far: ${brandTotals[stock.brand]}`);
+      const label = `${stock.brand} - ${stock.deviceName}`;
+      labelTotals[label] = (labelTotals[label] || 0) + available;
+      console.log(`   🏷️ Label total so far: ${labelTotals[label]}`);
     }
 
     const stockDataArray = Array.from(stockMap.values());
 
     console.log('📊 Final grouped stock data:', stockDataArray);
-    console.log('📈 Chart Labels:', Object.keys(brandTotals));
-    console.log('📉 Chart Values:', Object.values(brandTotals));
+    console.log('📈 Chart Labels:', Object.keys(labelTotals));
+    console.log('📉 Chart Values:', Object.values(labelTotals));
 
     res.render('admin/availableStock', {
       stockData: stockDataArray,
-      chartLabels: Object.keys(brandTotals),
-      chartValues: Object.values(brandTotals)
+      chartLabels: Object.keys(labelTotals),
+      chartValues: Object.values(labelTotals)
     });
 
   } catch (err) {
@@ -596,12 +616,12 @@ exports.getBuyerDetails = async (req, res) => {
       });
     }
 
-    // Group delivered orders by brand+device+variant+color
+    // ✅ Group delivered orders
     const groupedMap = new Map();
     deliveredOrders.forEach(order => {
       const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}`;
       const colorCode = order.colorCode || '#007bff';
-const image = order.imageUrl || '/images/default-phone.png'; // fallback if no image
+      const image = order.imageUrl || '/images/default-phone.png';
 
       if (!groupedMap.has(key)) {
         groupedMap.set(key, {
@@ -620,14 +640,17 @@ const image = order.imageUrl || '/images/default-phone.png'; // fallback if no i
 
     const transformedOrders = Array.from(groupedMap.values());
 
+    // ✅ Brand+Model wise chart data
     const brandCountMap = {};
     [...deliveredOrders, ...outForDeliveryOrders].forEach(order => {
-      brandCountMap[order.brand] = (brandCountMap[order.brand] || 0) + 1;
+      const key = `${order.brand} - ${order.deviceName}`;
+      brandCountMap[key] = (brandCountMap[key] || 0) + 1;
     });
 
     const outForDeliveryMap = {};
     outForDeliveryOrders.forEach(order => {
-      outForDeliveryMap[order.brand] = (outForDeliveryMap[order.brand] || 0) + 1;
+      const key = `${order.brand} - ${order.deviceName}`;
+      outForDeliveryMap[key] = (outForDeliveryMap[key] || 0) + 1;
     });
 
     const barChartLabels = Object.keys(brandCountMap);
@@ -689,7 +712,6 @@ exports.getSellerDetails = async (req, res) => {
       return res.status(404).render('error/404', { msg: 'Seller not found' });
     }
 
-    // Date filtering if month is selected
     let monthStart = null, monthEnd = null;
     if (selectedMonth) {
       const [monthName, year] = selectedMonth.split(' ');
@@ -710,7 +732,6 @@ exports.getSellerDetails = async (req, res) => {
       });
     }
 
-    // ✅ Group orders by brand-deviceName-variant-color and SUM bookingAmounts
     const groupedMap = new Map();
 
     for (const order of allOrders) {
@@ -722,7 +743,7 @@ exports.getSellerDetails = async (req, res) => {
           variant: order.variant || 'N/A',
           color: order.color || 'N/A',
           brand: order.brand || 'Unknown',
-          bookingAmounts: [order.bookingAmount || 0], // Collect all booking amounts
+          bookingAmounts: [order.bookingAmount || 0],
           image: order.imageUrl || '/images/default-phone.png',
           borderColor: order.colorCode || '#007bff',
           status: order.status,
@@ -738,7 +759,6 @@ exports.getSellerDetails = async (req, res) => {
       }
     }
 
-    // Calculate final bookingAmount from all collected amounts
     const groupedDevices = Array.from(groupedMap.values()).map(device => {
       const totalBookingAmount = device.bookingAmounts.reduce((sum, amt) => sum + amt, 0);
       return {
@@ -747,16 +767,16 @@ exports.getSellerDetails = async (req, res) => {
       };
     });
 
-    // Chart data for Pie and Bar
+    // ✅ Updated Chart Logic with brand + deviceName
     const pieChartMap = {};
     const barChartMap = {};
 
     allOrders.forEach(order => {
-      const name = order.deviceName;
+      const key = `${order.brand} - ${order.deviceName}`;
       if (order.status === 'out-for-delivery') {
-        pieChartMap[name] = (pieChartMap[name] || 0) + 1;
+        pieChartMap[key] = (pieChartMap[key] || 0) + 1;
       } else if (order.status === 'sold') {
-        barChartMap[name] = (barChartMap[name] || 0) + 1;
+        barChartMap[key] = (barChartMap[key] || 0) + 1;
       }
     });
 
@@ -765,7 +785,6 @@ exports.getSellerDetails = async (req, res) => {
     const barChartLabels = Object.keys(barChartMap);
     const barChartData = Object.values(barChartMap);
 
-    // Month dropdown data
     const now = new Date();
     const months = Array.from({ length: 6 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -773,7 +792,6 @@ exports.getSellerDetails = async (req, res) => {
       return { value: label, label };
     });
 
-    // ✅ Render page
     res.render('admin/sellerDetails', {
       seller,
       selectedMonth,
@@ -790,6 +808,7 @@ exports.getSellerDetails = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error loading seller details.' });
   }
 };
+
 
 
 
@@ -956,10 +975,12 @@ res.redirect('/admin/dashboard');  } catch (err) {
 exports.postPayment = async (req, res) => {
   try {
     const user = req.user;
-    const fromRole = user.role;
+
+    const fromRole = user.name.toLowerCase(); // ✅ Normalize
     const fromId = user._id;
     const { toRole, toId, receivedFromName, amount, mode } = req.body;
 
+    // ✅ Validate roles
     if ((fromRole === 'admin' && toRole !== 'buyer') || (fromRole === 'seller' && toRole !== 'admin')) {
       req.flash('error', 'Invalid payment direction.');
       return res.redirect('back');
@@ -982,12 +1003,13 @@ exports.postPayment = async (req, res) => {
     });
 
     await payment.save();
+
     const paymentAmount = parseInt(amount);
 
     if (fromRole === 'seller') {
       await Seller.findByIdAndUpdate(fromId, { $inc: { advance: -paymentAmount } });
     } else if (fromRole === 'admin' && toRole === 'buyer') {
-      await Buyer.findByIdAndUpdate(toId, { $inc: { dueAmount: -paymentAmount } });
+      await Buyer.findByIdAndUpdate(toId, { $inc: { dueAmount: -paymentAmount } }); // ✅ matches schema
     }
 
     req.flash('success', '✅ Payment submitted successfully.');
@@ -997,6 +1019,7 @@ exports.postPayment = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Failed to save payment.' });
   }
 };
+
 
 exports.renderAddPayment = (req, res) => {
   const buyerId = req.query.buyerId;

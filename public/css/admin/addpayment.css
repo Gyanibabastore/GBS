@@ -1,14 +1,7 @@
-body {
-  background: #f9f9f9;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+
 
 .form-container {
-  background: white;
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
   padding: 30px 40px;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);

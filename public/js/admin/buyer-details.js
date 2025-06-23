@@ -20,15 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
         datasets: [{
           label: "Out for Delivery",
           data: pieChartData,
-          backgroundColor: [
-            "#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1", "#17a2b8"
-          ]
+          backgroundColor: pieChartLabels.map(() =>
+            `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
+          )
         }]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: { position: "bottom" }
+          legend: { position: "bottom" },
+          title: {
+            display: true,
+            text: "Out-for-Delivery Devices (Brand + Model)"
+          }
         }
       }
     });
@@ -55,7 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
           y: { beginAtZero: true }
         },
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
+          title: {
+            display: true,
+            text: "Total Orders (Brand + Model)"
+          }
         }
       }
     });

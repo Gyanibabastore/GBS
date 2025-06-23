@@ -1,14 +1,7 @@
-    body {
-      background-image: url('https://images.unsplash.com/photo-1521790363533-4941f35f5b6f');
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      color: #333;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+  
 
     .overlay {
-      background-color: rgba(255, 255, 255, 0.95);
+       background: linear-gradient(to right, #e0f7fa, #ffffff);
       min-height: 100vh;
       padding: 30px;
       border-radius: 10px;

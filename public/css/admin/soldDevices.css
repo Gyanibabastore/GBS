@@ -1,13 +1,7 @@
-    body {
-      background-image: url('https://images.unsplash.com/photo-1581091012184-5c8f3ec8464b');
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      color: white;
-    }
+   
 
     .overlay {
-      background-color: rgba(0, 0, 0, 0.75);
+      /* background-color: rgba(0, 0, 0, 0.75); */
       min-height: 100vh;
       padding: 30px;
     }
@@ -31,3 +25,9 @@
     max-height: 400px;
     width: 100%;
   }
+  .text-center{
+      color:  #343a40;
+    }
+    .form-label{
+      color:#343a40 ;
+    }

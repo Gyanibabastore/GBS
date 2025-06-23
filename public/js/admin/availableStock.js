@@ -19,14 +19,15 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // ✅ Brand-wise aggregation
-    const brandMap = {};
+    // ✅ Group by brand + deviceName
+    const labelMap = {};
     rawStockData.forEach(item => {
-      brandMap[item.brand] = (brandMap[item.brand] || 0) + item.quantity;
+      const label = `${item.brand} - ${item.model}`;
+      labelMap[label] = (labelMap[label] || 0) + item.quantity;
     });
 
-    const labels = Object.keys(brandMap);
-    const data = Object.values(brandMap);
+    const labels = Object.keys(labelMap);
+    const data = Object.values(labelMap);
 
     const chartCanvas = document.getElementById("stockChart");
     if (!chartCanvas) throw new Error("Chart canvas not found.");
@@ -45,7 +46,23 @@ document.addEventListener("DOMContentLoaded", function () {
       options: {
         responsive: true,
         scales: {
-          y: { beginAtZero: true }
+          y: { beginAtZero: true, ticks: { precision: 0 } },
+          x: {
+            ticks: {
+              autoSkip: false,
+              maxRotation: 45,
+              minRotation: 20
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (context) => context[0].label,
+              label: (context) => `Qty: ${context.raw}`
+            }
+          }
         }
       }
     });

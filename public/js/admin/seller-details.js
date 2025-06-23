@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    // Month Filter Handler
     const monthSelect = document.getElementById('monthSelect');
     if (monthSelect) {
       monthSelect.addEventListener('change', () => {
@@ -31,15 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              position: 'bottom'
+            legend: { position: 'bottom' },
+            title: {
+              display: true,
+              text: 'Out for Delivery (Brand - Model)'
             },
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  const label = context.label || '';
-                  const value = context.raw;
-                  return `${label}: ${value}`;
+                  return `${context.label}: ${context.raw}`;
                 }
               }
             }
@@ -69,19 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
           scales: {
             y: {
               beginAtZero: true,
-              ticks: {
-                precision: 0
-              }
+              ticks: { precision: 0 }
             }
           },
           plugins: {
             legend: { display: false },
+            title: {
+              display: true,
+              text: 'Sold Devices (Brand - Model)'
+            },
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  const label = context.label || '';
-                  const value = context.raw;
-                  return `${label}: ${value}`;
+                  return `${context.label}: ${context.raw}`;
                 }
               }
             }

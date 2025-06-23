@@ -1,35 +1,62 @@
-body {
-  background-color: #f9f9fb;
-  font-family: 'Segoe UI', sans-serif;
-}
 
 .dashboard-title {
   font-weight: bold;
   font-size: 2rem;
   color: #343a40;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  transition: color 0.3s ease;
 }
 
 .card {
   border-radius: 1rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.12);
 }
 
 .card .card-title {
   font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.card .card-title:hover {
+  color: #007bff;
 }
 
 .logo {
   height: 50px;
   margin-right: 10px;
+  transition: transform 0.3s ease;
 }
-#soldPieChart,
-  #availablePieChart {
-    max-height:250px;
-    width: 100%;
-    margin: auto;
-  }
 
-  #barChart {
-    height: 350px !important;
-    max-height: 400px;
-    width: 100%;
-  }
+.logo:hover {
+  transform: scale(1.1) rotate(-2deg);
+}
+
+#soldPieChart,
+#availablePieChart {
+  max-height: 250px;
+  width: 100%;
+  margin: auto;
+  transition: transform 0.3s ease;
+}
+
+#soldPieChart:hover,
+#availablePieChart:hover {
+  transform: scale(1.05);
+}
+
+#barChart {
+  height: 350px !important;
+  max-height: 400px;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+#barChart:hover {
+  transform: scale(1.03);
+}

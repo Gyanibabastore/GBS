@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  padding-top: 72px; /* for fixed navbar */
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Background layer: image + gradient */
+  background: 
+    linear-gradient(to right, rgba(224, 247, 250, 0.9), rgba(255, 255, 255, 0.9)),
+    url('https://images.unsplash.com/photo-1521790363533-4941f35f5b6f');
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  color: #191818;
+
+  transition: background-color 0.3s ease;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1050;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  padding: 0.7rem 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+.navbar .navbar-brand {
+  font-size: 1.6rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff !important;
+}
+
+.navbar-brand img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* Navbar Links */
+.navbar-nav .nav-link {
+  color: #f1f1f1;
+  font-weight: 500;
+  transition: color 0.3s, background 0.3s;
+  margin: 0 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Logout button inside navbar */
+.navbar form button {
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.navbar form button:hover {
+  background-color: #ffffff !important;
+  color: #0056b3 !important;
+  border-color: transparent;
+}

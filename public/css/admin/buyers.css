@@ -1,15 +1,9 @@
-    body {
-      background-image: url('https://images.unsplash.com/photo-1549921296-3a5b60b6c3aa');
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      color: white;
-    }
-
+  
     .overlay {
-      /* background-color: rgba(0, 0, 0, 0.85); */
+    background-color:linear-gradient(to right, #e0f7fa, #ffffff);
       min-height: 100vh;
       padding: 30px;
+      border-radius: 10px;
     }
 
     .form-control::placeholder {
@@ -17,13 +11,14 @@
     }
 
     .buyer-card {
-      background-color: #90a6f9;
-      border-left: 6px solid #00c4ff;
+     background: linear-gradient(135deg, #6f42c1, #d63384);
       color: white;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
     }
-
-    .card-body, .table {
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      color: white;
+   .buyer-card:hover{
+    transform: translateY(-5px);
+   }
+     .search-bar {
+      margin-bottom: 20px;
     }

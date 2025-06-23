@@ -1,10 +1,6 @@
- body {
-      background: url('https://images.unsplash.com/photo-1549921296-3a4a1e4e74ed') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+
     .container {
-      background-color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
       padding: 30px;
       margin-top: 50px;
       border-radius: 15px;

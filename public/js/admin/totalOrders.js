@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return { labels, values, backgroundColors };
     };
 
-    const createPieChart = (ctx, labels, data, colors) => {
+    const createPieChart = (ctx, labels, data, colors, titleText) => {
       return new Chart(ctx, {
         type: 'pie',
         data: {
@@ -33,17 +33,27 @@ document.addEventListener('DOMContentLoaded', function () {
         options: {
           responsive: true,
           plugins: {
-            legend: { position: 'bottom' }
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.label}: ${ctx.raw}`
+              }
+            },
+            title: {
+              display: true,
+              text: titleText,
+              font: { size: 18 }
+            }
           }
         }
       });
     };
 
     const sold = preparePieData(window.soldBrandData);
-    createPieChart(soldCtx, sold.labels, sold.values, sold.backgroundColors);
+    createPieChart(soldCtx, sold.labels, sold.values, sold.backgroundColors, 'Sold Devices (Brand + Model)');
 
     const available = preparePieData(window.availableBrandData);
-    createPieChart(availableCtx, available.labels, available.values, available.backgroundColors);
+    createPieChart(availableCtx, available.labels, available.values, available.backgroundColors, 'Available Devices (Brand + Model)');
 
     // Chart export handler
     document.querySelectorAll('.download-btn').forEach(btn => {

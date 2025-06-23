@@ -4,8 +4,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
-  /* background: url('/images/logo.png') no-repeat center center fixed; */
-  background-size: cover;
+ background: linear-gradient(to right, #e0f7fa, #ffffff);  background-size: cover;
   background-color:#939191 ; /* 👈 ensures no solid background color */
   color: #191818;
   backdrop-filter: blur(2px);

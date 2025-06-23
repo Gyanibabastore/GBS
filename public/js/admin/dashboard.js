@@ -79,7 +79,7 @@ function renderCharts(soldData, availableData, barData) {
     new Chart(soldCtx, {
       type: 'pie',
       data: {
-        labels: soldData.map(d => d.brand),
+        labels: soldData.map(d => d.label),
         datasets: [{
           data: soldData.map(d => d.count),
           backgroundColor: generateColors(soldData.length),
@@ -91,7 +91,7 @@ function renderCharts(soldData, availableData, barData) {
     new Chart(availableCtx, {
       type: 'pie',
       data: {
-        labels: availableData.map(d => d.brand),
+        labels: availableData.map(d => d.label),
         datasets: [{
           data: availableData.map(d => d.count),
           backgroundColor: generateColors(availableData.length),
@@ -103,7 +103,7 @@ function renderCharts(soldData, availableData, barData) {
     new Chart(barCtx, {
       type: 'bar',
       data: {
-        labels: barData.map(b => b.brand),
+        labels: barData.map(b => b.label),
         datasets: [
           {
             label: "Sold",
@@ -134,6 +134,7 @@ function renderCharts(soldData, availableData, barData) {
     alert("Charts couldn't be loaded. Try reloading the page.");
   }
 }
+
 
 function generateColors(count) {
   const baseColors = [

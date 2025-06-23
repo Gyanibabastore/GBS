@@ -8,6 +8,7 @@ const Payment = require('../models/Payment');
 
 exports.getBuyerDashboard = async (req, res) => {
   try {
+        const currentUser = req.user;
     const buyerId = req.params.buyerId;
     const buyer = await Buyer.findById(buyerId).lean();
     if (!buyer) {
@@ -21,6 +22,7 @@ exports.getBuyerDashboard = async (req, res) => {
     const pendingOrdersCount = orders.filter(o => o.status === 'out-for-delivery').length;
 
     res.render('buyer/dashboard', {
+      currentUser,
       dashboardData: {
         _id: buyer._id,
         name: buyer.name,
