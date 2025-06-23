@@ -689,6 +689,7 @@ exports.getSellerDetails = async (req, res) => {
       return res.status(404).render('error/404', { msg: 'Seller not found' });
     }
 
+    // Date filtering if month is selected
     let monthStart = null, monthEnd = null;
     if (selectedMonth) {
       const [monthName, year] = selectedMonth.split(' ');
@@ -709,35 +710,54 @@ exports.getSellerDetails = async (req, res) => {
       });
     }
 
-    const soldOrders = allOrders.filter(order => order.status === 'sold');
-    const outForDeliveryOrders = allOrders.filter(order =>
-      order.status === 'out-for-delivery' && !order.buyerId
-    );
+    // ✅ Group orders by brand-deviceName-variant-color and SUM bookingAmounts
+    const groupedMap = new Map();
 
-    const devices = [...soldOrders, ...outForDeliveryOrders].map(order => ({
-      name: order.deviceName || 'N/A',
-      variant: order.variant || 'N/A',
-      color: order.color || 'N/A',
-      brand: order.brand || 'Unknown',
-      quantitySold: 1,
-      bookingAmount: order.bookingAmount,
-      borderColor: order.colorCode || '#007bff',
-      status: order.status,
-      orderId: order._id,
-      orderDate: order.createdAt.toDateString(),
-      isOutForDelivery: order.status === 'out-for-delivery',
-      sellerId: order.sellerId
-    }));
+    for (const order of allOrders) {
+      const key = `${order.brand}-${order.deviceName}-${order.variant}-${order.color}`;
 
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          name: order.deviceName || 'N/A',
+          variant: order.variant || 'N/A',
+          color: order.color || 'N/A',
+          brand: order.brand || 'Unknown',
+          bookingAmounts: [order.bookingAmount || 0], // Collect all booking amounts
+          image: order.imageUrl || '/images/default-phone.png',
+          borderColor: order.colorCode || '#007bff',
+          status: order.status,
+          orderDate: new Date(order.createdAt).toDateString(),
+          isOutForDelivery: order.status === 'out-for-delivery',
+          sellerId: order.sellerId,
+          count: 1
+        });
+      } else {
+        const existing = groupedMap.get(key);
+        existing.count += 1;
+        existing.bookingAmounts.push(order.bookingAmount || 0);
+      }
+    }
+
+    // Calculate final bookingAmount from all collected amounts
+    const groupedDevices = Array.from(groupedMap.values()).map(device => {
+      const totalBookingAmount = device.bookingAmounts.reduce((sum, amt) => sum + amt, 0);
+      return {
+        ...device,
+        bookingAmount: totalBookingAmount
+      };
+    });
+
+    // Chart data for Pie and Bar
     const pieChartMap = {};
     const barChartMap = {};
 
-    outForDeliveryOrders.forEach(order => {
-      pieChartMap[order.deviceName] = (pieChartMap[order.deviceName] || 0) + 1;
-    });
-
-    soldOrders.forEach(order => {
-      barChartMap[order.deviceName] = (barChartMap[order.deviceName] || 0) + 1;
+    allOrders.forEach(order => {
+      const name = order.deviceName;
+      if (order.status === 'out-for-delivery') {
+        pieChartMap[name] = (pieChartMap[name] || 0) + 1;
+      } else if (order.status === 'sold') {
+        barChartMap[name] = (barChartMap[name] || 0) + 1;
+      }
     });
 
     const pieChartLabels = Object.keys(pieChartMap);
@@ -745,6 +765,7 @@ exports.getSellerDetails = async (req, res) => {
     const barChartLabels = Object.keys(barChartMap);
     const barChartData = Object.values(barChartMap);
 
+    // Month dropdown data
     const now = new Date();
     const months = Array.from({ length: 6 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -752,12 +773,12 @@ exports.getSellerDetails = async (req, res) => {
       return { value: label, label };
     });
 
+    // ✅ Render page
     res.render('admin/sellerDetails', {
       seller,
       selectedMonth,
       months,
-      devices,
-      orders: devices,
+      groupedDevices,
       pieChartLabels,
       pieChartData,
       barChartLabels,
@@ -769,6 +790,7 @@ exports.getSellerDetails = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error loading seller details.' });
   }
 };
+
 
 
 

@@ -1,26 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
   try {
-    // Month Filter Logic
+    // Month Filter Handler
     const monthSelect = document.getElementById('monthSelect');
     if (monthSelect) {
       monthSelect.addEventListener('change', () => {
-        try {
-          const selectedMonth = monthSelect.value;
-          const url = new URL(window.location.href);
-          url.searchParams.set('month', selectedMonth);
-          window.location.href = url.toString();
-        } catch (monthErr) {
-          console.error("❌ Month filter error:", monthErr);
-          alert("Failed to apply month filter. Try again.");
-        }
+        const selectedMonth = monthSelect.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('month', selectedMonth);
+        window.location.href = url.toString();
       });
     }
 
-    // PIE CHART: Out for Delivery (Brand-wise)
+    // PIE CHART
     const pieData = window.chartData?.pie;
     const pieCtx = document.getElementById('outForDeliveryPie');
-
-    if (pieCtx && pieData && pieData.labels?.length > 0) {
+    if (pieCtx && pieData?.labels?.length > 0) {
       new Chart(pieCtx, {
         type: 'pie',
         data: {
@@ -29,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             label: 'Out for Delivery',
             data: pieData.data,
             backgroundColor: pieData.labels.map((_, i) =>
-              `hsl(${(i * 60) % 360}, 70%, 60%)`
+              `hsl(${(i * 360 / pieData.labels.length)}, 70%, 60%)`
             ),
             borderWidth: 1
           }]
@@ -39,21 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
           plugins: {
             legend: {
               position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw;
+                  return `${label}: ${value}`;
+                }
+              }
             }
           }
         }
       });
-    } else if (!pieCtx) {
-      console.warn("📊 Pie chart canvas not found.");
-    } else {
-      console.warn("📊 Pie chart data missing or empty.");
     }
 
-    // BAR CHART: Total Orders (Brand-wise)
+    // BAR CHART
     const barData = window.chartData?.bar;
     const barCtx = document.getElementById('totalOrdersBar');
-
-    if (barCtx && barData && barData.labels?.length > 0) {
+    if (barCtx && barData?.labels?.length > 0) {
       new Chart(barCtx, {
         type: 'bar',
         data: {
@@ -62,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             label: 'Total Orders',
             data: barData.data,
             backgroundColor: barData.labels.map((_, i) =>
-              `hsl(${(i * 60) % 360}, 80%, 50%)`
+              `hsl(${(i * 360 / barData.labels.length)}, 60%, 55%)`
             )
           }]
         },
@@ -70,22 +68,30 @@ document.addEventListener('DOMContentLoaded', () => {
           responsive: true,
           scales: {
             y: {
-              beginAtZero: true
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
             }
           },
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw;
+                  return `${label}: ${value}`;
+                }
+              }
+            }
           }
         }
       });
-    } else if (!barCtx) {
-      console.warn("📊 Bar chart canvas not found.");
-    } else {
-      console.warn("📊 Bar chart data missing or empty.");
     }
 
-  } catch (globalErr) {
-    console.error("🚨 Dashboard JS critical failure:", globalErr);
-    alert("Something went wrong loading the dashboard. Please refresh the page.");
+  } catch (err) {
+    console.error("🚨 Dashboard JS error:", err);
+    alert("Something went wrong loading the dashboard. Please try again.");
   }
 });
