@@ -23,4 +23,5 @@ router.post('/forgot/reset-password', blocker, authController.resetPassword);
 // admin login
 router.get('/admin/login', authController.adminlogin);
 router.post('/admin/login', authController.adminlogincontroller);
+
 module.exports = router;

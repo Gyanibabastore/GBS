@@ -68,10 +68,15 @@ app.use(
       styleSrc: [
         "'self'",
         "'unsafe-inline'", // required for Bootstrap styles
-        "https://cdn.jsdelivr.net"
+        "https://cdn.jsdelivr.net",
+        "https://fonts.googleapis.com" // ✅ allow Google Fonts styles
+      ],
+      fontSrc: [
+        "'self'",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.gstatic.com" // ✅ allow Google Fonts font files
       ],
       imgSrc: ["'self'", "data:", "https:", "*"], // ✅ allow all image sources
-      fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],

@@ -2,6 +2,12 @@
   display: none;
   opacity: 0;
   transition: opacity 0.5s ease;
+  background: rgba(255, 255, 255, 0.2); /* transparent */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 20px;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
 }
 
 #otpSection.show {

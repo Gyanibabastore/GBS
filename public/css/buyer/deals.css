@@ -1,58 +1,69 @@
+.container {
+  background-color: rgba(255, 255, 255, 0.2); /* transparent glass */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  color: #1f2937; /* dark readable text */
+  font-family: 'Poppins', sans-serif;
+}
 
-    body {
-      background: url('https://images.unsplash.com/photo-1618477461032-ec43819bd6fe') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .container {
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    .card {
-      margin-bottom: 20px;
-      border-radius: 20px;
-      overflow: hidden;
-      border: none;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-      transform: scale(1.02);
-    }
-    .card-img-top {
-      height: 220px;
-      object-fit: cover;
-      border-bottom: 3px solid #eee;
-    }
-    .card-body {
-      background-color: #f8f9fa;
-      padding: 20px;
-    }
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #333;
-    }
-    .card p {
-      font-size: 0.95rem;
-      color: #555;
-    }
-    .highlight-green {
-      color: green;
-      font-weight: bold;
-    }
-    .highlight-blue {
-      color: #007bff;
-      font-weight: bold;
-    }
-    .highlight-purple {
-      color: #6f42c1;
-      font-weight: bold;
-    }
-    .btn-success {
-      width: 100%;
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
+.card {
+  margin-bottom: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+}
+
+.card-img-top {
+  height: 220px;
+  object-fit: cover;
+  border-bottom: 3px solid #eee;
+}
+
+.card-body {
+  background-color: rgba(255, 255, 255, 0.3); /* semi-transparent */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.highlight-green {
+  color: green;
+  font-weight: bold;
+}
+
+.highlight-blue {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.highlight-purple {
+  color: #6f42c1;
+  font-weight: bold;
+}
+
+.btn-success {
+  width: 100%;
+  font-weight: bold;
+  font-size: 0.95rem;
+}

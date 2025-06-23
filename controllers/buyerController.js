@@ -43,12 +43,12 @@ exports.getBuyerDashboard = async (req, res) => {
 exports.getBuyerOrders = async (req, res) => {
   try {
     const buyerId = req.params.buyerId;
-
+ const buyer = await Buyer.findById(buyerId).lean();
     if (req.user.id !== buyerId) {
       req.flash('error', 'Unauthorized access');
       return res.status(403).redirect('/auth/login');
     }
-
+    
     const orders = await Order.find({ buyerId }).sort({ placedDate: -1 }).lean();
     const mappedOrders = orders.map(order => ({
       status: order.outForDelivery?.status || 'pending',
@@ -65,7 +65,8 @@ exports.getBuyerOrders = async (req, res) => {
 
     res.render('buyer/orders', {
       orders: mappedOrders,
-      defaultStatus: 'delivered'
+      defaultStatus: 'delivered',
+      buyer
     });
 
   } catch (error) {
@@ -78,6 +79,7 @@ exports.getBuyerOrders = async (req, res) => {
 exports.getOutForDelivery = async (req, res) => {
   try {
     const buyerId = req.user.id;
+     const buyer = await Buyer.findById(buyerId).lean();
     const orders = await Order.find({ buyerId, status: 'out-for-delivery' }).lean();
     const brands = await Deal.distinct("brand");
     const models = await Deal.distinct("deviceName");
@@ -91,7 +93,8 @@ exports.getOutForDelivery = async (req, res) => {
       models,
       variants,
       pincodes,
-      colors
+      colors,
+      buyer
     });
 
   } catch (err) {
@@ -174,7 +177,8 @@ exports.getBuyerDashboard = async (req, res) => {
         deliveredOrdersCount,
         pendingOrdersCount,
         totalDue: buyer.dueAmount || 0,
-        totalEarning: buyer.totalEarning || 0
+        totalEarning: buyer.totalEarning || 0,
+        
       },
       buyer
     });
@@ -189,6 +193,7 @@ exports.getBuyerDashboard = async (req, res) => {
 exports.getBuyerOrders = async (req, res) => {
   try {
     const buyerId = req.params.buyerId;
+     const buyer = await Buyer.findById(buyerId).lean();
     if (req.user.id !== buyerId) {
       req.flash('error', 'Unauthorized access');
       return res.redirect('/auth/login');
@@ -210,7 +215,8 @@ exports.getBuyerOrders = async (req, res) => {
    console.log("✅ Mapped Orders Rendered to EJS:", mappedOrders);
     res.render('buyer/orders', {
       orders: mappedOrders,
-      defaultStatus: 'delivered'
+      defaultStatus: 'delivered',
+      buyer
     });
 
   } catch (error) {
@@ -235,7 +241,8 @@ exports.getManageOrders = async (req, res) => {
       products: deals,
       quantities,
       pendingOrders,
-      buyerId: req.params.buyerId
+      buyerId: req.params.buyerId,
+      buyer
     });
 
   } catch (error) {
@@ -296,8 +303,18 @@ exports.getOutForDelivery = async (req, res) => {
     const variants = await Deal.distinct("variant");
     const pincodes = await Deal.distinct("pincode");
     const colors = await Deal.distinct("color");
+ const buyer = await Buyer.findById(req.user.id).lean(); // ✅ Add this line
 
-    res.render('buyer/ofd', { deliveries: orders, brands, models, variants, pincodes, colors });
+    res.render('buyer/ofd', {
+      deliveries: orders,
+      brands,
+      models,
+      variants,
+      pincodes,
+      colors,
+      buyer // ✅ Pass buyer to EJS for navbar etc.
+    });
+
 
   } catch (err) {
     console.error(err);
@@ -353,8 +370,9 @@ exports.postOutForDelivery = async (req, res) => {
 // Get Deals Page
 exports.getDeals = async (req, res) => {
   try {
+     const buyer = await Buyer.findById(req.user.id).lean();
     const deals = await Deal.find({ status: 'active' });
-    res.render('buyer/deals', { deals });
+    res.render('buyer/deals', { deals,buyer });
   } catch (error) {
     console.error('Error fetching deals:', error.message);
     res.status(500).render('error/500', { msg: 'Unable to fetch deals' });
@@ -395,7 +413,8 @@ exports.getPaymentHistory = async (req, res) => {
       payments,
       totalEarning: sumEarnings,
       totalDue,
-      selectedDate: date || ''
+      selectedDate: date || '',
+      buyer
     });
 
   } catch (err) {
