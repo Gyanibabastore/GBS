@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.addEventListener("click", () => {
       const isVisible = form.style.display === "block";
       form.style.display = isVisible ? "none" : "block";
+
+      if (!isVisible) {
+        form.scrollIntoView({ behavior: "smooth" });
+      }
     });
   }
 });
