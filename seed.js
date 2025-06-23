@@ -12,11 +12,11 @@ const seedAdmin = async () => {
     return process.exit(0);
   }
 
-  const hashedPassword = await bcrypt.hash('Ram9616#', 10);
+  const hashedPassword = await bcrypt.hash('Ritik2002@', 10);
 
   const admin = new Admin({
-    name: 'Admin',
-    email: 'akshansh9616972677@gmail.com',
+    name: 'Ritik Sharma',
+    email: 'gyanibabastore.com@gmail.com',
     password: hashedPassword
   });
 
