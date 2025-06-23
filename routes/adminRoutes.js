@@ -27,6 +27,7 @@ router.get('/sellerdeals', protect, isAdmin, adminController.rendersellerdealsPa
 
 router.post('/deal/activate', protect,isAdmin,adminController.activateDeal);
 router.post('/deals/toggle/:id', protect,isAdmin,adminController.toggleDealStatus);
+router.get('/deals/pending', protect, isAdmin, adminController.getPendingDeals);
 // Payment routes
 router.get('/addpayment', protect, isAdmin, adminController.renderAddPayment);
 router.post('/:id/payments', protect, isAdmin, (req, res, next) => {

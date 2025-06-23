@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include('../partials/head', { title: 'Pending Orders - Admin' }) %>
+  <link rel="stylesheet" href="/css/admin/pendingOrders.css" />
+</head>
+<body>
+  <%- include('../partials/adminNavbar') %>
+   
+  <div class="container py-4">
+    <a href="/admin/dashboard" class="btn btn-warning mb-3">⬅ Back to Dashboard</a>
+    <h2>🕒 Pending Orders Summary</h2>
+    
+
+    <% let lastBuyer = ''; %>
+    <% let grandTotal = 0; %>
+    <% groupedOrders.forEach(order => { %>
+      <% grandTotal += order.totalOrders; %>
+      <% if (lastBuyer !== order._id.buyerName) { %>
+        <% if (lastBuyer) { %><hr><% } %>
+        <h4><%= order._id.buyerName %></h4>
+        <% lastBuyer = order._id.buyerName; %>
+      <% } %>
+      <p>
+        <strong><%= order._id.brand %> - <%= order._id.deviceName %> <%= order._id.variant %> (<%= order._id.color %>)</strong>:
+        <%= order.totalOrders %> unit(s)
+      </p>
+    <% }) %>
+    <hr>
+    <h4>✅ Total Pending Orders: <%= grandTotal %></h4>
+
+    
+  </div>
+</body>
+</html>

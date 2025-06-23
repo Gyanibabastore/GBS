@@ -46,6 +46,7 @@ exports.getDashboard = async (req, res) => {
     const soldStock = allStocks.reduce((sum, s) => sum + s.soldCount, 0);
     const availableStock = allStocks.reduce((sum, s) => sum + s.availableCount, 0);
     const outForDeliveryCount = allOrders.filter(o => o.status === 'out-for-delivery' && !o.sellerId).length;
+    const pendingOrderCount = allOrders.filter(o => o.status === 'pending').length;
 
     const buyerCount = await Buyer.countDocuments();
     const sellerCount = await Seller.countDocuments();
@@ -76,6 +77,9 @@ exports.getDashboard = async (req, res) => {
       sold: soldBrandCount[label] || 0,
       available: availableBrandCount[label] || 0
     }));
+
+    // 🔥 Make the value available globally in EJS (for this render only)
+    res.locals.pendingOrderCount = pendingOrderCount;
 
     res.render('admin/dashboard', {
       totalOrders,
@@ -1170,5 +1174,70 @@ exports.updateOrdersToSold = async (req, res) => {
   } catch (err) {
     console.error("🔥 Error updating orders to sold:", err);
     res.status(500).render('error/500', { msg: "Failed to update orders" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+// Show all pending orders (based on status or flag)
+exports.getPendingDeals = async (req, res) => {
+  try {
+    const pendingOrders = await Order.aggregate([
+      {
+        $match: { status: 'pending' }
+      },
+      {
+        $lookup: {
+          from: 'buyers',
+          localField: 'buyerId',
+          foreignField: '_id',
+          as: 'buyerInfo'
+        }
+      },
+      {
+        $unwind: '$buyerInfo'
+      },
+      {
+        $group: {
+          _id: {
+            buyerName: '$buyerInfo.name',
+            brand: '$brand',
+            deviceName: '$deviceName',
+            variant: '$variant',
+            color: '$color'
+          },
+          totalOrders: {
+            $sum: {
+              $cond: [
+                { $ifNull: ['$quantity', false] },
+                '$quantity',
+                1
+              ]
+            }
+          },
+          buyers: { $addToSet: '$buyerInfo.name' }
+        }
+      },
+      {
+        $sort: { '_id.buyerName': 1 }
+      }
+    ]);
+
+    res.render('admin/pendingOrders', {
+      groupedOrders: pendingOrders
+    });
+
+  } catch (err) {
+    console.error('❌ Error in getPendingDeals:', err);
+    res.status(500).render('error/500', {
+      msg: 'Server error while fetching pending orders.'
+    });
   }
 };

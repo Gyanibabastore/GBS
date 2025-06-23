@@ -1,0 +1,47 @@
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+  font-size: 1.8rem;
+  color: #0077b6;
+  margin-bottom: 0.5rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+  color: #023e8a;
+  margin-top: 1.5rem;
+}
+
+p {
+  font-size: 1rem;
+  margin: 0.25rem 0 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #f1faff;
+  border-left: 4px solid #48cae4;
+  border-radius: 4px;
+}
+
+hr {
+  margin: 1.2rem 0;
+  border-top: 1px solid #ced4da;
+}
+
+.btn-warning {
+  background-color: #ffba08;
+  border: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #faa307;
+  color: white;
+}
