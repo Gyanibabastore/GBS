@@ -25,7 +25,8 @@
         <img src="<%= product.imageUrl %>" class="card-img-top rounded" alt="<%= product.deviceName %>" />
         <div class="card-body">
           <h5 class="card-title"><%= product.brand %> &nbsp;<%= product.deviceName %></h5>
-          <h5 class="mb-3 text-muted">Total Available Count: <%= totalAvailableCount %></h5>
+          <h5 class="mb-3 text-muted">Available: <%= product.availableCount %> pcs</h5>
+
 
           <p>
             Brand: <%= product.brand %><br />

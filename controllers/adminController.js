@@ -1130,13 +1130,12 @@ exports.rendersellerdealsPage = async (req, res) => {
     console.log('✅ All stocks fetched:', allStocks.length);
 
     const modelMap = new Map();
-    let totalAvailableCount = 0; // 🔹 track total availableCount
+    let totalAvailableCount = 0;
 
     for (const stock of allStocks) {
-      totalAvailableCount += stock.availableCount || 0; // ✅ add available count
-
       const key = `${stock.brand}|${stock.deviceName}|${stock.variant}|${stock.color}`;
-      console.log('🔍 Processing stock key:', key);
+      const availableCount = stock.availableCount || 0;
+      totalAvailableCount += availableCount;
 
       if (!modelMap.has(key)) {
         modelMap.set(key, {
@@ -1148,18 +1147,20 @@ exports.rendersellerdealsPage = async (req, res) => {
           returnAmount: stock.returnAmount,
           bookingAmountSeller: stock.bookingAmountSeller,
           deal: stock.deal,
-          _id: stock._id
+          _id: stock._id,
+          availableCount: availableCount // ✅ initialize
         });
       } else {
-        console.log('⚠️ Duplicate model key skipped:', key);
+        // ✅ aggregate availableCount if duplicate group
+        const existing = modelMap.get(key);
+        existing.availableCount += availableCount;
       }
     }
 
     const products = Array.from(modelMap.values());
-    console.log('📦 Final grouped products to render:', products.length);
-    console.log('📊 Total Available Count:', totalAvailableCount);
+    console.log('📦 Grouped products:', products.length);
+    console.log('📊 Total Available Count (all):', totalAvailableCount);
 
-    // ✅ Pass totalAvailableCount to the EJS view
     res.render('admin/sellerdeals', { products, totalAvailableCount });
   } catch (err) {
     console.error('❌ Error loading seller deals:', err);
