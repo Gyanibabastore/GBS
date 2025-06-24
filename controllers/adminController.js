@@ -1061,8 +1061,8 @@ exports.createDeal = async (req, res) => {
 exports.postPayment = async (req, res) => {
   try {
     const user = req.user;
-    console.log(user);
-    const fromRole = "admin"; 
+
+    const fromRole = user.name.toLowerCase(); // ✅ Normalize
     const fromId = user._id;
     const { toRole, toId, receivedFromName, amount, mode } = req.body;
     
