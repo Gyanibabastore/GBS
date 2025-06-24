@@ -1012,7 +1012,7 @@ exports.postPayment = async (req, res) => {
   try {
     const user = req.user;
 
-    const fromRole = user.name.toLowerCase(); // ✅ Normalize
+    const fromRole = "admin"; // ✅ Normalize
     const fromId = user._id;
     const { toRole, toId, receivedFromName, amount, mode } = req.body;
 
