@@ -7,6 +7,7 @@ const Payment = require('../models/Payment');
 const Deal = require('../models/Deal');
 const moment = require('moment');
 
+const sendWhatsApp = require('../utils/whatsapp');
 
 
 
@@ -936,6 +937,8 @@ exports.toggleDealStatus = async (req, res) => {
 
 
 
+
+
 exports.createDeal = async (req, res) => {
   try {
     const {
@@ -959,22 +962,27 @@ exports.createDeal = async (req, res) => {
     } = req.body;
 
     console.log("📩 Raw Request Body:", req.body);
-    console.log("🔍 buyerIds:", buyerIds);
-    console.log("📦 sendToAll:", sendToAll);
+
+    // 🛠️ Fix: handle missing sendToAll or buyerIds
+    const sendToAllFinal = sendToAll === 'true' || (!buyerIds && !sendToAll);
+    console.log("🟠 Final sendToAll value:", sendToAllFinal);
 
     let assignedBuyers = [];
 
-    if (sendToAll === 'true') {
+    if (sendToAllFinal) {
       assignedBuyers = [];
-      console.log("✅ Sending to ALL buyers (empty buyerIds)");
+      console.log("✅ 'Send to all' selected. Will send to all buyers.");
     } else if (buyerIds) {
       assignedBuyers = Array.isArray(buyerIds) ? buyerIds : [buyerIds];
-      console.log("✅ Sending to selected buyers:", assignedBuyers);
+      console.log("✅ Specific buyers selected:", assignedBuyers);
+    } else {
+      console.warn("⚠️ No buyers selected and sendToAllFinal is false");
     }
 
     const finalQuantity = unlimitedCheckbox === 'on' ? 'unlimited' : Number(quantity);
+    console.log("📦 Final deal quantity:", finalQuantity);
 
-    const newDeal = new Deal({
+    const dealData = {
       deviceName: modelName,
       brand,
       variant,
@@ -991,14 +999,55 @@ exports.createDeal = async (req, res) => {
       buyerIds: assignedBuyers,
       quantity: finalQuantity,
       createdBy: req.user?._id || null
-    });
+    };
 
+    console.log("📝 Deal to be saved:", dealData);
+
+    const newDeal = new Deal(dealData);
     await newDeal.save();
 
-    console.log("✅ Deal saved successfully");
+    console.log("✅ Deal saved to DB");
+
+    // 📤 Send WhatsApp to buyers
+    let buyersToNotify = [];
+
+    if (sendToAllFinal) {
+      buyersToNotify = await Buyer.find({}, 'mobile name').lean();
+      console.log(`📨 Found ${buyersToNotify.length} buyers (ALL)`);
+    } else if (assignedBuyers.length > 0) {
+      buyersToNotify = await Buyer.find({ _id: { $in: assignedBuyers } }, 'mobile name').lean();
+      console.log(`📨 Found ${buyersToNotify.length} buyers (SELECTED)`);
+    }
+
+    const message =
+      `📢 *New Deal!*\n\n` +
+      `📱 *${brand} ${modelName}*\n` +
+      `🎨 Variant: *${variant}* | Color: *${color}*\n` +
+      `💰 Booking: ₹${bookingAmount}\n\n` +
+      `🌐 Visit us: https://gyanibabastore.in`;
+
+    console.log("📨 WhatsApp Message:\n", message);
+
+    for (const buyer of buyersToNotify) {
+      if (buyer.mobile) {
+        console.log(`📲 Sending WhatsApp to ${buyer.name || 'Unnamed'} (${buyer.mobile})`);
+        await sendWhatsApp(
+          buyer.mobile,
+          message,
+          modelImage,
+          'Buy Now',
+          buyLink || 'https://gyanibabastore.in'
+        );
+        console.log(`✅ Sent to ${buyer.mobile}`);
+      } else {
+        console.warn(`⚠️ Skipped buyer ${buyer._id} — no mobile`);
+      }
+    }
+
+    console.log("✅ All WhatsApp messages processed");
     res.redirect('/admin/deals');
   } catch (err) {
-    console.error("❌ Error saving deal:", err);
+    console.error("❌ Error in createDeal:", err);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -1008,14 +1057,15 @@ exports.createDeal = async (req, res) => {
 
 
 
+
 exports.postPayment = async (req, res) => {
   try {
     const user = req.user;
-
-    const fromRole = user.name.toLowerCase(); // ✅ Normalize
+    console.log(user);
+    const fromRole = "admin"; 
     const fromId = user._id;
     const { toRole, toId, receivedFromName, amount, mode } = req.body;
-
+    
     // ✅ Validate roles
     if ((fromRole === 'admin' && toRole !== 'buyer') || (fromRole === 'seller' && toRole !== 'admin')) {
       req.flash('error', 'Invalid payment direction.');
@@ -1037,7 +1087,7 @@ exports.postPayment = async (req, res) => {
       mode,
       image: req.file.path
     });
-
+    
     await payment.save();
 
     const paymentAmount = parseInt(amount);
