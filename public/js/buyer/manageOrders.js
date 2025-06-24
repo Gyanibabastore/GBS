@@ -35,19 +35,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function adjustQuantity(index, delta) {
     const qtySpan = document.getElementById(`qty-${index}`);
     const formQty = document.getElementById(`form-qty-${index}`);
+    const maxQty = document.getElementById(`max-qty-${index}`);
 
-    if (!qtySpan || !formQty) {
+    if (!qtySpan || !formQty || !maxQty) {
       alert('❌ Quantity fields not found.');
       console.log("⛔ Error: Quantity elements missing");
       return;
     }
 
     let qty = parseInt(qtySpan.textContent);
+    const max = parseInt(maxQty.value);
     qty += delta;
 
     if (qty < 1) {
       alert("❗ Minimum quantity is 1.");
-      console.log("⚠️ Tried to decrease below 1");
+      return;
+    }
+
+    if (qty > max) {
+      alert(`❗ Cannot exceed available quantity (${max})`);
       return;
     }
 

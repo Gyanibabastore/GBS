@@ -2,7 +2,6 @@ let cart = [];
 let models = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Load models safely
   try {
     const modelData = document.getElementById("models-data");
     models = JSON.parse(modelData.textContent || "[]");
@@ -11,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     models = [];
   }
 
-  // Bind Add to Cart buttons
   document.querySelectorAll('.add-to-cart-btn').forEach(button => {
     button.addEventListener('click', () => {
       const index = parseInt(button.dataset.index);
@@ -19,10 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Bind Place Order button
   document.getElementById("place-order-btn")?.addEventListener("click", placeOrder);
 
-  // Show more orders
   document.getElementById("showMorePending")?.addEventListener("click", () => {
     document.querySelectorAll(".pending-order.d-none").forEach(el => el.classList.remove("d-none"));
     document.getElementById("showMorePending").remove();
@@ -33,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("showMoreDelivered").remove();
   });
 
-  // Search box filtering
   const searchBox = document.getElementById('search-box');
   const modelCards = document.querySelectorAll('#model-list .model-card');
 
@@ -130,16 +125,16 @@ async function placeOrder() {
   }
 
   try {
-    console.log("Sending cart:", cart);
-
     const res = await fetch('/seller/order', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json' // ✅ Ensures server sends JSON
+      },
       body: JSON.stringify({ cart })
     });
 
     const data = await res.json();
-    console.log("Server response:", data);
 
     if (res.ok) {
       alert('✅ Order placed successfully!');
@@ -154,4 +149,3 @@ async function placeOrder() {
     alert("❌ Something went wrong!");
   }
 }
-

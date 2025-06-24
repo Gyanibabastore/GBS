@@ -736,42 +736,41 @@ exports.getSellerDetails = async (req, res) => {
       });
     }
 
-    const groupedMap = new Map();
-
-    for (const order of allOrders) {
-      const key = `${order.brand}-${order.deviceName}-${order.variant}-${order.color}`;
-
-      if (!groupedMap.has(key)) {
-        groupedMap.set(key, {
-          name: order.deviceName || 'N/A',
-          variant: order.variant || 'N/A',
-          color: order.color || 'N/A',
-          brand: order.brand || 'Unknown',
-          bookingAmounts: [order.bookingAmount || 0],
-          image: order.imageUrl || '/images/default-phone.png',
-          borderColor: order.colorCode || '#007bff',
-          status: order.status,
-          orderDate: new Date(order.createdAt).toDateString(),
-          isOutForDelivery: order.status === 'out-for-delivery',
-          sellerId: order.sellerId,
-          count: 1
-        });
-      } else {
-        const existing = groupedMap.get(key);
-        existing.count += 1;
-        existing.bookingAmounts.push(order.bookingAmount || 0);
+    // Separate grouping for sold and out-for-delivery
+    const groupByStatus = (orders, status) => {
+      const map = new Map();
+      for (const order of orders.filter(o => o.status === status)) {
+        const key = `${order.brand}-${order.deviceName}-${order.variant}-${order.color}`;
+        if (!map.has(key)) {
+          map.set(key, {
+            name: order.deviceName || 'N/A',
+            variant: order.variant || 'N/A',
+            color: order.color || 'N/A',
+            brand: order.brand || 'Unknown',
+            bookingAmounts: [order.bookingAmount || 0],
+            image: order.imageUrl || '/images/default-phone.png',
+            borderColor: order.colorCode || '#007bff',
+            status: order.status,
+            orderDate: new Date(order.createdAt).toDateString(),
+            sellerId: order.sellerId,
+            count: 1
+          });
+        } else {
+          const existing = map.get(key);
+          existing.count += 1;
+          existing.bookingAmounts.push(order.bookingAmount || 0);
+        }
       }
-    }
-
-    const groupedDevices = Array.from(groupedMap.values()).map(device => {
-      const totalBookingAmount = device.bookingAmounts.reduce((sum, amt) => sum + amt, 0);
-      return {
+      return Array.from(map.values()).map(device => ({
         ...device,
-        bookingAmount: totalBookingAmount
-      };
-    });
+        bookingAmount: device.bookingAmounts.reduce((sum, amt) => sum + amt, 0)
+      }));
+    };
 
-    // ✅ Updated Chart Logic with brand + deviceName
+    const soldDevices = groupByStatus(allOrders, 'sold');
+    const outForDeliveryDevices = groupByStatus(allOrders, 'out-for-delivery');
+
+    // Chart Logic
     const pieChartMap = {};
     const barChartMap = {};
 
@@ -800,7 +799,8 @@ exports.getSellerDetails = async (req, res) => {
       seller,
       selectedMonth,
       months,
-      groupedDevices,
+      soldDevices,
+      outForDeliveryDevices,
       pieChartLabels,
       pieChartData,
       barChartLabels,
@@ -812,6 +812,7 @@ exports.getSellerDetails = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error loading seller details.' });
   }
 };
+
 
 
 
@@ -905,8 +906,10 @@ exports.getSellerPaymentDetails = async (req, res) => {
 
 exports.renderDealsPage = async (req, res) => {
   try {
-    const allDeals = await Deal.find().lean(); // fetch all, not just active
-    res.render('admin/createDeal', { deals: allDeals });
+    const allDeals = await Deal.find().populate('buyerIds', 'name email').lean();
+
+    const allBuyers = await Buyer.find().lean();
+    res.render('admin/createDeal', { deals: allDeals, buyers: allBuyers });
   } catch (err) {
     console.error('Failed to render deals page:', err);
     res.status(500).render('error/500', { msg: 'Failed to load create deal page' });
@@ -932,8 +935,9 @@ exports.toggleDealStatus = async (req, res) => {
 };
 
 
+
 exports.createDeal = async (req, res) => {
-try {
+  try {
     const {
       brand,
       modelName,
@@ -947,32 +951,60 @@ try {
       pincode,
       address,
       cardWorking,
-      status
+      status,
+      sendToAll,
+      buyerIds,
+      quantity,
+      unlimitedCheckbox
     } = req.body;
 
+    console.log("📩 Raw Request Body:", req.body);
+    console.log("🔍 buyerIds:", buyerIds);
+    console.log("📦 sendToAll:", sendToAll);
+
+    let assignedBuyers = [];
+
+    if (sendToAll === 'true') {
+      assignedBuyers = [];
+      console.log("✅ Sending to ALL buyers (empty buyerIds)");
+    } else if (buyerIds) {
+      assignedBuyers = Array.isArray(buyerIds) ? buyerIds : [buyerIds];
+      console.log("✅ Sending to selected buyers:", assignedBuyers);
+    }
+
+    const finalQuantity = unlimitedCheckbox === 'on' ? 'unlimited' : Number(quantity);
+
     const newDeal = new Deal({
-      deviceName: modelName, // mapped
+      deviceName: modelName,
       brand,
       variant,
       color,
-      imageUrl: modelImage, // mapped
+      imageUrl: modelImage,
       buyLink,
-      bookingAmount: Number(bookingAmount), // string → number
+      bookingAmount: Number(bookingAmount),
       returnAmount: Number(returnAmount),
       margin: Number(margin),
       pincode,
       address,
       cardWorking,
       status: status === 'on' ? 'active' : 'inactive',
-      createdBy: req.user?._id || null // if using auth, populate from token/session
+      buyerIds: assignedBuyers,
+      quantity: finalQuantity,
+      createdBy: req.user?._id || null
     });
 
     await newDeal.save();
-res.redirect('/admin/dashboard');  } catch (err) {
-    console.error(err);
+
+    console.log("✅ Deal saved successfully");
+    res.redirect('/admin/deals');
+  } catch (err) {
+    console.error("❌ Error saving deal:", err);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
+
+
 
 
 
@@ -1112,71 +1144,62 @@ exports.activateDeal = async (req, res) => {
 
 exports.updateOrdersToSold = async (req, res) => {
   try {
-    const { sellerId, buyerId } = req.query;
+    const { sellerId } = req.query;
     const { bookingAmountSeller } = req.body;
-    const fromRole = req.user.role;
 
-    if (!bookingAmountSeller || (!sellerId && !buyerId)) {
-      return res.status(400).render('error/404', { msg: "Missing bookingAmountSeller or sellerId/buyerId" });
+    if (!sellerId || !bookingAmountSeller) {
+      console.warn("❌ Missing sellerId or bookingAmountSeller");
+      return res.status(400).render('error/404', { msg: "Missing sellerId or bookingAmountSeller" });
     }
 
-    const query = sellerId
-      ? { sellerId, status: "out-for-delivery" }
-      : { buyerId, status: "out-for-delivery" };
-
-    const orders = await Order.find(query);
-
-    if (orders.length === 0) {
-      return res.status(404).render('error/404', { msg: "No matching orders found." });
+    const orders = await Order.find({ sellerId, status: 'out-for-delivery' });
+    if (!orders.length) {
+      console.warn("❌ No matching out-for-delivery orders for seller:", sellerId);
+      return res.status(404).render('error/404', { msg: "No pending orders found for seller" });
     }
 
     const bookingAmount = parseInt(bookingAmountSeller);
-    const total = bookingAmount * orders.length;
+    let totalEarning = 0;
 
-    for (let order of orders) {
-      order.status = 'sold';
-      order.bookingAmountSeller = bookingAmount;
-      order.margin = (order.returnAmount || 0) - bookingAmount;
-      await order.save();
-
+    for (const order of orders) {
       const stock = await Stock.findOne({
+        brand: order.brand,
         deviceName: order.deviceName,
         variant: order.variant,
         color: order.color
       });
 
+      const returnAmt = stock?.returnAmount || 0;
+      const margin = bookingAmount - returnAmt;
+
+      totalEarning += margin;
+      order.status = 'sold';
+      order.bookingAmountSeller = bookingAmount;
+      order.margin = margin;
+      await order.save();
+
       if (stock) {
         stock.availableCount = Math.max(0, stock.availableCount - 1);
         stock.soldCount += 1;
-        stock.soldAt.push({
-          date: new Date(),
-          orderId: order._id,
-          sellerId: order.sellerId
-        });
+        stock.soldAt.push({ date: new Date(), orderId: order._id, sellerId });
         await stock.save();
-      } else {
-        console.warn(`⚠️ No stock found for order ID: ${order._id}`);
       }
     }
 
-    if (fromRole === 'seller') {
-      await Seller.findByIdAndUpdate(sellerId, { $inc: { advance: total } });
-    } else if (fromRole === 'admin' && buyerId) {
-      await Buyer.findByIdAndUpdate(buyerId, { $inc: { due: -total } });
-    }
+    // ✅ Only update earning (not advance)
+    await Seller.findByIdAndUpdate(sellerId, {
+      $inc: { earning: totalEarning }
+    });
 
-    const redirectPath = sellerId
-      ? `/admin/sellers-details/${sellerId}`
-      : `/admin/buyer-details/${buyerId}`;
+    console.log(`✅ Total margin (earning) added for seller ${sellerId}: ₹${totalEarning}`);
+    req.flash('success', `✅ Orders marked as sold. Earning: ₹${totalEarning}`);
+    res.redirect(`/admin/sellers-details/${sellerId}`);
 
-    req.flash('success', '✅ Orders updated to SOLD successfully');
-    res.redirect(redirectPath);
   } catch (err) {
-    console.error("🔥 Error updating orders to sold:", err);
-    res.status(500).render('error/500', { msg: "Failed to update orders" });
+    console.error("🔥 Error in updateOrdersToSold:", err);
+    res.status(500).render('error/500', { msg: 'Error updating orders to sold.' });
   }
 };
-
 
 
 

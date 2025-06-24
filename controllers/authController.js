@@ -73,6 +73,7 @@ exports.signup = async (req, res) => {
 
     return res.redirect(`/${role}/dashboard/${newUser._id}`);
   } catch (err) {
+    console.log(err);
     return res.status(500).send('Signup failed');
   }
 };

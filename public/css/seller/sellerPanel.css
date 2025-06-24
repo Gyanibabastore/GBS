@@ -23,3 +23,7 @@
       background-color: #198754;
       color: white;
     }
+    .text-danger.fw-bold {
+  font-size: 0.95rem;
+  margin-top: 5px;
+}

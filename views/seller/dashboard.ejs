@@ -10,8 +10,9 @@
 <body>
 <div class="container py-4">
   <h2 class="text-primary mb-4">📦 Seller Panel - Gyanibaba Store</h2>
-  <a href="/seller/addpayment?sellerId=<%= sellerId%>" class="btn btn-primary">➕ Add Payment</a>
-
+  <div><a href="/seller/addpayment?sellerId=<%= sellerId%>" class="btn btn-primary">➕ Add Payment</a></div>
+  <hr>
+ 
   <!-- Search Box -->
   <div class="mb-4">
     <input type="text" class="form-control" placeholder="Search by model name..." id="search-box" />
@@ -27,6 +28,11 @@
             <h5 class="card-title"><%= model.brand %> - <%= model.title %></h5>
             <p>Color: <strong><%= model.color %></strong></p>
             <p>Booking Price: ₹<%= model.booking %></p>
+            <% if (model.stock <= 2) { %>
+  <div class="alert alert-danger py-1 px-2 small fw-bold mb-2">
+    ⚠ Hurry up! Only <%= model.stock %> piece<%= model.stock === 1 ? '' : 's' %> left
+  </div>
+<% } %>
             <button class="btn btn-primary mt-auto w-100 add-to-cart-btn" data-index="<%= index %>">Add to Cart</button>
           </div>
         </div>

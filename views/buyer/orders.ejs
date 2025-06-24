@@ -9,44 +9,51 @@
 </head>
 <body>
 
-  <%- include('../partials/navbar') %> 
-<div class="container py-5">
-  <h2 class="mb-4">📦 My Orders</h2>
+  <%- include('../partials/navbar') %>
 
-  <div class="controls d-flex gap-3 mb-4">
-    <input
-      type="text"
-      class="form-control search-box"
-      placeholder="Search by model..."
-      id="searchBox"
-    />
-    <select class="form-select status-filter" id="statusFilter">
-      <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
-      <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-      <option value="canceled" <%= defaultStatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
-    </select>
-  </div>
+  <div class="container py-5">
+    <h2 class="mb-4">📦 My Orders</h2>
 
-  <div id="orders-container">
-    <% orders.forEach(order => { %>
-      <div
-        class="card p-3 mb-3 <%= order.status !== defaultStatus ? 'd-none' : '' %>"
-        data-model="<%= order.deviceModel.toLowerCase() %>"
-        data-status="<%= order.status %>"
-      >
-        <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid" />
-        <div class="card-body">
-          <h5><strong>Device:</strong> <%= order.deviceModel %>, <%= order.variant %>, <%= order.color %></h5>
-          <p><strong>Order Date:</strong> <%= order.orderDate %></p>
-          <p><strong>Booking Amount:</strong> ₹<%= order.bookingAmount %></p>
-          <p><strong>Return Amount:</strong> ₹<%= order.returnAmount %></p>
-          <p><strong>Margin:</strong> ₹<%= order.margin %></p>
+    <!-- 🔍 Filter controls -->
+    <div class="controls d-flex gap-3 mb-4">
+      <input
+        type="text"
+        class="form-control search-box"
+        placeholder="Search by model..."
+        id="searchBox"
+      />
+      <select class="form-select status-filter" id="statusFilter">
+        <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+        <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+        <option value="canceled" <%= defaultStatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
+      </select>
+    </div>
+
+    <!-- 📋 Orders -->
+    <div id="orders-container" class="row">
+      <% orders.forEach(order => { %>
+        <div
+          class="card p-3 mb-3 col-md-6 col-lg-4 order-card <%= order.status !== defaultStatus ? 'd-none' : '' %>"
+          data-model="<%= order.deviceModel.toLowerCase() %>"
+          data-status="<%= order.status %>"
+        >
+          <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid rounded mb-2" />
+          <div class="card-body">
+            <h5><strong>Device:</strong> <%= order.deviceModel %></h5>
+            <p><strong>Variant:</strong> <%= order.variant %></p>
+            <p><strong>Color:</strong> <%= order.color %></p>
+            <p><strong>Quantity:</strong> <%= order.quantity %></p>
+            <p><strong>Order Date:</strong> <%= order.orderDate || 'N/A' %></p>
+            <p><strong>Booking Amount:</strong> ₹<%= order.bookingAmount %></p>
+            <p><strong>Return Amount:</strong> ₹<%= order.returnAmount %></p>
+            <p><strong>Margin:</strong> ₹<%= order.margin %></p>
+          </div>
         </div>
-      </div>
-    <% }) %>
+      <% }) %>
+    </div>
   </div>
-</div>
 
-<script src="/js/buyer/order.js"></script>
+  <!-- External script -->
+  <script src="/js/buyer/order.js"></script>
 </body>
 </html>

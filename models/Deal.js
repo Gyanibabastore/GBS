@@ -7,6 +7,9 @@ const dealSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  buyerIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Buyer' }]
+
+  ,
   brand: {
     type: String,
     required: true
@@ -19,6 +22,11 @@ const dealSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+quantity: {
+  type: String,
+  required: true
+}
+,
   bookingAmount: {
     type: Number,
     required: true

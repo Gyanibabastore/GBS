@@ -80,11 +80,17 @@
       </div>
 
     <!-- Orders Section -->
+<!-- Inside <body> ... existing content unchanged -->
+
+<!-- Orders Section -->
 <div class="row mt-4">
-  <h4>📋 Orders</h4>
-  <% groupedDevices.forEach(device => { %>
+  <h4>🟡 Out for Delivery Devices</h4>
+  <% if (outForDeliveryDevices.length === 0) { %>
+    <p class="text-muted">No devices currently out for delivery.</p>
+  <% } %>
+  <% outForDeliveryDevices.forEach(device => { %>
     <div class="col-md-6 mb-3">
-      <div class="card h-100 border-start border-4 shadow-sm <%= device.status === 'sold' ? 'border-success' : 'border-warning' %>">
+      <div class="card h-100 border-start border-4 shadow-sm border-warning">
         <img src="<%= device.image || '/images/default-phone.png' %>" class="card-img-top" alt="Product Image" style="height: 200px; object-fit: contain; background: #f8f9fa;">
         <div class="card-body">
           <h5 class="card-title d-flex justify-content-between align-items-center">
@@ -94,16 +100,12 @@
           <p class="card-text mb-1">📅 Order Date: <%= device.orderDate %></p>
           <p class="card-text mb-1">🧾 Variant: <%= device.variant %> | 🎨 Color: <%= device.color %></p>
           <p class="card-text mb-1">💰 Booking Amount: ₹<%= device.bookingAmount %></p>
-          <p class="card-text fw-bold mb-2">Status: 
-            <span class="<%= device.status === 'sold' ? 'text-success' : 'text-warning' %>">
-              <%= device.status %>
-            </span>
-          </p>
+          <p class="card-text fw-bold mb-2 text-warning">Status: Out for Delivery</p>
 
-          <% if (device.isOutForDelivery && String(device.sellerId) === String(seller._id)) { %>
+          <% if (String(device.sellerId) === String(seller._id)) { %>
             <form method="POST" action="/admin/orders/mark-sold?sellerId=<%= seller._id %>">
               <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmount %>" />
-              <button class="btn btn-sm btn-outline-primary w-100 mt-2">✅ Mark All Delivered as Sold</button>
+              <button class="btn btn-sm btn-outline-primary w-100 mt-2">✅ Mark All as Sold</button>
             </form>
           <% } %>
         </div>
@@ -111,6 +113,31 @@
     </div>
   <% }) %>
 </div>
+
+<div class="row mt-5">
+  <h4>🟢 Sold Devices</h4>
+  <% if (soldDevices.length === 0) { %>
+    <p class="text-muted">No devices sold yet.</p>
+  <% } %>
+  <% soldDevices.forEach(device => { %>
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 border-start border-4 shadow-sm border-success">
+        <img src="<%= device.image || '/images/default-phone.png' %>" class="card-img-top" alt="Product Image" style="height: 200px; object-fit: contain; background: #f8f9fa;">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            <span><%= device.brand %> <%= device.name %></span>
+            <span class="badge bg-dark">x<%= device.count %></span>
+          </h5>
+          <p class="card-text mb-1">📅 Order Date: <%= device.orderDate %></p>
+          <p class="card-text mb-1">🧾 Variant: <%= device.variant %> | 🎨 Color: <%= device.color %></p>
+          <p class="card-text mb-1">💰 Booking Amount: ₹<%= device.bookingAmount %></p>
+          <p class="card-text fw-bold mb-2 text-success">Status: Sold</p>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
 
   <!-- Scripts -->
   <script src="/js/admin/seller-details.js"></script>

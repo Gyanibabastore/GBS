@@ -122,55 +122,162 @@ exports.getBuyerDashboard = async (req, res) => {
 exports.getBuyerOrders = async (req, res) => {
   try {
     const buyerId = req.params.buyerId;
-     const buyer = await Buyer.findById(buyerId).lean();
+    const buyer = await Buyer.findById(buyerId).lean();
+
     if (req.user.id !== buyerId) {
       req.flash('error', 'Unauthorized access');
       return res.redirect('/auth/login');
     }
 
     const orders = await Order.find({ buyerId }).sort({ placedDate: -1 }).lean();
-    const mappedOrders = orders.map(order => ({
-      status: order.outForDelivery?.status || 'pending',
-      deviceModel: `${order.brand || 'Unknown'} ${order.deviceName || ''}`,
-      variant: order.variant || '',
-      color: order.color || '',
-      imageUrl: order.imageUrl || '',
-      bookingAmount: order.bookingAmount,
-      returnAmount: order.returnAmount,
-      margin: order.margin,
-      quantity: order.quantity,
-      orderDate: order.placedDate ? new Date(order.placedDate).toLocaleDateString() : ''
-    }));
-   console.log("✅ Mapped Orders Rendered to EJS:", mappedOrders);
+
+    const orderMap = {};
+    const statusPriority = { delivered: 3, pending: 2, canceled: 1 };
+
+    orders.forEach(order => {
+      const brand = (order.brand || '').trim().toLowerCase();
+      const deviceName = (order.deviceName || '').trim().toLowerCase();
+      const variant = (order.variant || '').trim().toLowerCase();
+      const color = (order.color || '').trim().toLowerCase();
+      const bookingAmount = order.bookingAmount || 0;
+      const returnAmount = order.returnAmount || 0;
+      const margin = order.margin || 0;
+      const imageUrl = order.imageUrl || '';
+      const placedDate = order.placedDate?.toISOString().split('T')[0] || '';
+
+      const status = order.outForDelivery?.status || 'pending';
+      const quantity = Number(order.quantity) || 1;
+
+      // 👇 Include status in the key so they are grouped separately
+      const key = `${brand}|${deviceName}|${variant}|${color}|${bookingAmount}|${returnAmount}|${margin}|${imageUrl}|${placedDate}|${status}`;
+
+      if (!orderMap[key]) {
+        orderMap[key] = {
+          status,
+          deviceModel: `${order.brand || 'Unknown'} ${order.deviceName || ''}`,
+          variant: order.variant || '',
+          color: order.color || '',
+          imageUrl: order.imageUrl || '',
+          bookingAmount: order.bookingAmount,
+          returnAmount: order.returnAmount,
+          margin: order.margin,
+          quantity,
+          orderDate: order.placedDate
+            ? new Date(order.placedDate).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })
+            : ''
+        };
+      } else {
+        orderMap[key].quantity += quantity;
+      }
+    });
+
+    const groupedOrders = Object.values(orderMap);
+
     res.render('buyer/orders', {
-      orders: mappedOrders,
+      orders: groupedOrders,
       defaultStatus: 'delivered',
       buyer
     });
 
   } catch (error) {
-    console.error('Error fetching buyer orders:', error);
+    console.error('❌ Error fetching buyer orders:', error);
     res.status(500).render('error/500', { msg: 'Unable to load orders at this time.' });
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Manage Orders Page
 exports.getManageOrders = async (req, res) => {
   try {
-    const buyer = await Buyer.findById(req.params.buyerId).lean();
-    if (!buyer) return res.status(404).render('error/404', { msg: 'Buyer not found' });
+    const buyerId = req.params.buyerId;
 
+    // Find buyer
+    const buyer = await Buyer.findById(buyerId).lean();
+    if (!buyer) {
+      return res.status(404).render('error/404', { msg: 'Buyer not found' });
+    }
+
+    // Get all active deals
     const deals = await Deal.find({ status: 'active' }).lean();
-    const quantities = deals.map(() => 1); // default quantity = 1
 
-    const pendingOrders = (buyer.orders || []).filter(order => order.status === 'pending');
-    console.log(`📦 Found ${deals.length} active deals. Sending to EJS.`);
+    // Get all pending orders for this buyer
+    const rawOrders = await Order.find({
+      buyerId: buyerId,
+      status: 'pending'
+    }).lean();
 
+    // Group pending orders by brand, deviceName, variant, color, and date
+    const groupedOrdersMap = new Map();
+
+    rawOrders.forEach(order => {
+      // Handle missing or invalid date safely
+      let dateKey = 'unknown';
+      if (order.date && !isNaN(new Date(order.date))) {
+        dateKey = new Date(order.date).toISOString().slice(0, 10); // YYYY-MM-DD
+      }
+
+      const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}|${dateKey}`;
+
+      if (!groupedOrdersMap.has(key)) {
+        // Initialize quantity
+        groupedOrdersMap.set(key, {
+          ...order,
+          quantity: order.quantity || 1,
+          date: order.date || new Date() // default date for rendering
+        });
+      } else {
+        // Increase quantity if already grouped
+        groupedOrdersMap.get(key).quantity += order.quantity || 1;
+      }
+    });
+
+    const groupedPendingOrders = Array.from(groupedOrdersMap.values());
+
+    // Send to view
     res.render('buyer/manageOrder', {
       products: deals,
-      quantities,
-      pendingOrders,
-      buyerId: req.params.buyerId,
+      pendingOrders: groupedPendingOrders,
+      buyerId: buyerId,
       buyer
     });
 
@@ -179,6 +286,9 @@ exports.getManageOrders = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error loading manage order page.' });
   }
 };
+
+
+
 
 exports.updateBuyerOrder = async (req, res) => {
   try {
@@ -189,10 +299,47 @@ exports.updateBuyerOrder = async (req, res) => {
       deviceName, brand, variant, bookingAmount, returnAmount,
       imageUrl, margin, quantity, color
     } = req.body;
-    console.log("this is body that coming ",req.body);
+
     const parsedQuantity = parseInt(quantity) || 0;
     console.log(`📝 Order requested: ${parsedQuantity} units of ${deviceName}`);
 
+    const deal = await Deal.findOne({
+      brand,
+      deviceName,
+      variant,
+      color
+    });
+
+    if (!deal) {
+      console.warn('⚠️ No matching deal found to update quantity.');
+      req.flash('error', 'No matching deal found.');
+      return res.redirect(`/buyer/${req.params.buyerId}/orders`);
+    }
+
+    // ♾️ Handle limited quantity
+    if (deal.quantity === 'unlimited') {
+      console.log(`♾️ Unlimited deal — proceeding with order`);
+    } else {
+      const availableQty = parseInt(deal.quantity);
+
+      if (parsedQuantity > availableQty) {
+        req.flash('error', `Only ${availableQty} unit(s) left in deal. Cannot place ${parsedQuantity}.`);
+        return res.redirect(`/buyer/${req.params.buyerId}/orders`);
+      }
+
+      const updatedQty = availableQty - parsedQuantity;
+      deal.quantity = updatedQty;
+
+      if (updatedQty === 0) {
+        deal.status = 'inactive';
+        console.log(`🛑 Quantity finished — deal set to inactive`);
+      }
+
+      await deal.save();
+      console.log(`✅ Deal quantity updated to ${updatedQty}`);
+    }
+
+    // 🟢 Insert orders
     const ordersToInsert = [];
     for (let i = 0; i < parsedQuantity; i++) {
       ordersToInsert.push({
@@ -210,7 +357,7 @@ exports.updateBuyerOrder = async (req, res) => {
         createdAt: new Date()
       });
     }
-    console.log("this what i inserting in order",ordersToInsert);
+
     await Order.insertMany(ordersToInsert);
     console.log(`✅ ${parsedQuantity} orders inserted.`);
 
@@ -222,6 +369,8 @@ exports.updateBuyerOrder = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Unable to create orders at this time.' });
   }
 };
+
+
 
 exports.getOutForDelivery = async (req, res) => {
   try {
@@ -327,14 +476,24 @@ exports.postOutForDelivery = async (req, res) => {
 // Get Deals Page
 exports.getDeals = async (req, res) => {
   try {
-     const buyer = await Buyer.findById(req.user.id).lean();
-    const deals = await Deal.find({ status: 'active' });
-    res.render('buyer/deals', { deals,buyer });
+    const buyer = await Buyer.findById(req.user.id).lean();
+
+    const deals = await Deal.find({
+      status: 'active',
+      $or: [
+        { buyerIds: { $exists: false } },             // no buyerIds field
+        { buyerIds: { $size: 0 } },                   // empty array
+        { buyerIds: buyer._id }                       // specific to this buyer
+      ]
+    }).lean();
+
+    res.render('buyer/deals', { deals, buyer });
   } catch (error) {
     console.error('Error fetching deals:', error.message);
     res.status(500).render('error/500', { msg: 'Unable to fetch deals' });
   }
 };
+
 
 // Get Payment History
 exports.getPaymentHistory = async (req, res) => {

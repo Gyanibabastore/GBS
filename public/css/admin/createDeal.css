@@ -1,23 +1,29 @@
 
-    .container {
-      /* background-color: rgba(255, 255, 255, 0.95); */
-      padding: 30px;
-      margin-top: 50px;
-      border-radius: 15px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-    }
-    .form-label {
-      font-weight: bold;
-    }
-    .btn-primary {
-      width: 100%;
-      font-size: 1.1rem;
-      padding: 10px;
-      border-radius: 10px;
-    }
+/* Container Styling */
+.container {
+  padding: 30px;
+  margin-top: 30px;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  background-color: #fff;
+}
 
-    .card:hover {
+/* Form Labels & Buttons */
+.form-label {
+  font-weight: bold;
+}
+
+.btn-primary {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* Card Styling */
+.card:hover {
   transform: translateY(-4px);
+  transition: transform 0.3s ease;
 }
 
 .card-title {
@@ -28,7 +34,196 @@
   padding: 1.2rem;
 }
 
+/* Switch Styling */
 .form-switch .form-check-input {
   width: 2.5em;
   height: 1.3em;
+}
+
+/* Buyer Checkbox Hover */
+.buyer-checkbox:hover {
+  background-color: #f1f1f1;
+  border-radius: 6px;
+}
+
+/* ✅ Modal Overlay */
+#buyerModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* ✅ Modal Dialog */
+#buyerModal .modal-dialog {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  max-width: 520px;
+  width: 95%;
+  animation: slideUp 0.4s ease-out;
+  margin: 20px auto;
+  overflow: hidden;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ Animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Modal Header/Footer */
+#buyerModal .modal-header,
+#buyerModal .modal-footer {
+  background-color: #f1f5fb;
+  border: none;
+  padding: 0.75rem 1.25rem;
+}
+
+/* ✅ Modal Title */
+#buyerModal .modal-title {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* ✅ Modal Body */
+#buyerModal .modal-body {
+  padding: 1rem 1.25rem;
+  background-color: #fafbff;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ✅ Buyer Search */
+#buyerSearch {
+  border-radius: 10px;
+  border: 1px solid #cbd5e0;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  margin-bottom: 12px;
+  transition: border-color 0.3s;
+}
+
+#buyerSearch:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* ✅ Buyer List */
+.buyer-list {
+  max-height: 240px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  padding: 4px;
+}
+
+/* ✅ Individual Buyer Item */
+.buyer-checkbox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.2s;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.buyer-checkbox:hover {
+  background: #eaf6ff;
+}
+
+.buyer-checkbox span {
+  font-weight: 500;
+  color: #333;
+}
+
+/* ✅ Checkbox Styling */
+.buyer-checkbox-input {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  background-color: #f1f1f1;
+  border: 2px solid #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+.buyer-checkbox-input:checked {
+  background-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.buyer-checkbox-input:checked::after {
+  content: '✔';
+  color: white;
+  font-size: 0.75rem;
+  position: absolute;
+  top: 2px;
+  left: 4px;
+}
+
+/* ✅ Select All Styling */
+#selectAllBuyers {
+  margin-right: 8px;
+}
+
+/* ✅ Footer Count & Buttons */
+#selectedCount {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+#confirmCreateDeal {
+  background-color: #28a745;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+#confirmCreateDeal:hover {
+  background-color: #218838;
+}
+
+#cancelBuyerModal {
+  border-radius: 8px;
+}
+
+/* ✅ Responsive Tweaks */
+@media (max-width: 576px) {
+  #buyerModal .modal-dialog {
+    max-width: 95%;
+    margin: 10px auto;
+  }
+
+  .buyer-checkbox {
+    font-size: 0.9rem;
+  }
+
+  #buyerSearch {
+    padding: 0.5rem;
+  }
 }

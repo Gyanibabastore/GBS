@@ -14,10 +14,10 @@
     <h2 class="mb-4">📦 Manage Your Orders</h2>
     <button class="btn btn-primary mb-4" id="toggle-pending-btn">Show Pending Orders</button>
 
+    <!-- 📦 Product Listing -->
     <div id="product-list" class="row">
       <% for (let i = 0; i < products.length; i++) {
         const product = products[i];
-        const qty = quantities[i] || 1;
       %>
       <div class="col-md-6 col-lg-4">
         <div class="card p-3 mb-4">
@@ -29,12 +29,13 @@
               Variant: <%= product.variant %><br />
               Booking Amount: ₹<%= product.bookingAmount %><br />
               Return Amount: ₹<%= product.returnAmount %><br />
-              Margin: ₹<%= product.margin %>
+              Margin: ₹<%= product.margin %><br />
+              Available Quantity: <strong><%= product.quantity %></strong>
             </p>
             <div class="cart-actions">
               <div class="quantity-controls btn-group">
                 <button type="button" class="btn btn-outline-secondary qty-decrease" data-index="<%= i %>">-</button>
-                <span id="qty-<%= i %>" class="btn btn-light"><%= qty %></span>
+                <span id="qty-<%= i %>" class="btn btn-light">1</span>
                 <button type="button" class="btn btn-outline-secondary qty-increase" data-index="<%= i %>">+</button>
               </div>
 
@@ -47,7 +48,8 @@
                 <input type="hidden" name="returnAmount" value="<%= product.returnAmount %>" />
                 <input type="hidden" name="margin" value="<%= product.margin %>" />
                 <input type="hidden" name="imageUrl" value="<%= product.imageUrl %>" />
-                <input type="hidden" name="quantity" id="form-qty-<%= i %>" value="<%= qty %>" />
+                <input type="hidden" name="quantity" id="form-qty-<%= i %>" value="1" />
+                <input type="hidden" id="max-qty-<%= i %>" value="<%= product.quantity %>" />
                 <button type="submit" class="btn btn-success">Update Order</button>
               </form>
             </div>
@@ -57,17 +59,32 @@
       <% } %>
     </div>
 
+    <!-- 🕒 Pending Orders -->
     <div id="pending-orders" style="display: none;">
-      <h3 class="mt-5">🕒 Pending Orders</h3>
-      <ul class="list-group mt-3">
-        <% for (let j = 0; j < pendingOrders.length; j++) { %>
-          <li class="list-group-item">
-            <%= new Date(pendingOrders[j].date).toLocaleDateString() %>:
-            <%= pendingOrders[j].title || 'Unknown Product' %> x
-            <%= pendingOrders[j].quantity || 1 %>
-          </li>
-        <% } %>
-      </ul>
+      <h3 class="mt-5 mb-3">🕒 Pending Orders</h3>
+      <% if (pendingOrders && pendingOrders.length > 0) { %>
+        <div class="row">
+          <% pendingOrders.forEach(order => { %>
+            <div class="col-md-6 col-lg-4">
+              <div class="card p-3 mb-4">
+                <img src="<%= order.imageUrl %>" alt="<%= order.deviceName || order.title %>" class="card-img-top rounded" />
+                <div class="card-body">
+                  <h5><strong>Device:</strong> <%= order.deviceName || order.title || 'Unknown' %></h5>
+                  <p><strong>Variant:</strong> <%= order.variant || 'N/A' %></p>
+                  <p><strong>Color:</strong> <%= order.color || 'N/A' %></p>
+                  <p><strong>Order Date:</strong> <%= new Date(order.date).toLocaleDateString() %></p>
+                  <p><strong>Quantity:</strong> <%= order.quantity || 1 %></p>
+                  <p><strong>Booking Amount:</strong> ₹<%= order.bookingAmount %></p>
+                  <p><strong>Return Amount:</strong> ₹<%= order.returnAmount %></p>
+                  <p><strong>Margin:</strong> ₹<%= order.margin %></p>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="text-muted">No pending orders.</p>
+      <% } %>
     </div>
   </div>
 

@@ -6,15 +6,45 @@ const Payment = require('../models/Payment');
 const mongoose = require('mongoose');
 
 // GET seller dashboard
+// ✅ Full Controller: getSellerDashboard
+
+function groupOrders(orders) {
+  const grouped = new Map();
+
+  for (const order of orders) {
+    const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}`;
+    const modelTitle = `${order.deviceName} (${order.variant})`;
+    const price = order.bookingAmount || order.bookingAmountSeller || 0;
+
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        modelTitle,
+        brand: order.brand,
+        color: order.color,
+        quantity: 1,
+        totalPrice: price,
+        date: order.placedDate || order.deliveryDate || order.createdAt
+      });
+    } else {
+      const existing = grouped.get(key);
+      existing.quantity += 1;
+      existing.totalPrice += price;
+    }
+  }
+
+  return Array.from(grouped.values());
+}
+
 exports.getSellerDashboard = async (req, res) => {
   try {
     const sellerId = req.user.id;
-
     const stockDeals = await Stock.find({ deal: true, availableCount: { $gt: 0 } });
     const modelMap = new Map();
 
     for (const stock of stockDeals) {
       const key = `${stock.deviceName}|${stock.variant}|${stock.color}`;
+      const isLowStock = stock.availableCount < 2;
+
       if (!modelMap.has(key)) {
         modelMap.set(key, {
           title: `${stock.deviceName} (${stock.variant})`,
@@ -22,35 +52,29 @@ exports.getSellerDashboard = async (req, res) => {
           image: stock.imageUrl,
           color: stock.color,
           booking: stock.bookingAmountSeller,
-          stock: stock.availableCount
+          stock: stock.availableCount,
+          lowStock: isLowStock
         });
       } else {
-        modelMap.get(key).stock += stock.availableCount;
+        const existing = modelMap.get(key);
+        existing.stock += stock.availableCount;
+        if (stock.availableCount < 2) existing.lowStock = true;
       }
     }
 
     const models = Array.from(modelMap.values());
 
-    const pendingOrders = await Order.find({ sellerId, status: 'out-for-delivery' }).sort({ deliveryDate: -1 });
-    const deliveredSellerOrders = await Order.find({ sellerId, status: 'sold' }).sort({ deliveryDate: -1 });
+    const rawPending = await Order.find({ sellerId, status: 'out-for-delivery' }).sort({ deliveryDate: -1 });
+    const rawDelivered = await Order.find({ sellerId, status: 'sold' }).sort({ deliveryDate: -1 });
 
-    const formatOrder = (order) => ({
-      id: order._id,
-      modelTitle: `${order.deviceName} (${order.variant})`,
-      quantity: 1,
-      color: order.color,
-      totalPrice: order.bookingAmount || order.bookingAmountSeller || 0,
-      date: order.placedDate || order.deliveryDate || order.createdAt
-    });
-
-    const formattedPending = pendingOrders.map(order => ({ ...formatOrder(order), date: order.placedDate }));
-    const formattedDelivered = deliveredSellerOrders.map(order => ({ ...formatOrder(order), date: order.deliveryDate }));
+    const pendingOrders = groupOrders(rawPending);
+    const deliveredOrders = groupOrders(rawDelivered);
 
     res.render('seller/dashboard', {
       sellerId,
       models,
-      pendingOrders: formattedPending,
-      deliveredOrders: formattedDelivered
+      pendingOrders,
+      deliveredOrders
     });
 
   } catch (err) {
@@ -67,11 +91,7 @@ exports.placeSellerOrder = async (req, res) => {
     const { cart } = req.body;
 
     if (!Array.isArray(cart) || cart.length === 0) {
-      if (req.xhr || req.headers.accept.includes('application/json')) {
-        return res.status(400).json({ message: 'Cart is empty' });
-      }
-      req.flash('error', 'Cart is empty');
-      return res.redirect('/seller/dashboard');
+      return res.status(400).json({ message: 'Cart is empty' });
     }
 
     const newOrders = [];
@@ -99,22 +119,13 @@ exports.placeSellerOrder = async (req, res) => {
       }
     }
 
-    if (req.xhr || req.headers.accept.includes('application/json')) {
-      return res.status(200).json({ message: 'Orders placed successfully.' });
-    }
-
-    req.flash('success', 'Orders placed successfully.');
-    res.redirect('/seller/dashboard');
+    return res.status(200).json({ message: 'Orders placed successfully.' });
   } catch (err) {
     console.error('Order Placement Error:', err);
-
-    if (req.xhr || req.headers.accept.includes('application/json')) {
-      return res.status(500).json({ message: 'Server error. Failed to place orders.' });
-    }
-
-    res.status(500).render('error/500', { msg: 'Failed to place orders.' });
+    return res.status(500).json({ message: 'Server error. Failed to place orders.' });
   }
 };
+
 
 
 // GET render add payment page
