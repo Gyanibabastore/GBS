@@ -184,6 +184,31 @@
   left: 4px;
 }
 
+
+.deal-card {
+  transition: transform 0.2s ease-in-out;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+}
+
+.deal-card:hover {
+  transform: translateY(-5px);
+}
+
+.deal-card .card-title {
+  font-size: 1.1rem;
+}
+
+.deal-card .badge {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.deal-card ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+
 /* ✅ Select All Styling */
 #selectAllBuyers {
   margin-right: 8px;
@@ -227,3 +252,42 @@
     padding: 0.5rem;
   }
 }
+.card-img-top {
+      height: 200px;
+      object-fit: contain;
+      background-color: #f8f9fa;
+      padding: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .card-img-top {
+        height: 180px;
+        padding: 8px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .card-img-top {
+        height: 160px;
+        padding: 6px;
+      }
+    }
+     @media (max-width: 576px) {
+      .card-img-top {
+        height: 160px;
+        padding: 6px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .card-title {
+        font-size: 1rem;
+      }
+
+      .card-body p,
+      .card-body ul li {
+        font-size: 0.9rem;
+      }
+    }

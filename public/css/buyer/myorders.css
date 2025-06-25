@@ -1,44 +1,141 @@
-.card {
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background-color: rgba(255, 255, 255, 0.2); /* transparent */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  padding: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.card img {
-  width: 120px;
-  height: auto;
-  border-radius: 10px;
+/* 🔳 Card Styling */
+.card {
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+  position: relative;
 }
 
-.card-body {
-  flex: 1;
+.card:hover {
+  transform: scale(1.02);
 }
 
-h2 {
-  color: #007bff;
-  font-weight: bold;
-  font-family: 'Poppins', sans-serif;
+.card-body p {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
 }
 
+.card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.product-img {
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+
+/* 🔍 Search & Filter Controls */
 .controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  font-family: 'Poppins', sans-serif;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .search-box {
-  width: 50%;
+  flex: 1 1 250px;
+  min-width: 200px;
 }
 
 .status-filter {
-  width: 200px;
+  flex: 0 0 180px;
+  min-width: 160px;
+}
+
+/* 🎀 Ribbon Stickers */
+.sticker {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  border-radius: 999px;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.sticker.delivered {
+  background-color: #28a745;
+}
+
+.sticker.pending {
+  background-color: #ffc107;
+  color: black;
+}
+
+.sticker.canceled {
+  background-color: #dc3545;
+}
+
+/* 📱 Responsive Adjustments */
+@media (max-width: 992px) {
+  .card {
+    margin-bottom: 20px;
+  }
+
+  .search-box,
+  .status-filter {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-body p {
+    font-size: 0.9rem;
+  }
+
+  .product-img {
+    height: 120px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 20px 15px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .sticker {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+  }
 }

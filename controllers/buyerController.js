@@ -68,7 +68,8 @@ exports.getBuyerOrders = async (req, res) => {
     res.render('buyer/orders', {
       orders: mappedOrders,
       defaultStatus: 'delivered',
-      buyer
+      buyer,
+      
     });
 
   } catch (error) {
@@ -295,22 +296,19 @@ exports.updateBuyerOrder = async (req, res) => {
     const buyer = await Buyer.findById(req.params.buyerId);
     if (!buyer) return res.status(404).render('error/404', { msg: 'Buyer not found' });
 
-    const {
-      deviceName, brand, variant, bookingAmount, returnAmount,
-      imageUrl, margin, quantity, color
-    } = req.body;
+    const orders = req.body.orders || [];
 
-    const parsedQuantity = parseInt(quantity) || 0;
-    console.log(`📝 Order requested: ${parsedQuantity} units of ${deviceName}`);
+    for (const item of orders) {
+      const {
+        deviceName, brand, variant, bookingAmount,
+        returnAmount, imageUrl, margin, quantity, color
+      } = item;
 
-    const deal = await Deal.findOne({
-      brand,
-      deviceName,
-      variant,
-      color
-    });
+      const parsedQuantity = parseInt(quantity) || 0;
+      if (parsedQuantity < 1) continue;
 
-    if (!deal) {
+      const deal = await Deal.findOne({ brand, deviceName, variant, color });
+        if (!deal) {
       console.warn('⚠️ No matching deal found to update quantity.');
       req.flash('error', 'No matching deal found.');
       return res.redirect(`/buyer/${req.params.buyerId}/orders`);
@@ -324,7 +322,7 @@ exports.updateBuyerOrder = async (req, res) => {
 
       if (parsedQuantity > availableQty) {
         req.flash('error', `Only ${availableQty} unit(s) left in deal. Cannot place ${parsedQuantity}.`);
-        return res.redirect(`/buyer/${req.params.buyerId}/orders`);
+        return res.redirect(`/buyer/manage-orders/${req.params.buyerId}`);
       }
 
       const updatedQty = availableQty - parsedQuantity;
@@ -339,33 +337,33 @@ exports.updateBuyerOrder = async (req, res) => {
       console.log(`✅ Deal quantity updated to ${updatedQty}`);
     }
 
-    // 🟢 Insert orders
-    const ordersToInsert = [];
-    for (let i = 0; i < parsedQuantity; i++) {
-      ordersToInsert.push({
-        buyerId: req.params.buyerId,
-        deviceName,
-        brand,
-        variant,
-        bookingAmount: parseInt(bookingAmount) || 0,
-        returnAmount: parseInt(returnAmount) || 0,
-        margin: parseInt(margin) || 0,
-        imageUrl,
-        status: 'pending',
-        color,
-        placedDate: new Date(),
-        createdAt: new Date()
-      });
+      const ordersToInsert = [];
+      for (let i = 0; i < parsedQuantity; i++) {
+        ordersToInsert.push({
+          buyerId: req.params.buyerId,
+          deviceName,
+          brand,
+          variant,
+          bookingAmount: parseInt(bookingAmount) || 0,
+          returnAmount: parseInt(returnAmount) || 0,
+          margin: parseInt(margin) || 0,
+          imageUrl,
+          status: 'pending',
+          color,
+          placedDate: new Date(),
+          createdAt: new Date()
+        });
+      }
+
+      await Order.insertMany(ordersToInsert);
+      console.log(`✅ Inserted ${parsedQuantity} of ${deviceName}`);
     }
 
-    await Order.insertMany(ordersToInsert);
-    console.log(`✅ ${parsedQuantity} orders inserted.`);
-
-    req.flash('success', `${parsedQuantity} orders created successfully.`);
+    req.flash('success', `Orders placed successfully.`);
     res.redirect(`/buyer/manage-orders/${req.params.buyerId}`);
 
   } catch (error) {
-    console.error('❌ Order creation failed:', error);
+    console.error('❌ Bulk order creation failed:', error);
     res.status(500).render('error/500', { msg: 'Unable to create orders at this time.' });
   }
 };

@@ -23,22 +23,34 @@
 <% } %>
 
   <div class="container py-5">
+          <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
     <h2 class="mb-4">🚚 Out for Delivery</h2>
    
     <div id="delivery-list">
       <% deliveries.forEach(function(delivery) { %>
-        <div class="card p-3 mb-3">
-          <div class="card-body">
-            <h5><strong>Device:</strong> <%= delivery.brand %> - <%= delivery.deviceName %>, <%= delivery.variant %>, <%= delivery.color %></h5>
-            <p><strong>Customer Name:</strong> <%= delivery.outForDelivery?.name || 'N/A' %></p>
-            <p><strong>Tracking:</strong> <%= delivery.outForDelivery?.tracking || 'N/A' %></p>
-            <p><strong>Pincode:</strong> <%= delivery.outForDelivery?.pincode || 'N/A' %></p>
-            <p><strong>OTP:</strong> <%= delivery.outForDelivery?.otp || 'N/A' %></p>
-            <p><strong>Mobile Last 4:</strong> <%= delivery.outForDelivery?.last4Digit || 'N/A' %></p>
-            <p><strong>Status:</strong> <%= delivery.outForDelivery?.status || delivery.status || 'N/A' %></p>
-          </div>
-        </div>
-      <% }) %>
+  <div class="card p-3 mb-4 position-relative">
+    <!-- 🎀 Status Ribbon -->
+    <% let status = delivery.outForDelivery?.status || delivery.status || 'N/A'; %>
+    <% if (status) { %>
+      <div class="status-ribbon <%= status.toLowerCase() %>">
+        <% if (status === 'Delivered') { %> ✅ Delivered <% } %>
+        <% if (status === 'Pending') { %> ⏳ Pending <% } %>
+        <% if (status === 'Canceled') { %> ❌ Canceled <% } %>
+      </div>
+    <% } %>
+
+    <div class="card-body">
+      <h5><strong>Device:</strong> <%= delivery.brand %> - <%= delivery.deviceName %>, <%= delivery.variant %>, <%= delivery.color %></h5>
+      <p><strong>Customer Name:</strong> <%= delivery.outForDelivery?.name || 'N/A' %></p>
+      <p><strong>Tracking:</strong> <%= delivery.outForDelivery?.tracking || 'N/A' %></p>
+      <p><strong>Pincode:</strong> <%= delivery.outForDelivery?.pincode || 'N/A' %></p>
+      <p><strong>OTP:</strong> <%= delivery.outForDelivery?.otp || 'N/A' %></p>
+      <p><strong>Mobile Last 4:</strong> <%= delivery.outForDelivery?.last4Digit || 'N/A' %></p>
+      <p><strong>Status:</strong> <%= status %></p>
+    </div>
+  </div>
+<% }) %>
+
     </div>
 
     <button class="out-btn" id="toggleExpandBtn">+ Out for Delivery</button>

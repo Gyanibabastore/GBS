@@ -4,16 +4,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-pending-btn");
   const pendingSection = document.getElementById("pending-orders");
 
-  toggleBtn?.addEventListener("click", () => {
-    if (!pendingSection) {
-      alert("❌ Pending section not found");
-      return;
-    }
-    const isHidden = pendingSection.style.display === "none";
-    pendingSection.style.display = isHidden ? "block" : "none";
-    toggleBtn.textContent = isHidden ? "Hide Pending Orders" : "Show Pending Orders";
-    console.log("🔄 Toggled Pending Orders section");
-  });
+toggleBtn?.addEventListener("click", () => {
+  if (!pendingSection) {
+    alert("❌ Pending section not found");
+    return;
+  }
+
+  const isHidden = pendingSection.style.display === "none";
+  pendingSection.style.display = isHidden ? "block" : "none";
+  toggleBtn.textContent = isHidden ? "Hide Pending Orders" : "Show Pending Orders";
+
+  if (isHidden) {
+    // 🕒 Delay scroll so DOM has time to render the section
+    setTimeout(() => {
+      pendingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  console.log("🔄 Toggled Pending Orders section");
+});
+
+
 
   const increaseButtons = document.querySelectorAll(".qty-increase");
   const decreaseButtons = document.querySelectorAll(".qty-decrease");
@@ -69,4 +80,25 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("🔁 Submitting order for index:", index);
     });
   });
+});
+
+const showMoreBtn = document.getElementById("show-more-btn");
+let currentVisible = 8;
+
+showMoreBtn?.addEventListener("click", () => {
+  const cards = document.querySelectorAll(".pending-order-card");
+  const total = cards.length;
+  const nextVisible = Math.min(currentVisible + 8, total);
+
+  for (let i = currentVisible; i < nextVisible; i++) {
+    cards[i].style.display = "block";
+  }
+
+  currentVisible = nextVisible;
+
+  if (currentVisible >= total) {
+    showMoreBtn.style.display = "none";
+  }
+
+  console.log(`📦 Showed up to ${currentVisible} cards`);
 });

@@ -22,8 +22,8 @@
 
     <!-- Delivery Cards -->
     <% deliveries.forEach(function(delivery, index) { %>
-      <div 
-  class="delivery-card p-3 border rounded mb-3 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
+     <div 
+  class="delivery-card mb-4 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
   data-id="<%= delivery.id %>" 
   data-buyer="<%= delivery.buyer %>" 
   data-tracking="<%= delivery.trackingId %>" 
@@ -34,21 +34,27 @@
   data-pincode="<%= delivery.pincode %>"
 >
 
-        <h5>Buyer: <%= delivery.buyer %></h5>
-        <p class="mb-1"><strong>Brand:</strong> <%= delivery.brand %></p>
-        <p class="mb-1"><strong>Model:</strong> <%= delivery.model %></p>
-        <p class="mb-1"><strong>Variant:</strong> <%= delivery.variant %></p>
-        <p class="mb-1"><strong>Color:</strong> <%= delivery.color %></p>
-        <p class="mb-1"><strong>Pincode:</strong> <%= delivery.pincode %></p>
-        <p class="mb-1"><strong>Tracking ID:</strong> <%= delivery.trackingId %></p>
-        <p class="mb-1"><strong>Mobile:</strong> <%= delivery.mobile %></p>
-        <p class="mb-2"><strong>OTP:</strong> <%= delivery.otp %></p>
+  <!-- 🔖 Status Badge -->
+  <span class="badge-status <%= delivery.delivered ? 'badge-delivered' : 'badge-pending' %>">
+    <%= delivery.delivered ? 'Delivered' : 'Pending' %>
+  </span>
 
-        <div class="form-check form-switch">
-          <input class="form-check-input delivery-toggle" type="checkbox" id="deliverySwitch<%= index %>" <%= delivery.delivered ? 'checked disabled' : '' %>>
-          <label class="form-check-label" for="deliverySwitch<%= index %>">Delivered</label>
-        </div>
-      </div>
+  <h5>👤 Buyer: <%= delivery.buyer %></h5>
+  <p><strong>📱 Brand:</strong> <%= delivery.brand %></p>
+  <p><strong>📦 Model:</strong> <%= delivery.model %></p>
+  <p><strong>🔢 Variant:</strong> <%= delivery.variant %></p>
+  <p><strong>🎨 Color:</strong> <%= delivery.color %></p>
+  <p><strong>📍 Pincode:</strong> <%= delivery.pincode %></p>
+  <p><strong>🚚 Tracking ID:</strong> <%= delivery.trackingId %></p>
+  <p><strong>📞 Mobile:</strong> <%= delivery.mobile %></p>
+  <p><strong>🔐 OTP:</strong> <%= delivery.otp %></p>
+
+  <div class="form-check form-switch mt-3">
+    <input class="form-check-input delivery-toggle" type="checkbox" id="deliverySwitch<%= index %>" <%= delivery.delivered ? 'checked disabled' : '' %>>
+    <label class="form-check-label" for="deliverySwitch<%= index %>">Mark as Delivered</label>
+  </div>
+</div>
+
     <% }); %>
 
     <!-- Modal for verification -->

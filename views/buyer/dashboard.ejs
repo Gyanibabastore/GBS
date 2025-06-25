@@ -22,28 +22,32 @@
       <!-- Summary Section -->
       <div class="row section">
         <div class="col-md-3">
-          <a href="/buyer/<%= dashboardData._id %>/orders" class="card p-4 text-center text-decoration-none text-dark d-block">
+          <a href="/buyer/<%= dashboardData._id %>/orders" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="📦">
+
             <h5 class="card-title">📦 My Orders</h5>
             <p class="value"><%= dashboardData.deliveredOrdersCount.toLocaleString() %></p>
           </a>
         </div>
 
         <div class="col-md-3">
-          <a href="/buyer/payment-history "class="card p-4 text-center text-decoration-none text-dark d-block">
+          <a href="/buyer/payment-history" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="💳">
+
             <h5 class="card-title">📉 Due Payment</h5>
             <p class="value text-danger">₹<%= dashboardData.totalDue.toLocaleString() %></p>
           </a>
         </div>
 
         <div class="col-md-3">
-          <a href="/buyer/dashboard/<%= dashboardData._id %>" class="card p-4 text-center text-decoration-none text-dark d-block">
+          <a href="/buyer/dashboard/<%= dashboardData._id %>" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="💸">
+
             <h5 class="card-title">💰 My Earnings</h5>
             <p class="value text-success">₹<%= dashboardData.totalEarning.toLocaleString() %></p>
           </a>
         </div>
 
         <div class="col-md-3">
-          <a href="/buyer/out-for-delivery" class="card p-4 text-center text-decoration-none text-dark d-block">
+        <a href="/buyer/out-for-delivery" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="🚚">
+
             <h5 class="card-title">🚚 Out For Delivery</h5>
             <p class="value text-warning"><%= dashboardData.pendingOrdersCount.toLocaleString() %></p>
           </a>

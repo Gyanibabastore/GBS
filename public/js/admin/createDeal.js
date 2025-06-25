@@ -12,18 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectedCount = document.getElementById('selectedCount');
   const sendToAllInput = document.getElementById('sendToAllInput');
 
-  // quantity + unlimited logic
+  // ✅ Unlimited Quantity Handling
   const quantityInput = document.getElementById('quantity');
   const unlimitedCheckbox = document.getElementById('unlimitedCheckbox');
-
   if (unlimitedCheckbox && quantityInput) {
     unlimitedCheckbox.addEventListener('change', () => {
-      if (unlimitedCheckbox.checked) {
-        quantityInput.value = '';
-        quantityInput.disabled = true;
-      } else {
-        quantityInput.disabled = false;
-      }
+      quantityInput.disabled = unlimitedCheckbox.checked;
+      if (unlimitedCheckbox.checked) quantityInput.value = '';
     });
   }
 
@@ -39,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buyerModal.classList.remove('show');
     buyerModal.style.display = 'none';
   };
+
   closeBuyerModal.addEventListener('click', hideModal);
   cancelBuyerModal.addEventListener('click', hideModal);
   buyerModal.addEventListener('click', (e) => {
@@ -84,11 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   confirmBtn.addEventListener('click', () => {
-    console.log("🟢 Submit button clicked");
     document.querySelectorAll('.hidden-buyer-input').forEach(inp => inp.remove());
-
     sendToAllInput.value = isSelectAllActive ? 'true' : 'false';
-    console.log("✅ sendToAllInput set to:", sendToAllInput.value);
 
     if (!isSelectAllActive) {
       buyerInputs.forEach(input => {
@@ -99,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
           hiddenInput.value = input.value;
           hiddenInput.classList.add('hidden-buyer-input');
           dealForm.appendChild(hiddenInput);
-          console.log("📝 Appending buyer ID:", input.value);
         }
       });
     }
@@ -107,18 +99,62 @@ document.addEventListener('DOMContentLoaded', () => {
     dealForm.submit();
   });
 
-  // ✅ Toggle deal status switch
+  // ✅ Toggle Handling
   const toggleSwitches = document.querySelectorAll('.toggle-status');
   toggleSwitches.forEach(toggle => {
     toggle.addEventListener('change', async () => {
       const dealId = toggle.getAttribute('data-id');
+      const quantityAttr = toggle.getAttribute('data-quantity');
+      const quantity = quantityAttr === '-1' ? 'unlimited' : parseInt(quantityAttr);
+
+      if (toggle.checked && quantity !== 'unlimited' && quantity === 0) {
+        const qtyToAdd = prompt('⚠ Quantity is 0. Please enter quantity to enable this deal:');
+        const qtyNum = parseInt(qtyToAdd);
+        if (isNaN(qtyNum) || qtyNum <= 0) {
+          alert('❌ Invalid quantity entered. Deal not activated.');
+          toggle.checked = false;
+          return;
+        }
+
+        try {
+          const res = await fetch(`/admin/deals/toggle/${dealId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantityToAdd: qtyNum })
+          });
+          const data = await res.json();
+          if (data.success) {
+            toggle.nextElementSibling.innerText = '🟢 Active';
+            toggle.closest('.card-body').querySelector('.add-quantity-form')?.remove();
+            alert('✅ Quantity added and deal activated.');
+          } else {
+            alert(data.message || '❌ Failed to activate deal.');
+            toggle.checked = false;
+          }
+        } catch (err) {
+          console.error('❌ Toggle error:', err);
+          alert('Server error.');
+          toggle.checked = false;
+        }
+
+        return;
+      }
+
       try {
-        const res = await fetch(`/admin/deals/toggle/${dealId}`, { method: 'POST' });
+        const res = await fetch(`/admin/deals/toggle/${dealId}`, {
+          method: 'POST'
+        });
         const data = await res.json();
         if (data.success) {
-          toggle.nextElementSibling.innerText = data.newStatus === 'active' ? '🟢 Active' : '🔴 Inactive';
+  alert('✅ Quantity added and deal activated.');
+  location.reload(); // 🔄 Reload the page to reflect changes
+
+
+
+          
+          
         } else {
-          alert('Failed to update deal status.');
+          alert(data.message || '❌ Failed to update deal status.');
           toggle.checked = !toggle.checked;
         }
       } catch (err) {

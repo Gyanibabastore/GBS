@@ -60,3 +60,74 @@
 #barChart:hover {
   transform: scale(1.03);
 }
+/* Make chart containers responsive */
+@media (max-width: 768px) {
+  #soldPieChart,
+  #availablePieChart,
+  #barChart {
+    height: auto !important;
+    max-height: 220px !important;
+  }
+
+  .dashboard-title {
+    font-size: 1.5rem;
+  }
+
+  .card .card-title {
+    font-size: 1rem;
+  }
+
+  .card .card-text {
+    font-size: 1.1rem;
+  }
+
+  .download-btn {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    margin: 2px;
+  }
+
+  .row > [class*="col-md-6"],
+  .row > [class*="col-md-3"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .text-end.mb-3 {
+    text-align: center !important;
+  }
+
+  .text-end.mb-3 .btn {
+    margin-bottom: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+
+  input.form-control {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-title {
+    font-size: 1.2rem;
+  }
+
+  .logo {
+    height: 40px;
+  }
+}
+
+/* Make canvas inside card scale with card */
+.card canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 300px;
+}
+
+/* Ensure buttons stay within the view */
+.card-body .text-center {
+  flex-wrap: wrap;
+}

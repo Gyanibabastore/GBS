@@ -10,49 +10,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (statusFilter) {
     statusFilter.addEventListener("change", () => {
-      filterStatus(statusFilter.value);
+      filterOrders(searchBox.value);
     });
   }
 });
 
 function filterOrders(searchTerm) {
   const term = searchTerm.toLowerCase();
-  const cards = document.querySelectorAll("#orders-container .card");
+  const selectedStatus = document.getElementById("statusFilter").value;
+  const wrappers = document.querySelectorAll("#orders-container .order-card-wrapper");
 
-  cards.forEach(card => {
-    const model = card.getAttribute("data-model") || '';
-    const statusMatch = filterByStatus(card);
+  wrappers.forEach(wrapper => {
+    const model = wrapper.getAttribute("data-model") || '';
+    const status = wrapper.getAttribute("data-status") || '';
+
+    const statusMatch = status === selectedStatus;
     const searchMatch = model.includes(term);
 
     if (statusMatch && searchMatch) {
-      card.classList.remove("d-none");
+      wrapper.classList.remove("d-none");
     } else {
-      card.classList.add("d-none");
+      wrapper.classList.add("d-none");
     }
   });
-}
-
-function filterStatus(status) {
-  const cards = document.querySelectorAll("#orders-container .card");
-  const searchBox = document.getElementById("searchBox");
-  const searchTerm = searchBox.value.toLowerCase();
-
-  cards.forEach(card => {
-    const cardStatus = card.getAttribute("data-status") || '';
-    const model = card.getAttribute("data-model") || '';
-    const statusMatch = cardStatus === status;
-    const searchMatch = model.includes(searchTerm);
-
-    if (statusMatch && searchMatch) {
-      card.classList.remove("d-none");
-    } else {
-      card.classList.add("d-none");
-    }
-  });
-}
-
-function filterByStatus(card) {
-  const statusFilter = document.getElementById("statusFilter");
-  const selectedStatus = statusFilter.value;
-  return card.getAttribute("data-status") === selectedStatus;
 }

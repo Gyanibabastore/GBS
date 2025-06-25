@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (deal && availableCount === 0) {
         alert('❌ Cannot activate deal — Stock is 0');
-        toggle.checked = false; // revert switch visually
+        toggle.checked = false;
         return;
       }
 
@@ -40,7 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (res.ok) {
           console.log('✅ Server responded:', data.message);
-          window.location.reload();
+
+          // 👉 Optional: Show a toast
+          const toast = document.createElement('div');
+          toast.innerText = `✔️ ${data.message}`;
+          toast.className = 'deal-toast';
+          document.body.appendChild(toast);
+          setTimeout(() => toast.remove(), 3000);
+
+          // Optional: highlight card being updated
+          card.parentElement.classList.add('card-updated');
+          setTimeout(() => {
+            card.parentElement.classList.remove('card-updated');
+            window.location.reload();
+          }, 500);
         } else {
           console.error('❌ Server error:', data.error);
           alert(data.error || 'Toggle failed.');
@@ -49,11 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('❌ Fetch error:', err);
         alert('Toggle failed. Try again.');
       }
-      
     });
   });
-  
-  // Load More functionality
+
+  // ✅ Load More functionality
   const loadMoreBtn = document.getElementById('loadMoreBtn');
   const productCards = document.querySelectorAll('.product-card');
   let visibleCount = 6;
@@ -66,11 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     visibleCount += 6;
 
-    // Hide button if all are shown
     if (visibleCount >= productCards.length) {
       loadMoreBtn.style.display = 'none';
     }
   });
-
 });
-

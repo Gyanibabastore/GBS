@@ -1,45 +1,124 @@
-
-
-.form-container {
-  background: linear-gradient(to right, #e0f7fa, #ffffff);
-  padding: 30px 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 400px;
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  padding: 1rem;
   color: #333;
 }
 
-form label {
+/* Container */
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* Labels */
+label {
   display: block;
-  margin: 10px 0 5px;
-  color: #444;
+  margin-top: 1rem;
+  font-weight: 500;
 }
 
-form input,
-form select {
+/* Inputs, Selects */
+input[type="text"],
+input[type="number"],
+input[type="file"],
+select {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease;
 }
 
-button {
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Submit Button */
+button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background: #007BFF;
-  border: none;
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background-color: #28a745;
   color: white;
-  font-weight: bold;
-  border-radius: 5px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background: #0056b3;
+button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+/* Back Link Button */
+.btn-warning {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background-color: #ffc107;
+  color: #212529;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  button[type="submit"],
+  .btn-warning {
+    font-size: 0.95rem;
+    padding: 0.65rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    padding: 1rem;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select,
+  input[type="file"] {
+    font-size: 0.95rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
 }

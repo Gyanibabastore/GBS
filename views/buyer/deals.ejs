@@ -11,6 +11,8 @@
 
   <%- include('../partials/navbar') %> 
   <div class="container">
+      <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+
     <h2 class="mb-4 text-primary">🔥 Hot Deals</h2>
     <div class="row" id="deals-list">
       <% deals.forEach(function(deal) { 

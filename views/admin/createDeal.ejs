@@ -33,7 +33,7 @@
           <input type="text" class="form-control" id="color" name="color" required>
         </div>
       </div>
-     <div class="mb-3">
+      <div class="mb-3">
         <label for="buyLink" class="form-label">Buy Now Link</label>
         <input type="url" class="form-control" id="buyLink" name="buyLink" required>
       </div>
@@ -41,8 +41,6 @@
         <label for="modelImage" class="form-label">Model Image Link</label>
         <input type="url" class="form-control" id="modelImage" name="modelImage" required>
       </div>
-
-      
 
       <div class="row">
         <div class="col-md-4 mb-3">
@@ -57,7 +55,6 @@
           <label for="margin" class="form-label">Buyer Margin</label>
           <input type="number" class="form-control" id="margin" name="margin" min="0" required>
         </div>
-        
       </div>
 
       <div class="row">
@@ -69,23 +66,21 @@
           <label for="address" class="form-label">Address</label>
           <input type="text" class="form-control" id="address" name="address" required>
         </div>
-        
       </div>
 
       <div class="mb-3">
         <label for="cardWorking" class="form-label">Card Working</label>
         <input type="text" class="form-control" id="cardWorking" name="cardWorking" required>
-        <div class="col-md-4 mb-3">
-  <label for="quantity" class="form-label">Quantity</label>
-  <div class="input-group">
-    <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
-    <div class="input-group-text">
-      <input class="form-check-input mt-0" type="checkbox" id="unlimitedCheckbox">
-      <label class="ms-2" for="unlimitedCheckbox" style="font-size: 0.9rem;">Unlimited</label>
-    </div>
-  </div>
-</div>
-
+        <div class="col-md-4 mt-3">
+          <label for="quantity" class="form-label">Quantity</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="checkbox" id="unlimitedCheckbox">
+              <label class="ms-2" for="unlimitedCheckbox" style="font-size: 0.9rem;">Unlimited</label>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="form-check form-switch mb-4">
@@ -93,7 +88,6 @@
         <label class="form-check-label" for="status">Active</label>
       </div>
 
-      <!-- Button to trigger buyer modal -->
       <button type="button" class="btn btn-primary w-100" id="triggerBuyerModal">Create Deal</button>
     </form>
 
@@ -101,35 +95,55 @@
       <div class="mt-5">
         <h4 class="mb-4 text-center text-secondary">💼 All Deals</h4>
         <div class="row g-4">
-          <% deals.forEach(deal => { %>
-            <div class="col-md-4">
-              <div class="card shadow-sm">
-                <img src="<%= deal.imageUrl %>" class="card-img-top" alt="Image" style="height:200px; object-fit:cover;">
-                <div class="card-body">
-                  <h5 class="card-title"><%= deal.brand %> <%= deal.deviceName %> - <%= deal.variant %></h5>
-                  <p>Color: <%= deal.color %></p>
-                  <p>Booking: ₹<%= deal.bookingAmount %>, Return: ₹<%= deal.returnAmount %>, Margin: ₹<%= deal.margin %></p>
-                  <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary">🔗 Buy</a>
+         <% deals.forEach(deal => { %>
+  <div class="col-md-4">
+    <div class="card shadow deal-card border-0 rounded-4 h-100">
+      <div class="position-relative">
+        <img src="<%= deal.imageUrl %>" class="card-img-top rounded-top-4" alt="Image" style="height: 200px; object-fit: cover;">
+        <span class="badge position-absolute top-0 end-0 m-2 px-3 py-1 rounded-pill fw-bold fs-6 
+          <%= deal.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+          <%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %>
+        </span>
+      </div>
 
-                  <% if (deal.buyerIds && deal.buyerIds.length > 0) { %>
-                    <p class="mt-2 mb-1 text-muted fw-bold">👥 Sent To:</p>
-                    <ul class="ps-3 mb-2">
-                      <% deal.buyerIds.forEach(buyer => { %>
-                        <li style="font-size: 0.9rem;"><%= buyer.name %></li>
-                      <% }) %>
-                    </ul>
-                  <% } else { %>
-                    <p class="mt-2 text-muted">👥 Sent to all buyers</p>
-                  <% } %>
+      <div class="card-body px-3 pt-3">
+        <h5 class="card-title fw-bold mb-1"><%= deal.brand %> <%= deal.deviceName %> - <%= deal.variant %></h5>
+        <p class="mb-2 text-muted">Color: <strong><%= deal.color %></strong></p>
 
-                  <div class="form-check form-switch mt-3">
-                    <input class="form-check-input toggle-status" type="checkbox" data-id="<%= deal._id %>" <%= deal.status === 'active' ? 'checked' : '' %>>
-                    <label><%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %></label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% }) %>
+        <div class="d-flex justify-content-between text-center mb-3">
+          <div><small class="text-muted">Booking</small><br><span class="fw-semibold text-primary">₹<%= deal.bookingAmount %></span></div>
+          <div><small class="text-muted">Return</small><br><span class="fw-semibold text-success">₹<%= deal.returnAmount %></span></div>
+          <div><small class="text-muted">Margin</small><br><span class="fw-semibold text-danger">₹<%= deal.margin %></span></div>
+        </div>
+
+        <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary w-100 mb-2">🔗 Buy Now</a>
+
+        <% if (deal.buyerIds && deal.buyerIds.length > 0) { %>
+          <p class="mt-2 mb-1 text-muted fw-bold">👥 Sent To:</p>
+          <ul class="ps-3 mb-2 small">
+            <% deal.buyerIds.forEach(buyer => { %>
+              <li><%= buyer.name %></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="mt-2 mb-2 text-muted small">👥 Sent to <strong>All Buyers</strong></p>
+        <% } %>
+
+        <div class="form-check form-switch d-flex align-items-center justify-content-between mt-2">
+          <input 
+            class="form-check-input toggle-status" 
+            type="checkbox" 
+            data-id="<%= deal._id %>" 
+            data-quantity="<%= deal.quantity === 'unlimited' ? -1 : deal.quantity %>"
+            <%= deal.status === 'active' ? 'checked' : '' %>
+          >
+          <label class="form-check-label ms-2"><%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %></label>
+        </div>
+      </div>
+    </div>
+  </div>
+<% }) %>
+
         </div>
       </div>
     <% } %>
@@ -160,9 +174,7 @@
         </div>
 
         <div class="modal-footer">
-          <!-- ✅ Important hidden input added here -->
           <input type="hidden" id="sendToAllInput" name="sendToAll" value="false">
-
           <p id="selectedCount" class="text-muted mb-1">Selected: 0 buyers</p>
           <button type="button" class="btn btn-secondary" id="cancelBuyerModal">Cancel</button>
           <button type="button" class="btn btn-primary" id="confirmCreateDeal">Confirm & Create Deal</button>

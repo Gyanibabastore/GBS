@@ -1018,11 +1018,31 @@ exports.renderDealsPage = async (req, res) => {
 exports.toggleDealStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const deal = await Deal.findById(id);
+    const quantityToAdd = req.body?.quantityToAdd;
 
+    const deal = await Deal.findById(id);
     if (!deal) return res.status(404).json({ success: false, message: 'Deal not found' });
 
-    deal.status = deal.status === 'active' ? 'inactive' : 'active';
+    // Add quantity if passed
+    if (quantityToAdd !== undefined) {
+      const qty = parseInt(quantityToAdd);
+      if (isNaN(qty) || qty <= 0) {
+        return res.status(400).json({ success: false, message: 'Invalid quantity' });
+      }
+
+      if (deal.quantity === 'unlimited') {
+        return res.status(400).json({ success: false, message: 'Cannot add to unlimited quantity' });
+      }
+
+      deal.quantity = (deal.quantity || 0) + qty;
+    }
+
+    const isActivating = deal.status === 'inactive';
+    if (isActivating && deal.quantity !== 'unlimited' && (deal.quantity === 0 || deal.quantity === '0')) {
+      return res.status(400).json({ success: false, message: 'Cannot activate deal with 0 quantity' });
+    }
+
+    deal.status = isActivating ? 'active' : 'inactive';
     await deal.save();
 
     res.json({ success: true, newStatus: deal.status });
@@ -1031,6 +1051,8 @@ exports.toggleDealStatus = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
 
 
 

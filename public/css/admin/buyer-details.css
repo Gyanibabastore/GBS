@@ -1,44 +1,179 @@
+/* Base Reset & Font */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .overlay {
-      /* background-color: rgba(255, 255, 255, 0.95); */
-      min-height: 100vh;
-      padding: 30px;
-      border-radius: 10px;
-    }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
 
-    .buyer-info-card {
-      background: linear-gradient(135deg, #17a2b8, #00c9a7);
-      color: white;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    }
+h2, h5 {
+  font-weight: 600;
+}
 
-    .order-card {
-      background-color: #fdfdfd;
-      border-left: 6px solid #28a745;
-      transition: transform 0.3s ease;
-    }
+/* Main Layout */
+.overlay {
+  min-height: 100vh;
+  padding: 30px 15px;
+}
 
-    .order-card:hover {
-      transform: translateY(-5px);
-    }
+/* Back Button */
+.btn-outline-dark {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
 
-    .filter-bar {
-      margin-bottom: 20px;
-    }
+/* Buyer Info Card */
+.buyer-info-card {
+  background: linear-gradient(135deg, #17a2b8, #00c9a7);
+  color: white;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
 
-    .chart-container {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      margin: 0 auto;
-    }
+.buyer-info-card .card-body p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
 
-    canvas {
-      max-height: 300px;
-    }
+.buyer-info-card .card-body a {
+  color: #000;
+  text-decoration: underline;
+}
 
-    h2, h5 {
-      font-weight: 600;
-    }
+/* Stat Boxes Inside Info Card */
+.buyer-info-card .bg-white {
+  background: #fff !important;
+}
+
+/* Filter */
+.filter-bar {
+  margin-bottom: 20px;
+}
+
+.form-select {
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+/* Chart Cards */
+.card canvas {
+  max-height: 300px;
+  width: 100%;
+}
+
+.card h5 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Order Cards */
+.order-card {
+  background-color: #ffffff;
+  border-left: 6px solid #28a745;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+}
+
+.order-card img {
+  height: 200px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.order-card .card-body {
+  padding: 1rem;
+}
+
+.order-card .card-text {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+  .order-card img {
+    height: 180px;
+  }
+
+  .buyer-info-card .row > div {
+    margin-bottom: 1rem;
+  }
+
+  .chart-container,
+  .card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .form-label {
+    font-size: 0.95rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .buyer-info-card {
+    padding: 1rem;
+  }
+
+  .order-card .card-text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .overlay {
+    padding: 20px 10px;
+  }
+
+  .btn-outline-dark {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .form-select {
+    width: 100%;
+  }
+
+  .chart-container {
+    padding: 1rem;
+  }
+
+  .order-card img {
+    height: 150px;
+  }
+
+  .order-card .card-body {
+    padding: 0.75rem;
+  }
+
+  .order-card .card-title {
+    font-size: 1rem;
+  }
+}

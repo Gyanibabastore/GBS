@@ -1,32 +1,171 @@
-  
-    .overlay {
-     
-      min-height: 100vh;
-      padding: 30px;
-    }
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .table thead {
-      background-color: #343a40;
-      color: white;
-    }
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.6;
+}
 
-    canvas {
-      max-height: 300px;
-    }
+/* Overlay Container */
+.overlay {
+  padding: 30px;
+  min-height: 100vh;
+}
 
-    .total-summary {
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-      color: #ffc107;
-    }
+/* Headings */
+h2.text-center {
+  color: #343a40;
+  font-size: 1.75rem;
+}
 
-    .back-btn {
-      margin-bottom: 20px;
-    }
-  .text-center{
-      color:  #343a40;
-    }
+/* Labels */
+.form-label {
+  color: #343a40;
+  font-weight: 600;
+}
 
-    .form-label{
-      color:#343a40 ;
-    }
+/* Back Button */
+.btn-warning {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Reset Filter Button */
+#resetFilters {
+  padding: 0.55rem;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* Table Section */
+.table-responsive {
+  overflow-x: auto;
+  background-color: #212529;
+  border-radius: 12px;
+  padding: 10px;
+  margin-top: 1rem;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  color: white;
+}
+
+.table thead {
+  background-color: #343a40;
+  color: white;
+}
+
+.table td,
+.table th {
+  padding: 0.75rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.table tbody tr:hover {
+  background-color: #495057;
+  transition: background-color 0.3s ease;
+}
+
+/* Card and Chart Styles */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-body {
+  background-color: #ffffff;
+  padding: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  color: #343a40;
+  font-weight: 600;
+}
+
+/* Chart Canvas */
+canvas {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Download Buttons */
+.download-btn {
+  margin: 0 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  h2.text-center {
+    font-size: 1.5rem;
+  }
+
+  .btn-warning {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .download-btn {
+    margin: 5px 3px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 20px 10px;
+  }
+
+  h2.text-center {
+    font-size: 1.3rem;
+  }
+
+  .btn-warning {
+    width: 100%;
+    text-align: center;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .download-btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+}

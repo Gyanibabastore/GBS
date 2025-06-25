@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
   <link rel="stylesheet" href="/css/admin/buyers.css">
 </head>
 <body>
-  <!-- ✅ Admin Navbar Include -->
+  <!-- ✅ Admin Navbar -->
   <%- include('../partials/adminNavbar') %>
+
   <div class="overlay">
     <div class="container">
-     <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+      <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
       <h2 class="text-center mb-4">Buyers</h2>
 
-      <!-- Unified Search Box -->
+      <!-- Search -->
       <div class="mb-4">
         <input type="text" class="form-control" id="searchInput" placeholder="Search by Name or Mobile">
       </div>
 
       <!-- Buyer Cards -->
-      <div id="buyerList">
+      <div id="buyerList" class="row">
         <% buyers.forEach((buyer, index) => { %>
-          <div class="mb-3">
-            <div class="card buyer-card" style="border-left-color: <%= buyer.color %>;">
+          <div class="col-md-6 mb-3 buyer-card">
+            <div class="card shadow-sm">
               <div class="card-body">
                 <h5 class="card-title"><%= buyer.name %></h5>
                 <p class="card-text mb-1">Mobile: <%= buyer.mobile %></p>
@@ -36,7 +37,6 @@
     </div>
   </div>
 
-  <!-- External JS only -->
   <script src="/js/admin/buyers.js"></script>
 </body>
 </html>
