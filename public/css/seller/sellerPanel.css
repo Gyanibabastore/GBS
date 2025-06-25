@@ -27,3 +27,43 @@
   font-size: 0.95rem;
   margin-top: 5px;
 }
+
+
+.btn-out-of-stock {
+  background-color: #d6d6d6;
+  color: #888;
+  pointer-events: none;
+  border: 1px solid #ccc;
+}
+.model-card {
+  border-radius: 15px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.model-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.text-success {
+  font-weight: 500;
+}
+
+.small {
+  font-size: 0.85rem;
+}
+.alert-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+}
+.text-danger.fw-bold {
+  font-size: 1.5rem;
+}

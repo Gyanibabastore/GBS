@@ -9,11 +9,23 @@
   <%- include('../partials/adminNavbar') %>
   <div class="container">
     <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
-    <h2 class="mb-4 text-success">💰 Payment Received from Seller - <%= seller.name %></h2>
+    <h2 class="mb-4 text-success">💰 Payment Received from- <%= seller.name %></h2>
 
+    <!-- Seller Info -->
+<div class="mb-4">
+      <h5>Seller Information</h5>
+      <p>
+        Name: <strong><%= seller.name %></strong><br>
+        Mobile: <strong><%= seller.mobile %></strong><br>
+        Email: <strong><%= seller.email %></strong><br>
+        UPI ID: <strong><%= seller.upi %></strong>
+      </p>
+    </div>
 
     <div class="mb-4 text-end">
-  
+          <!-- Seller Info -->
+
+
 </div>
     <!-- Summary -->
     <div class="row mb-4">
@@ -31,35 +43,27 @@
       </div>
     </div>
 
-    <!-- Seller Info -->
-    <div class="mb-4">
-      <h5>Seller Information</h5>
-      <p>
-        Name: <strong><%= seller.name %></strong><br>
-        Mobile: <strong><%= seller.mobile %></strong><br>
-        Email: <strong><%= seller.email %></strong><br>
-        UPI ID: <strong><%= seller.upi %></strong>
-      </p>
-    </div>
 
     <!-- Payment Transactions -->
     <div class="row g-4">
-      <% payments.forEach((txn, index) => { %>
-        <div class="col-md-6">
-          <div class="card p-3">
-            <img src="<%= txn.proof %>" class="transaction-img mb-3" alt="Proof">
-            <div class="card-body">
-              <h5 class="card-title">Transaction <%= index + 1 %></h5>
-              <p class="card-text">
-                Amount: ₹<%= txn.amount.toLocaleString() %><br>
-                Mode: <%= txn.mode %><br>
-                Date: <%= txn.date %>
-              </p>
-            </div>
-          </div>
+  <% payments.forEach((txn, index) => { %>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <img src="<%= txn.image %>" class="card-img-top transaction-img rounded-top" alt="Proof" style="object-fit: cover; height: 180px;">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold text-primary mb-3">Payment <%= index + 1 %></h5>
+          <ul class="list-unstyled mb-0">
+            <li><strong>Name:</strong> <%= txn.receivedFromName %></li>
+            <li><strong>Amount:</strong> ₹<%= txn.amount %></li>
+            <li><strong>Mode:</strong> <%= txn.mode %></li>
+            <li><strong>Date:</strong> <%= txn.date.toISOString().split('T')[0] %></li>
+          </ul>
         </div>
-      <% }) %>
+      </div>
     </div>
+  <% }); %>
+</div>
+
   </div>
   <script src="/js/admin/seller-payment.js"></script>
 </body>

@@ -36,7 +36,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI, // ✅ Ensure this is set in Render
-    ttl: 24 * 60 * 60
+    ttl: 24 * 60 * 60*1000*7
   })
 }));
 
@@ -95,7 +95,7 @@ app.use((req, res, next) => {
 
 // -------------------- FILE UPLOAD --------------------
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'public/uploads'),
+  destination: (req, file, cb) => cb(null, 'public/images'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 const upload = multer({ storage });

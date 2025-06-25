@@ -362,7 +362,7 @@ exports.updateBuyerOrder = async (req, res) => {
     console.log(`✅ ${parsedQuantity} orders inserted.`);
 
     req.flash('success', `${parsedQuantity} orders created successfully.`);
-    res.redirect(`/buyer/${req.params.buyerId}/orders`);
+    res.redirect(`/buyer/manage-orders/${req.params.buyerId}`);
 
   } catch (error) {
     console.error('❌ Order creation failed:', error);
@@ -374,12 +374,13 @@ exports.updateBuyerOrder = async (req, res) => {
 
 exports.getOutForDelivery = async (req, res) => {
   try {
-    console.log("hiii");
+    
+
     const buyerId = req.user.id;
     const buyer = await Buyer.findById(buyerId).lean();
     const orders = await Order.find({ buyerId, status: 'out-for-delivery' }).lean();
 
-    // 🔽 Add this part if not already added
+    // 🔽 Get dropdown data from all deals
     const deals = await Deal.find({}).lean();
     const groupedData = {};
 
@@ -399,23 +400,32 @@ exports.getOutForDelivery = async (req, res) => {
       groupedData[deal.brand].pincodes.add(deal.pincode);
     });
 
-    // Convert Sets to Arrays
+    // 🔁 Convert Sets to Arrays
     for (const brand in groupedData) {
       groupedData[brand].models = Array.from(groupedData[brand].models);
       groupedData[brand].variants = Array.from(groupedData[brand].variants);
       groupedData[brand].colors = Array.from(groupedData[brand].colors);
       groupedData[brand].pincodes = Array.from(groupedData[brand].pincodes);
     }
-console.log("RENDERING DROPDOWN DATA:", {
-  brands: Object.keys(groupedData),
-  dropdownMap: groupedData
-});
-    // ✅ Fix is here: Pass dropdownMap into render
+
+    console.log("RENDERING DROPDOWN DATA:", {
+      brands: Object.keys(groupedData),
+      dropdownMap: groupedData
+    });
+   console.log("🎯 Flash Success:", req.flash('success'));
+console.log("🎯 Flash Error:", req.flash('error'));
+
+    // ✅ Render with flash messages included
     res.render('buyer/ofd', {
       deliveries: orders,
       brands: Object.keys(groupedData),
-      dropdownMap: groupedData, // ✅ THIS IS MANDATORY
-      buyer
+      dropdownMap: groupedData,
+      buyer,
+      messages: {
+    success: req.flash('success'),
+    error: req.flash('error')
+  }
+      
     });
 
   } catch (err) {
@@ -423,7 +433,8 @@ console.log("RENDERING DROPDOWN DATA:", {
     res.status(500).render('error/500', { msg: 'Could not load deliveries' });
   }
 };
-// Post Out For Delivery Request
+
+
 // Out For Delivery - POST
 exports.postOutForDelivery = async (req, res) => {
   try {
@@ -443,12 +454,17 @@ exports.postOutForDelivery = async (req, res) => {
     });
 
     if (!order) {
-      req.flash('error', 'No matching pending order found');
+      req.flash('error', '❌ No matching pending order found');
       return res.status(404).redirect('/buyer/out-for-delivery');
     }
 
-    if (order.outForDelivery?.trackingId === trackingId) {
-      req.flash('error', 'This tracking ID is already used');
+    if (!trackingId || !otp || !mobileLast4 || !name) {
+      req.flash('error', '❌ Please fill all required fields');
+      return res.redirect('/buyer/out-for-delivery');
+    }
+
+    if (order.outForDelivery?.tracking === trackingId) {
+      req.flash('error', '❌ This tracking ID is already used');
       return res.redirect('/buyer/out-for-delivery');
     }
 
@@ -465,14 +481,16 @@ exports.postOutForDelivery = async (req, res) => {
     };
 
     await order.save();
-    req.flash('success', 'Order marked as out for delivery');
+    req.flash('success', '✅ Order marked as out for delivery');
     res.redirect('/buyer/out-for-delivery');
 
   } catch (err) {
     console.error('Post OFD Error:', err);
-    res.status(500).render('error/500', { msg: 'Something went wrong while updating order' });
+    req.flash('error', '❌ Something went wrong while updating order');
+    res.redirect('/buyer/out-for-delivery');
   }
 };
+
 // Get Deals Page
 exports.getDeals = async (req, res) => {
   try {
@@ -502,39 +520,51 @@ exports.getPaymentHistory = async (req, res) => {
     const { date } = req.query;
 
     const buyer = await Buyer.findById(buyerId);
-    if (!buyer) return res.status(404).render('error/404', { msg: 'Buyer not found' });
+    if (!buyer) {
+      return res.status(404).render('error/404', { msg: 'Buyer not found' });
+    }
 
-    let filter = {
+    // Base filter
+    const filter = {
       fromRole: 'admin',
       toRole: 'buyer',
       toId: buyerId
     };
 
+    let selectedDate = null;
+
     if (date) {
-      const selectedDate = new Date(date);
+      selectedDate = new Date(date + 'T00:00:00'); // ensure start of day
       const nextDay = new Date(selectedDate);
-      nextDay.setDate(selectedDate.getDate() + 1);
-      filter.date = { $gte: selectedDate, $lt: nextDay };
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      filter.date = {
+        $gte: selectedDate,
+        $lt: nextDay
+      };
+
+      console.log("🕵️‍♂️ Date filter applied:", filter.date);
+    } else {
+      console.log("ℹ️ No date filter applied");
     }
 
+    // Get payments
     const payments = await Payment.find(filter).sort({ date: -1 });
-    const totalEarning = await Payment.aggregate([
-      { $match: { ...filter } },
-      { $group: { _id: null, total: { $sum: "$amount" } } }
-    ]);
-    const sumEarnings = totalEarning[0]?.total || 0;
-    const totalDue = buyer.margin - sumEarnings;
+
+    // Use buyer's stored values
+    const totalEarning = buyer.totalEarning || 0;
+    const totalDue = buyer.dueAmount || 0;
 
     res.render('buyer/payment', {
       payments,
-      totalEarning: sumEarnings,
+      totalEarning,
       totalDue,
       selectedDate: date || '',
       buyer
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in getPaymentHistory:", err);
     res.status(500).render('error/500', { msg: 'Error loading payment history' });
   }
 };

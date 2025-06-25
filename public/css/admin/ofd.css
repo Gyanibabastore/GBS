@@ -27,3 +27,7 @@
       border-radius: 10px;
       margin-bottom: 30px;
     }
+body.modal-open {
+    overflow-y: auto !important;
+    padding-right: 0 !important;
+  }

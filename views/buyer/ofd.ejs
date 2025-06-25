@@ -10,10 +10,21 @@
 <body>
 
   <%- include('../partials/navbar') %>
+  <div id="flash-messages"
+     data-success="<%= success && success.length ? success[0] : '' %>"
+     data-error="<%= error && error.length ? error[0] : '' %>">
+</div>
+
+<% if (success && success.length) { %>
+  <div class="alert alert-success mt-2"><%= success[0] %></div>
+<% } %>
+<% if (error && error.length) { %>
+  <div class="alert alert-danger mt-2"><%= error[0] %></div>
+<% } %>
 
   <div class="container py-5">
     <h2 class="mb-4">🚚 Out for Delivery</h2>
-
+   
     <div id="delivery-list">
       <% deliveries.forEach(function(delivery) { %>
         <div class="card p-3 mb-3">

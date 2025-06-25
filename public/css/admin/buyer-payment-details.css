@@ -47,4 +47,9 @@
       font-size: 0.95rem;
       color: #333;
     }
-  
+  .transaction-img {
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}

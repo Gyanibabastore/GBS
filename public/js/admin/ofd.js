@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const deliveryCards = document.querySelectorAll('.delivery-card');
   const verifyModalEl = document.getElementById('verifyModal');
-  const verifyModal = new bootstrap.Modal(verifyModalEl);
+  const verifyModal = new bootstrap.Modal(verifyModalEl, {
+  backdrop: 'static',
+  keyboard: false,
+  focus: false
+});
   const verifyBody = document.getElementById('verifyBody');
   const confirmBtn = document.getElementById('confirmDelivery');
 
@@ -22,12 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reset toggle to unchecked
       toggle.checked = false;
 
-      verifyBody.innerHTML = `
-        <p><strong>Buyer:</strong> ${card.getAttribute('data-buyer')}</p>
-        <p><strong>Tracking ID:</strong> ${card.getAttribute('data-tracking')}</p>
-        <p class="text-danger">Are you sure you want to mark this order as <strong>Delivered</strong>?</p>
-        <p class="text-warning">⚠️ This action is <strong>irreversible</strong>.</p>
-      `;
+     verifyBody.innerHTML = `
+  <p><strong>Name:</strong> ${card.getAttribute('data-buyer')}</p>
+    <p><strong>Tracking ID:</strong> ${card.getAttribute('data-tracking')}</p>
+  <p><strong>Model:</strong> ${card.getAttribute('data-brand')}&nbsp;${card.getAttribute('data-model')}&nbsp;${card.getAttribute('data-variant')}&nbsp;${card.getAttribute('data-color')}</p>
+  
+  <p><strong>Pincode:</strong> ${card.getAttribute('data-pincode')}</p>
+
+  <p class="text-danger">Are you sure you want to mark this order as <strong>Delivered</strong>?</p>
+  <p class="text-warning">⚠️ This action is <strong>irreversible</strong>.</p>
+`;
+card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+setTimeout(() => verifyModal.show(), 300); // Slight delay to allow scroll
+
       verifyModal.show();
     });
   });

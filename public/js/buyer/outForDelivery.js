@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // === Toggle Expand Form ===
   const toggleBtn = document.getElementById("toggleExpandBtn");
   const form = document.getElementById("expand-card");
 
@@ -46,4 +47,17 @@ document.addEventListener("DOMContentLoaded", () => {
       populateOptions(pincodeSelect, []);
     }
   });
+
+  // === Flash Message Alert (CSP-Safe) ===
+  const flashDiv = document.getElementById("flash-messages");
+  if (flashDiv) {
+    const errorMsg = flashDiv.dataset.error;
+    const successMsg = flashDiv.dataset.success;
+
+    if (errorMsg) {
+      alert(errorMsg);
+    } else if (successMsg) {
+      alert(successMsg);
+    }
+  }
 });

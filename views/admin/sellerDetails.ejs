@@ -39,7 +39,7 @@
                 <div class="col-sm-6 col-md-3">
                   <div class="bg-white text-dark p-3 rounded shadow-sm">
                     <h6>💰 Total Earnings</h6>
-                    <p class="mb-0 fw-bold">₹<%= seller.totalEarnings %></p>
+                    <p class="mb-0 fw-bold">₹<%= seller.earning %></p>
                   </div>
                 </div>
               </div>
@@ -104,8 +104,18 @@
 
           <% if (String(device.sellerId) === String(seller._id)) { %>
             <form method="POST" action="/admin/orders/mark-sold?sellerId=<%= seller._id %>">
-              <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmount %>" />
-              <button class="btn btn-sm btn-outline-primary w-100 mt-2">✅ Mark All as Sold</button>
+              <input type="hidden" name="brand" value="<%= device.brand %>">
+              <input type="hidden" name="deviceName" value="<%= device.name %>">
+              <input type="hidden" name="variant" value="<%= device.variant %>">
+              <input type="hidden" name="color" value="<%= device.color %>">
+              <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmount %>">
+
+              <div class="mb-2">
+                <label class="form-label">Quantity to Mark as Sold</label>
+                <input type="number" name="customCount" class="form-control" value="<%= device.count %>" min="1" max="<%= device.count %>" required>
+              </div>
+
+              <button type="submit" class="btn btn-sm btn-outline-primary w-100">✅ Mark as Sold</button>
             </form>
           <% } %>
         </div>
@@ -113,6 +123,7 @@
     </div>
   <% }) %>
 </div>
+
 
 <div class="row mt-5">
   <h4>🟢 Sold Devices</h4>

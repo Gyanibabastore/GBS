@@ -9,6 +9,7 @@
 </head>
 <body>
   <%- include('../partials/navbar') %> 
+
   <div class="container">
     <h2 class="mb-4">💰 Payment History</h2>
 
@@ -30,7 +31,7 @@
         type="date" 
         class="form-control w-auto" 
         onchange="filterByDate(this.value)"
-        value="<%= selectedDate ? selectedDate : '' %>"
+        value="<%= selectedDate ? new Date(selectedDate).toISOString().slice(0, 10) : '' %>"
       />
     </div>
 

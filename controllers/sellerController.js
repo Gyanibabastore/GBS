@@ -12,6 +12,8 @@ function groupOrders(orders) {
   const grouped = new Map();
 
   for (const order of orders) {
+    console.log("🧾 Order Brand:", order.brand);
+
     const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}`;
     const modelTitle = `${order.deviceName} (${order.variant})`;
     const price = order.bookingAmount || order.bookingAmountSeller || 0;
@@ -23,6 +25,7 @@ function groupOrders(orders) {
         color: order.color,
         quantity: 1,
         totalPrice: price,
+        sellerName: order.sellerName || "You", // 🆕 Include sellerName
         date: order.placedDate || order.deliveryDate || order.createdAt
       });
     } else {
@@ -38,6 +41,10 @@ function groupOrders(orders) {
 exports.getSellerDashboard = async (req, res) => {
   try {
     const sellerId = req.user.id;
+
+    const seller = await Seller.findById(sellerId).lean();
+    const dueAmount = seller?.advance || 0; // 💰 Get advance from seller schema
+
     const stockDeals = await Stock.find({ deal: true, availableCount: { $gt: 0 } });
     const modelMap = new Map();
 
@@ -51,6 +58,7 @@ exports.getSellerDashboard = async (req, res) => {
           brand: stock.brand,
           image: stock.imageUrl,
           color: stock.color,
+          buyerprice:stock.returnAmount,
           booking: stock.bookingAmountSeller,
           stock: stock.availableCount,
           lowStock: isLowStock
@@ -69,12 +77,13 @@ exports.getSellerDashboard = async (req, res) => {
 
     const pendingOrders = groupOrders(rawPending);
     const deliveredOrders = groupOrders(rawDelivered);
-
+    console.log(models);
     res.render('seller/dashboard', {
       sellerId,
       models,
       pendingOrders,
-      deliveredOrders
+      deliveredOrders,
+      dueAmount
     });
 
   } catch (err) {
@@ -83,8 +92,7 @@ exports.getSellerDashboard = async (req, res) => {
   }
 };
 
-// POST place seller orders
-// POST place seller orders
+
 exports.placeSellerOrder = async (req, res) => {
   try {
     const sellerId = req.user.id;
@@ -94,7 +102,11 @@ exports.placeSellerOrder = async (req, res) => {
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
+    console.log("🛒 Received Cart:", cart);
+
     const newOrders = [];
+    let totalBookingAmount = 0;
+    let totalMargin = 0;
 
     for (const item of cart) {
       const deviceName = item.title.split(' (')[0];
@@ -102,7 +114,25 @@ exports.placeSellerOrder = async (req, res) => {
       const quantity = item.quantity || 1;
       const color = item.color || '';
 
+      const booking = item.booking;
+      const buyerprice = item.buyerprice;
+
+      totalBookingAmount += booking * quantity;
+      totalMargin += (booking - buyerprice) * quantity;
+     console.log("margin",totalMargin)
       for (let i = 0; i < quantity; i++) {
+        const stock = await Stock.findOne({
+          brand: item.brand,
+          deviceName,
+          variant,
+          color
+        });
+
+        if (!stock || stock.availableCount <= 0) {
+          console.warn(`⚠️ Stock not available for ${item.brand} ${deviceName} ${variant} ${color}`);
+          continue;
+        }
+
         const order = await Order.create({
           sellerId,
           deviceName,
@@ -110,18 +140,39 @@ exports.placeSellerOrder = async (req, res) => {
           variant,
           color,
           imageUrl: item.image,
-          bookingAmount: item.booking,
+          bookingAmount: booking,
           placedDate: new Date(),
           status: 'out-for-delivery'
         });
+
+        stock.availableCount -= 1;
+        await stock.save();
 
         newOrders.push(order);
       }
     }
 
-    return res.status(200).json({ message: 'Orders placed successfully.' });
+    if (newOrders.length === 0) {
+      return res.status(400).json({ message: 'No valid orders could be placed due to stock limits.' });
+    }
+
+    // ✅ Update seller advance and earnings
+    await Seller.findByIdAndUpdate(
+      sellerId,
+      {
+        $inc: {
+          advance: totalBookingAmount,
+          earning: totalMargin
+        }
+      }
+    );
+
+    console.log(`💰 Added ₹${totalBookingAmount} to seller's advance`);
+    console.log(`📈 Added ₹${totalMargin} to seller's earning`);
+
+    return res.status(200).json({ message: 'Orders placed successfully.', count: newOrders.length });
   } catch (err) {
-    console.error('Order Placement Error:', err);
+    console.error('❌ Order Placement Error:', err);
     return res.status(500).json({ message: 'Server error. Failed to place orders.' });
   }
 };
@@ -144,20 +195,26 @@ exports.renderAddPayment = (req, res) => {
   });
 };
 
-// POST payment
 exports.postPayment = async (req, res) => {
   try {
-    const user = req.user;
-    const fromRole = user.role;
-    const fromId = user.id;
-
+    // ✅ Use values from the submitted form
     const {
+      fromRole,
+      fromId,
       toRole,
       toId,
       receivedFromName,
       amount,
       mode
     } = req.body;
+
+    console.log("🧾 Incoming Payment Form Data:");
+    console.log({ fromRole, fromId, toRole, toId, receivedFromName, amount, mode });
+
+    if (!req.file || !req.file.path) {
+      req.flash('error', 'Payment proof image is required.');
+      return res.redirect('back');
+    }
 
     if (fromRole === 'seller' && toRole !== 'admin') {
       req.flash('error', 'Seller can only send payment to admin.');
@@ -168,12 +225,7 @@ exports.postPayment = async (req, res) => {
       return res.redirect('back');
     }
 
-    if (!req.file || !req.file.path) {
-      req.flash('error', 'Payment proof image is required.');
-      return res.redirect('back');
-    }
-
-    const payment = new Payment({
+    const paymentData = {
       fromRole,
       fromId,
       toRole,
@@ -182,9 +234,14 @@ exports.postPayment = async (req, res) => {
       amount,
       mode,
       image: req.file.path
-    });
+    };
 
+    console.log("📦 Final Payment Data to be saved:");
+    console.log(paymentData);
+
+    const payment = new Payment(paymentData);
     await payment.save();
+
     const paymentAmount = parseInt(amount);
 
     if (fromRole === 'seller') {
@@ -204,7 +261,6 @@ exports.postPayment = async (req, res) => {
     }
 
     req.flash('success', 'Payment recorded successfully.');
-
     const redirectPath =
       toRole === 'admin'
         ? `/seller/dashboard/${fromId}`
@@ -215,3 +271,4 @@ exports.postPayment = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Failed to save payment.' });
   }
 };
+

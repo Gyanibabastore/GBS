@@ -39,3 +39,9 @@
       object-fit: cover;
       border-radius: 10px;
     }
+.transaction-img {
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}

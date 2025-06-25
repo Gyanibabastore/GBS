@@ -1,63 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <%- include('../partials/head', { title: "Payment Due - GBSTORE" }) %>
   <link rel="stylesheet" href="/css/admin/paymentdue.css">
 </head>
-
 <body>
-  <!-- ✅ Admin Navbar Include -->
   <%- include('../partials/adminNavbar') %>
-  <div class="container">
-         <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+  <div class="container py-4">
+    <a href="/admin/dashboard" class="btn btn-warning mb-3">⬅ Back to Dashboard</a>
 
     <h2 class="mb-4">💸 Payment Due Summary (Paid to Buyers)</h2>
 
-    <!-- Filter Section -->
-    <div class="row filter-section">
-      <div class="col-md-4 mb-3">
-        <label for="filterDate" class="form-label">Select Date</label>
-        <input type="date" class="form-control" id="filterDate" value="<%= filterDate || '' %>">
-      </div>
-      <div class="col-md-4 mb-3">
-        <label for="filterMonth" class="form-label">Select Month</label>
-        <select id="filterMonth" class="form-select">
-          <% months.forEach(month => { %>
-            <option value="<%= month %>" <%= month === filterMonth ? 'selected' : '' %>><%= month %></option>
-          <% }) %>
-        </select>
+    
+  <!-- Filter Form -->
+<div class="row">
+  <div class="col-md-4">
+    <label>Date:</label>
+    <input type="date" id="filterDate" class="form-control" value="<%= filterDate || '' %>">
+  </div>
+  <div class="col-md-4">
+    <label>Month:</label>
+    <select id="filterMonth" class="form-select">
+      <option value="">-- Select Month --</option>
+      <% months.forEach(month => { %>
+        <option value="<%= month %>" <%= month === filterMonth ? 'selected' : '' %>><%= month %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-4 d-flex align-items-end">
+    <button id="resetFilter" class="btn btn-danger w-100">Reset Filter</button>
+  </div>
+</div>
+
+
+    <!-- Total Due -->
+    <div class="card text-center my-4">
+      <div class="card-body">
+        <h5>Total Due</h5>
+        <h3 class="fw-bold text-success">₹<%= totalDue.toLocaleString() %></h3>
       </div>
     </div>
 
-    <!-- Summary Card -->
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card summary-card text-center">
-          <h5>Total Payment Due</h5>
-          <p class="display-6 fw-bold">₹<%= totalDue.toLocaleString() %></p>
-        </div>
-      </div>
+    <!-- Payments List -->
+   <div class="row g-4">
+  <% if (payments.length === 0) { %>
+    <div class="col-12">
+      <div class="alert alert-info text-center">No payments found for this filter.</div>
     </div>
-
-    <!-- Payment Cards -->
-    <div class="row g-4">
-      <% payments.forEach(payment => { %>
-        <div class="col-md-6">
-          <div class="card p-3">
-            <img src="<%= payment.proofImage || 'https://source.unsplash.com/400x200/?invoice,receipt' %>" class="transaction-img mb-3" alt="Proof" />
-            <div class="card-body">
-              <h5 class="card-title">Buyer: <%= payment.buyerName %></h5>
-              <p class="card-text">
-                💰 ₹<%= payment.amount.toLocaleString() %><br />
-                📅 <%= payment.date %><br />
-                💳 <%= payment.mode %><br />
-                📱 Reference: <%= payment.reference %>
-              </p>
-            </div>
+  <% } else { %>
+    <% payments.forEach(payment => { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+          <img src="<%= payment.proofImage %>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Proof Image">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title mb-2">👤 Buyer: <%= payment.buyer?.name || 'N/A' %></h5>
+            <p class="card-text mb-1">🧾 Paid By: <%= payment.receivedFromName %></p>
+            <p class="card-text mb-1">💰 Amount: ₹<%= payment.amount.toLocaleString() %></p>
+            <p class="card-text mb-1">💳 Mode: <%= payment.mode %></p>
+            <p class="card-text mb-1">📅 Date: <%= payment.date %></p>
           </div>
         </div>
-      <% }) %>
-    </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+
+    <!-- Optional debug -->
+    <!-- <pre><%= JSON.stringify(payments, null, 2) %></pre> -->
   </div>
 
   <script src="/js/admin/paymentdue.js"></script>

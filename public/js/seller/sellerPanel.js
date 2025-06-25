@@ -50,13 +50,22 @@ function addToCart(index) {
   );
 
   if (existing) {
+    if (existing.quantity >= model.stock) {
+      alert(`🚫 Only ${model.stock} item(s) available in stock.`);
+      return;
+    }
     existing.quantity += 1;
   } else {
+    if (model.stock < 1) {
+      alert("🚫 Out of stock.");
+      return;
+    }
     cart.push({
       _id: model._id,
       title: model.title,
       booking: model.booking,
       returnAmount: model.returnAmount,
+      buyerprice: model.buyerprice,
       color: model.color,
       brand: model.brand,
       image: model.image,
@@ -68,8 +77,18 @@ function addToCart(index) {
 }
 
 function changeQty(index, delta) {
-  cart[index].quantity += delta;
-  if (cart[index].quantity <= 0) cart.splice(index, 1);
+  const item = cart[index];
+  const model = models.find(m => m.title === item.title && m.color === item.color);
+  if (!model) return;
+
+  const newQty = item.quantity + delta;
+  if (newQty > model.stock) {
+    alert(`🚫 Cannot exceed stock limit (${model.stock}) for this item.`);
+    return;
+  }
+
+  item.quantity = newQty;
+  if (item.quantity <= 0) cart.splice(index, 1);
   renderCart();
 }
 
@@ -129,7 +148,7 @@ async function placeOrder() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json' // ✅ Ensures server sends JSON
+        'Accept': 'application/json'
       },
       body: JSON.stringify({ cart })
     });

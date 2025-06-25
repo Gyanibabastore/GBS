@@ -16,18 +16,24 @@
 
     <!-- Summary Count -->
     <div class="summary-bar d-flex justify-content-between mb-3">
-      <div><strong>Delivered:</strong> <span id="deliveredCount"><%= deliveredCount %></span></div>
+
       <div><strong>Pending:</strong> <span id="pendingCount"><%= pendingCount %></span></div>
     </div>
 
     <!-- Delivery Cards -->
     <% deliveries.forEach(function(delivery, index) { %>
       <div 
-        class="delivery-card p-3 border rounded mb-3 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
-        data-id="<%= delivery.id %>" 
-        data-buyer="<%= delivery.buyer %>" 
-        data-tracking="<%= delivery.trackingId %>"
-      >
+  class="delivery-card p-3 border rounded mb-3 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
+  data-id="<%= delivery.id %>" 
+  data-buyer="<%= delivery.buyer %>" 
+  data-tracking="<%= delivery.trackingId %>" 
+  data-brand="<%= delivery.brand %>"
+  data-model="<%= delivery.model %>"
+  data-variant="<%= delivery.variant %>"
+  data-color="<%= delivery.color %>"
+  data-pincode="<%= delivery.pincode %>"
+>
+
         <h5>Buyer: <%= delivery.buyer %></h5>
         <p class="mb-1"><strong>Brand:</strong> <%= delivery.brand %></p>
         <p class="mb-1"><strong>Model:</strong> <%= delivery.model %></p>

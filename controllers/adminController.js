@@ -357,108 +357,204 @@ exports.getAllSellers = async (req, res) => {
   }
 };
 
-// seller payments
 exports.getAllSellerPayments = async (req, res) => {
   try {
-    const { filterDate, filterMonth } = req.query;
+    const { filterDate, filterMonth, mode } = req.query;
+    console.log("📥 Seller Filters:", { filterDate, filterMonth });
 
-    const payments = await Payment.find({ role: 'Seller' }).populate('userId').lean();
+    // Always filter fromRole = seller
+    const paymentFilter = { fromRole: 'seller' };
 
-    const allPayments = payments.map(payment => ({
-      name: payment.userId?.name || 'N/A',
-      phone: payment.userId?.phone || 'N/A',
-      amount: payment.amount,
-      mode: payment.mode,
-      proofImg: payment.proofImage,
-      date: payment.date ? new Date(payment.date).toLocaleDateString() : 'N/A',
-    }));
-
-    let filtered = allPayments;
+    // Apply date filter
     if (filterDate) {
-      filtered = filtered.filter(p => p.date === new Date(filterDate).toLocaleDateString());
-    } else if (filterMonth) {
-      filtered = filtered.filter(p => {
-        const month = new Date(p.date).toLocaleString('default', { month: 'long', year: 'numeric' });
-        return month === filterMonth;
-      });
+      const start = new Date(filterDate);
+      start.setUTCHours(0, 0, 0, 0);
+      const end = new Date(filterDate);
+      end.setUTCHours(23, 59, 59, 999);
+      paymentFilter.date = { $gte: start, $lte: end };
+      console.log("📅 Date Filter:", start.toISOString(), '→', end.toISOString());
     }
 
-    const totalAdvance = filtered.reduce((acc, p) => acc + p.amount, 0);
-
-    const months = [...new Set(allPayments.map(p => new Date(p.date).toLocaleString('default', { month: 'long', year: 'numeric' })))]
-
-    res.render('admin/paymentRecived', {
-      payments: filtered,
-      totalAdvance,
-      filterDate,
-      filterMonth,
-      months
-    });
-  } catch (err) {
-    console.error('Error in getAllSellerPayments:', err);
-    req.flash('error', 'Failed to load seller payments');
-    res.status(500).render('error/500', { msg: 'Failed to load seller payments' });
-  }
-};
-
-// total payment due
-exports.getTotalPaymentDue = async (req, res) => {
-  try {
-    const { filterDate, filterMonth } = req.query;
-
-    const buyers = await Buyer.find().select('dueAmount').lean();
-    const totalDue = buyers.reduce((acc, buyer) => acc + (buyer.dueAmount || 0), 0);
-
-    let paymentFilter = { role: 'buyer' };
-
-    if (filterMonth) {
+    // Apply month filter
+    else if (filterMonth) {
       const [monthName, year] = filterMonth.split(' ');
       const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
       const start = new Date(year, monthIndex, 1);
       const end = new Date(year, monthIndex + 1, 1);
       paymentFilter.date = { $gte: start, $lt: end };
+      console.log("🗓️ Month Filter:", start.toISOString(), '→', end.toISOString());
     }
+
+    console.log("🔎 Final Seller Payment Filter:", paymentFilter);
+
+    // Get matching payments
+    const paymentDocs = await Payment.find(paymentFilter).sort({ date: -1 }).lean();
+    console.log("📄 Payments Found:", paymentDocs.length);
+
+    // Map payments and manually extract seller details from toId (or fromId if you use that)
+    const payments = await Promise.all(
+      paymentDocs.map(async (p) => {
+        let seller = null;
+
+        // Fetch seller if toId is ObjectId or populated
+        const sellerId = typeof p.toId === 'object' && p.toId._id ? p.toId._id : p.toId;
+
+        if (sellerId) {
+          seller = await Seller.findById(sellerId).lean();
+        }
+
+        return {
+          name: seller?.name || 'N/A',
+          phone: seller?.mobile || 'N/A',
+          amount: p.amount,
+          mode: p.mode,
+          proofImg: p.image,
+          date: p.date ? new Date(p.date).toLocaleDateString() : 'N/A',
+        };
+      })
+    );
+
+    // Get total advance from all sellers
+    const allSellers = await Seller.find().lean();
+    const totalAdvance = allSellers.reduce((sum, s) => sum + (s.advance || 0), 0);
+
+    // Month list
+    const allSellerPayments = await Payment.find({ fromRole: 'seller' }).select('date').lean();
+    const monthSet = new Set();
+    allSellerPayments.forEach(p => {
+      const d = new Date(p.date);
+      const monthYear = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+      monthSet.add(monthYear);
+    });
+    const months = Array.from(monthSet).sort((a, b) => new Date(`1 ${a}`) - new Date(`1 ${b}`));
+
+    // JSON response for AJAX
+    if (req.headers.accept === 'application/json' || mode === 'json') {
+      return res.json({ totalAdvance, payments });
+    }
+
+    // Render the page
+    res.render('admin/paymentRecived', {
+      payments,
+      totalAdvance,
+      filterDate,
+      filterMonth,
+      months,
+    });
+
+  } catch (err) {
+    console.error('❌ Error in getAllSellerPayments:', err);
+    res.status(500).render('error/500', { msg: 'Failed to load seller payments' });
+  }
+};
+
+
+
+exports.getTotalPaymentDue = async (req, res) => {
+  try {
+    const { filterDate, filterMonth, mode } = req.query;
+
+    console.log("🔍 Incoming Filters:", { filterDate, filterMonth });
+
+    // 1. Total Due Amount
+    const buyers = await Buyer.find().select('dueAmount').lean();
+    const totalDue = buyers.reduce((acc, b) => acc + (b.dueAmount || 0), 0);
+    console.log("💰 Total Due Amount:", totalDue);
+
+    // 2. Payment Filter
+    const paymentFilter = { fromRole: 'admin' };
 
     if (filterDate) {
       const start = new Date(filterDate);
-      const end = new Date(start);
-      end.setDate(end.getDate() + 1);
+      start.setUTCHours(0, 0, 0, 0); // Start of the day (UTC)
+      const end = new Date(filterDate);
+      end.setUTCHours(23, 59, 59, 999); // End of the day (UTC)
+      paymentFilter.date = { $gte: start, $lte: end };
+
+      console.log("📅 Filtering by date range:", start.toISOString(), '→', end.toISOString());
+    } else if (filterMonth) {
+      const [monthName, year] = filterMonth.split(' ');
+      const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+      const start = new Date(year, monthIndex, 1);
+      const end = new Date(year, monthIndex + 1, 1);
       paymentFilter.date = { $gte: start, $lt: end };
+
+      console.log("🗓️ Filtering by month range:", start.toISOString(), '→', end.toISOString());
     }
 
-    const paymentDocs = await Payment.find(paymentFilter).populate('buyerId', 'name').sort({ date: -1 }).lean();
+    console.log("🔎 Final Payment Filter:", paymentFilter);
 
-    const payments = paymentDocs.map(p => ({
-      buyerName: p.buyerId?.name || 'Unknown Buyer',
-      amount: p.amount || 0,
-      mode: p.mode || 'N/A',
-      date: p.date.toDateString(),
-      reference: p.reference || 'N/A',
-      proofImage: p.proofImage || ''
+    // 3. Get Filtered Payments
+    const paymentDocs = await Payment.find(paymentFilter).sort({ date: -1 }).lean();
+    console.log("🧾 Raw Payments Found:", paymentDocs.length);
+
+    const payments = await Promise.all(paymentDocs.map(async p => {
+      let buyer = null;
+      if (p.toRole === 'buyer') {
+        const buyerId = typeof p.toId === 'object' ? p.toId._id : p.toId;
+        if (buyerId) {
+          buyer = await Buyer.findById(buyerId).lean();
+        }
+      }
+
+      return {
+        _id: p._id.toString(),
+        fromRole: p.fromRole,
+        fromId: p.fromId,
+        toRole: p.toRole,
+        toId: p.toId,
+        receivedFromName: p.receivedFromName,
+        amount: p.amount,
+        mode: p.mode,
+        date: p.date ? p.date.toDateString() : 'N/A',
+        proofImage: p.image,
+        buyer: buyer ? {
+          name: buyer.name || 'N/A',
+          email: buyer.email || 'N/A',
+          mobile: buyer.mobile || 'N/A'
+        } : null
+      };
     }));
 
-    const allBuyerPayments = await Payment.find({ role: 'buyer' }).select('date').lean();
+    // 4. Build Filter Months
+    const allAdminPayments = await Payment.find({ fromRole: 'admin' }).select('date').lean();
     const monthSet = new Set();
-    allBuyerPayments.forEach(p => {
-      const date = new Date(p.date);
-      const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    allAdminPayments.forEach(p => {
+      const d = new Date(p.date);
+      const monthYear = d.toLocaleString('default', { month: 'long', year: 'numeric' });
       monthSet.add(monthYear);
     });
-    const months = Array.from(monthSet).sort((a, b) => new Date(a) - new Date(b));
 
+    const months = Array.from(monthSet).sort((a, b) => new Date(`1 ${a}`) - new Date(`1 ${b}`));
+
+    // ✅ Conditional Response
+    if (req.headers.accept === 'application/json' || mode === 'json') {
+      return res.json({ totalDue, payments });
+    }
+
+    // Render EJS page
     res.render('admin/paymentDue', {
-      payments,
       totalDue,
+      payments,
       months,
-      filterMonth,
-      filterDate
+      filterDate,
+      filterMonth
     });
+
   } catch (err) {
-    console.error('Error loading payment due page:', err);
-    req.flash('error', 'Failed to load due payments');
-    res.status(500).render('error/500', { msg: 'Failed to load due payments' });
+    console.error('❌ Error in getTotalPaymentDue:', err);
+    if (req.headers.accept === 'application/json') {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    res.status(500).render('error/500', { msg: 'Failed to load payments' });
   }
 };
+
+
+
+
+
+
 
 // out-for-delivery (OFD)
 exports.getAllDeliveries = async (req, res) => {
@@ -479,18 +575,19 @@ exports.getAllDeliveries = async (req, res) => {
       model: order.deviceName,
       variant: order.variant,
       color: order.color,
+      buyer:order.outForDelivery?.name,
       pincode: order.outForDelivery?.pincode || 'N/A',
       trackingId: order.outForDelivery?.tracking || 'N/A',
       otp: order.outForDelivery?.otp || 'N/A',
       delivered: order.outForDelivery?.status === 'delivered',
     }));
+   
 
-    const deliveredCount = deliveries.filter(d => d.delivered).length;
-    const pendingCount = deliveries.length - deliveredCount;
-
+    const pendingCount = deliveries.length ;
+   
     res.render('admin/ofd', {
       deliveries,
-      deliveredCount,
+      
       pendingCount
     });
   } catch (err) {
@@ -869,15 +966,15 @@ exports.getSellerPaymentDetails = async (req, res) => {
     const { sellerId } = req.params;
     const seller = await Seller.findById(sellerId);
     if (!seller) return res.status(404).render('error/404', { msg: 'Seller not found' });
-
+     console.log(sellerId);
     const payments = await Payment.find({
-      toId: sellerId,
-      role: 'Seller'
+      fromId: sellerId,
+      fromRole: 'seller'
     }).sort({ date: -1 });
 
     const totalReceived = payments.reduce((sum, txn) => sum + txn.amount, 0);
     const totalAdvance = seller.advance || 0;
-
+    console.log(payments);
     res.render('admin/seller-payment', {
       seller,
       totalReceived,
@@ -1062,7 +1159,7 @@ exports.postPayment = async (req, res) => {
   try {
     const user = req.user;
 
-    const fromRole = user.name.toLowerCase(); // ✅ Normalize
+    const fromRole = "admin"; // ✅ Normalize
     const fromId = user._id;
     const { toRole, toId, receivedFromName, amount, mode } = req.body;
     
@@ -1173,11 +1270,14 @@ exports.activateDeal = async (req, res) => {
   try {
     const { stockId, deal, bookingAmountSeller } = req.body;
 
-    // Validate input
     if (!stockId) return res.status(400).json({ error: 'Stock ID is required' });
 
     const stock = await Stock.findById(stockId);
     if (!stock) return res.status(404).json({ error: 'Stock not found' });
+
+    if (deal && stock.availableCount === 0) {
+      return res.status(400).json({ error: 'Cannot activate deal — Stock is zero.' });
+    }
 
     stock.deal = deal;
     stock.bookingAmountSeller = bookingAmountSeller;
@@ -1193,23 +1293,34 @@ exports.activateDeal = async (req, res) => {
 
 
 
-exports.updateOrdersToSold = async (req, res) => {
+
+exports.updateOrdersToSold = async (req, res) => { 
   try {
     const { sellerId } = req.query;
-    const { bookingAmountSeller } = req.body;
+    const { bookingAmountSeller, customCount, brand, deviceName, variant, color } = req.body;
 
-    if (!sellerId || !bookingAmountSeller) {
-      console.warn("❌ Missing sellerId or bookingAmountSeller");
-      return res.status(400).render('error/404', { msg: "Missing sellerId or bookingAmountSeller" });
+    if (!sellerId || !bookingAmountSeller || !customCount || !brand || !deviceName || !variant || !color) {
+      console.warn("❌ Missing required fields");
+      return res.status(400).render('error/404', { msg: "Missing required fields" });
     }
 
-    const orders = await Order.find({ sellerId, status: 'out-for-delivery' });
+    const limit = parseInt(customCount);
+    const bookingAmount = parseInt(bookingAmountSeller);
+
+    const orders = await Order.find({
+      sellerId,
+      status: 'out-for-delivery',
+      brand,
+      deviceName,
+      variant,
+      color
+    }).sort({ createdAt: 1 }).limit(limit);
+
     if (!orders.length) {
       console.warn("❌ No matching out-for-delivery orders for seller:", sellerId);
       return res.status(404).render('error/404', { msg: "No pending orders found for seller" });
     }
 
-    const bookingAmount = parseInt(bookingAmountSeller);
     let totalEarning = 0;
 
     for (const order of orders) {
@@ -1230,14 +1341,12 @@ exports.updateOrdersToSold = async (req, res) => {
       await order.save();
 
       if (stock) {
-        stock.availableCount = Math.max(0, stock.availableCount - 1);
         stock.soldCount += 1;
         stock.soldAt.push({ date: new Date(), orderId: order._id, sellerId });
         await stock.save();
       }
     }
 
-    // ✅ Only update earning (not advance)
     await Seller.findByIdAndUpdate(sellerId, {
       $inc: { earning: totalEarning }
     });
@@ -1251,6 +1360,7 @@ exports.updateOrdersToSold = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error updating orders to sold.' });
   }
 };
+
 
 
 

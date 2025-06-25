@@ -1,6 +1,6 @@
 const blockMap = new Map(); // key: ip+mac, value: { count, blockedUntil }
 
-const MAX_ATTEMPTS = 10;
+const MAX_ATTEMPTS = 20;
 const BLOCK_TIME = 30 * 60 * 1000; // 30 minutes
 
 module.exports = (req, res, next) => {
