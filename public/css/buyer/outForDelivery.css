@@ -1,44 +1,63 @@
+/* outForDelivery.css */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f7f9fc;
+}
+
 .container {
-  background-color: rgba(255, 255, 255, 0.2); /* transparent */
+  background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   padding: 30px;
   border-radius: 20px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  font-family: 'Poppins', sans-serif;
 }
 
-.card {
-  border-radius: 20px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  transition: transform 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.2); /* transparent */
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  font-family: 'Poppins', sans-serif;
+.delivery-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+  overflow: hidden;
 }
 
-.card:hover {
+.delivery-card:hover {
   transform: scale(1.02);
 }
 
+.status-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 8px 20px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  border-bottom-right-radius: 10px;
+  z-index: 10;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.status-ribbon.out {
+  background-color: #17a2b8;
+}
+
+.card-body p {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
 .expand-card {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  display: none;
-  /* Removed fixed positioning */
   width: 100%;
   max-width: 600px;
-  margin: 0 auto;
-  margin-top: 20px;
-  font-family: 'Poppins', sans-serif;
+  margin: 20px auto;
 }
-
 
 .expand-card input,
 .expand-card select {
@@ -59,44 +78,19 @@
   font-weight: bold;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   transition: background-color 0.3s;
-  font-family: 'Poppins', sans-serif;
 }
 
 .out-btn:hover {
   background-color: #c82333;
 }
 
-h2 {
-  color: #343a40;
-  font-weight: bold;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-  font-family: 'Poppins', sans-serif;
-}
-.status-ribbon {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  padding: 6px 14px;
-  font-size: 0.75rem;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
-  z-index: 1;
-  text-transform: uppercase;
-}
+@media (max-width: 768px) {
+  .delivery-card {
+    padding: 1rem;
+  }
 
-.status-ribbon.delivered {
-  background-color: #28a745;
-}
-
-.status-ribbon.pending {
-  background-color: #ffc107;
-  color: #000;
-}
-
-.status-ribbon.canceled {
-  background-color: #dc3545;
+  .status-ribbon {
+    font-size: 0.65rem;
+    padding: 6px 14px;
+  }
 }

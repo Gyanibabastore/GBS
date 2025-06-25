@@ -1,21 +1,10 @@
 const Order = require('../models/Order');
-
 const Buyer = require('../models/Buyer');
 const Seller = require('../models/Seller');
 const Payment = require('../models/Payment');
-
 const Deal = require('../models/Deal');
 const moment = require('moment');
-
 const sendWhatsApp = require('../utils/whatsapp');
-
-
-
-
-
-
-
-
 const Stock = require('../models/Stock'); // Adjust path as needed
 
 
