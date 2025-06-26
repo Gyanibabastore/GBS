@@ -163,3 +163,18 @@ button:disabled {
     width: 100%;
   }
 }
+.password-checklist {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: #dc3545; /* red by default */
+}
+.password-checklist span {
+  font-weight: bold;
+  margin-right: 5px;
+}
+.password-checklist .valid {
+  color: #28a745; /* green */
+}
+.password-checklist .invalid {
+  color: #dc3545; /* red */
+}

@@ -824,35 +824,44 @@ exports.getSellerDetails = async (req, res) => {
     }
 
     // Separate grouping for sold and out-for-delivery
-    const groupByStatus = (orders, status) => {
-      const map = new Map();
-      for (const order of orders.filter(o => o.status === status)) {
-        const key = `${order.brand}-${order.deviceName}-${order.variant}-${order.color}`;
-        if (!map.has(key)) {
-          map.set(key, {
-            name: order.deviceName || 'N/A',
-            variant: order.variant || 'N/A',
-            color: order.color || 'N/A',
-            brand: order.brand || 'Unknown',
-            bookingAmounts: [order.bookingAmount || 0],
-            image: order.imageUrl || '/images/default-phone.png',
-            borderColor: order.colorCode || '#007bff',
-            status: order.status,
-            orderDate: new Date(order.createdAt).toDateString(),
-            sellerId: order.sellerId,
-            count: 1
-          });
-        } else {
-          const existing = map.get(key);
-          existing.count += 1;
-          existing.bookingAmounts.push(order.bookingAmount || 0);
-        }
-      }
-      return Array.from(map.values()).map(device => ({
-        ...device,
-        bookingAmount: device.bookingAmounts.reduce((sum, amt) => sum + amt, 0)
-      }));
-    };
+   const groupByStatus = (orders, status) => {
+  const map = new Map();
+
+  for (const order of orders.filter(o => o.status === status)) {
+    const key = `${order.brand}-${order.deviceName}-${order.variant}-${order.color}`;
+
+    if (!map.has(key)) {
+      map.set(key, {
+        name: order.deviceName || 'N/A',
+        variant: order.variant || 'N/A',
+        color: order.color || 'N/A',
+        brand: order.brand || 'Unknown',
+        bookingAmounts: [order.bookingAmount || 0],
+        bookingAmountsBuyer: [order.bookingAmount || 0],
+        bookingAmountsSeller: [order.bookingAmountSeller || 0], // ✅ properly initialized
+        image: order.imageUrl || '/images/default-phone.png',
+        borderColor: order.colorCode || '#007bff',
+        status: order.status,
+        orderDate: new Date(order.createdAt).toDateString(),
+        sellerId: order.sellerId,
+        count: 1
+      });
+    } else {
+      const existing = map.get(key);
+      existing.count += 1;
+      existing.bookingAmounts.push(order.bookingAmount || 0);
+      existing.bookingAmountsBuyer.push(order.bookingAmount || 0);
+      existing.bookingAmountsSeller.push(order.bookingAmountSeller || 0); // ✅ safe push
+    }
+  }
+
+  return Array.from(map.values()).map(device => ({
+    ...device,
+    bookingAmount: (device.bookingAmounts || []).reduce((sum, amt) => sum + amt, 0),
+    bookingAmountSeller: (device.bookingAmountsSeller || []).reduce((sum, amt) => sum + amt, 0)
+  }));
+};
+
 
     const soldDevices = groupByStatus(allOrders, 'sold');
     const outForDeliveryDevices = groupByStatus(allOrders, 'out-for-delivery');
@@ -894,10 +903,11 @@ exports.getSellerDetails = async (req, res) => {
       barChartData
     });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).render('error/500', { msg: 'Error loading seller details.' });
-  }
+ } catch (err) {
+  console.error(err); // 🔍 Check what this says
+  res.status(500).render('error/500', { msg: 'Error loading seller details.' });
+}
+
 };
 
 
@@ -1306,17 +1316,22 @@ exports.activateDeal = async (req, res) => {
 
 
 exports.updateOrdersToSold = async (req, res) => { 
+  console.log("hiii you entered");
   try {
     const { sellerId } = req.query;
-    const { bookingAmountSeller, customCount, brand, deviceName, variant, color } = req.body;
+    const { bookingAmountSeller, customCount, brand, deviceName, variant, color, bookingAmountBuyer } = req.body;
 
-    if (!sellerId || !bookingAmountSeller || !customCount || !brand || !deviceName || !variant || !color) {
+    console.log("kart body", req.body);
+    console.log("sellerId", sellerId);
+
+    if (!sellerId || !bookingAmountSeller || !bookingAmountBuyer || !customCount || !brand || !deviceName || !variant || !color) {
       console.warn("❌ Missing required fields");
       return res.status(400).render('error/404', { msg: "Missing required fields" });
     }
 
     const limit = parseInt(customCount);
-    const bookingAmount = parseInt(bookingAmountSeller);
+    const bookingSellerAmt = parseInt(bookingAmountSeller);
+    const bookingBuyerAmt = parseInt(bookingAmountBuyer);
 
     const orders = await Order.find({
       sellerId,
@@ -1332,7 +1347,8 @@ exports.updateOrdersToSold = async (req, res) => {
       return res.status(404).render('error/404', { msg: "No pending orders found for seller" });
     }
 
-    let totalEarning = 0;
+    const marginPerUnit = bookingSellerAmt - bookingBuyerAmt;
+    const totalEarning = marginPerUnit * limit;
 
     for (const order of orders) {
       const stock = await Stock.findOne({
@@ -1342,13 +1358,9 @@ exports.updateOrdersToSold = async (req, res) => {
         color: order.color
       });
 
-      const returnAmt = stock?.returnAmount || 0;
-      const margin = bookingAmount - returnAmt;
-
-      totalEarning += margin;
       order.status = 'sold';
-      order.bookingAmountSeller = bookingAmount;
-      order.margin = margin;
+      order.bookingAmountSeller = bookingSellerAmt;
+      order.margin = marginPerUnit;
       await order.save();
 
       if (stock) {
@@ -1359,7 +1371,10 @@ exports.updateOrdersToSold = async (req, res) => {
     }
 
     await Seller.findByIdAndUpdate(sellerId, {
-      $inc: { earning: totalEarning }
+      $inc: {
+        earning: totalEarning,
+        advance: bookingSellerAmt * limit // ✅ Add total amount to advance
+      }
     });
 
     console.log(`✅ Total margin (earning) added for seller ${sellerId}: ₹${totalEarning}`);
@@ -1371,6 +1386,7 @@ exports.updateOrdersToSold = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Error updating orders to sold.' });
   }
 };
+
 
 
 

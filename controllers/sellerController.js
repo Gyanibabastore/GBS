@@ -117,9 +117,7 @@ exports.placeSellerOrder = async (req, res) => {
       const booking = item.booking;
       const buyerprice = item.buyerprice;
 
-      totalBookingAmount += booking * quantity;
-      totalMargin += (booking - buyerprice) * quantity;
-     console.log("margin",totalMargin)
+      
       for (let i = 0; i < quantity; i++) {
         const stock = await Stock.findOne({
           brand: item.brand,
@@ -140,9 +138,11 @@ exports.placeSellerOrder = async (req, res) => {
           variant,
           color,
           imageUrl: item.image,
-          bookingAmount: booking,
+          bookingAmount: buyerprice,
           placedDate: new Date(),
-          status: 'out-for-delivery'
+          status: 'out-for-delivery',
+          bookingAmountSeller:booking,
+          
         });
 
         stock.availableCount -= 1;

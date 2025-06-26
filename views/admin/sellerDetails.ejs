@@ -32,7 +32,7 @@
               <div class="row mt-4">
                 <div class="col-sm-6 col-md-3">
                   <div class="bg-white text-dark p-3 rounded shadow-sm">
-                    <h6>💸 Advance Amount</h6>
+                    <h6>💸 Due Amount</h6>
                     <a href="/admin/seller-payment/<%= seller._id %>"><p class="mb-0 fw-bold">₹<%= seller.advance %></p></a>
                   </div>
                 </div>
@@ -107,7 +107,10 @@
           </h5>
           <p class="card-text mb-1">📅 Order Date: <%= device.orderDate %></p>
           <p class="card-text mb-1">🧾 Variant: <%= device.variant %> | 🎨 Color: <%= device.color %></p>
-          <p class="card-text mb-1">💰 Booking Amount: ₹<%= device.bookingAmount %></p>
+          <p class="card-text mb-1">💰 Return Amount to buyer: ₹<%= device.bookingAmount %></p>
+          <p class="card-text mb-1">💰 Booking Amount to seller: ₹<%= device.bookingAmountSeller %></p>
+
+
           <p class="card-text fw-bold mb-2 text-warning">Status: Out for Delivery</p>
 
           <% if (String(device.sellerId) === String(seller._id)) { %>
@@ -116,7 +119,9 @@
               <input type="hidden" name="deviceName" value="<%= device.name %>">
               <input type="hidden" name="variant" value="<%= device.variant %>">
               <input type="hidden" name="color" value="<%= device.color %>">
-              <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmount %>">
+              <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmountSeller %>">
+              
+              <input type="hidden" name="bookingAmountBuyer" value="<%= device.bookingAmount %>">
 
               <div class="mb-2">
                 <label class="form-label">Quantity to Mark as Sold</label>

@@ -43,30 +43,32 @@
       </div>
 
       <!-- Dashboard Cards -->
-      <div class="row">
-        <% const cards = [
-          { title: "Total Orders", value: totalOrders, class: "primary", link: "/admin/orders" },
-          { title: "Sold Devices", value: soldStock, class: "success", link: "/admin/sold-devices" },
-          { title: "Available Stock", value: availableStock, class: "warning", link: "/admin/stock" },
-          { title: "Out For Delivery", value: outForDeliveryCount, class: "secondary", link: "/admin/ofd" },
-          { title: "Total Buyers", value: buyerCount, class: "info", link: "/admin/buyers" },
-          { title: "Total Sellers", value: sellerCount, class: "dark", link: "/admin/sellers" },
-          { title: "Total seller Due", value: `₹${totalOrderValue}`, class: "danger", link: "/admin/payments" },
-          { title: "Total Dues", value: `₹${totalDue}`, class: "danger", link: "/admin/dues" }
-        ]; %>
+  <div class="row flex-wrap">
+  <% const cards = [
+    { title: "Total Orders", value: totalOrders, class: "primary", link: "/admin/orders" },
+    { title: "Sold Devices", value: soldStock, class: "success", link: "/admin/sold-devices" },
+    { title: "Available Stock", value: availableStock, class: "warning", link: "/admin/stock" },
+    { title: "Out For Delivery", value: outForDeliveryCount, class: "secondary", link: "/admin/ofd" },
+    { title: "Total Buyers", value: buyerCount, class: "info", link: "/admin/buyers" },
+    { title: "Total Sellers", value: sellerCount, class: "dark", link: "/admin/sellers" },
+    { title: "Total seller Due", value: `₹${totalOrderValue}`, class: "success", link: "/admin/payments" },
+    { title: "Total Dues", value: `₹${totalDue}`, class: "danger", link: "/admin/dues" }
+  ]; %>
 
-        <% cards.forEach(card => { %>
-          <div class="col-md-3 mb-3">
-            <div class="card text-white bg-<%= card.class %> shadow position-relative">
-              <div class="card-body">
-                <h5 class="card-title"><%= card.title %></h5>
-                <p class="card-text fs-4"><%= card.value %></p>
-                <a href="<%= card.link %>" class="stretched-link"></a>
-              </div>
-            </div>
-          </div>
-        <% }) %>
+<% cards.forEach(card => { %>
+    <div class="col-6 col-md-3 mb-4 d-flex">
+      <div class="card card-stat bg-<%= card.class %> text-white w-100">
+        <div class="card-body">
+          <h5 class="card-title"><%= card.title %></h5>
+          <p class="card-text"><%= card.value %></p>
+          <a href="<%= card.link %>" class="stretched-link"></a>
+        </div>
       </div>
+    </div>
+  <% }) %>
+</div>
+
+
 
       <!-- Pie Charts -->
       <div class="row mt-5 justify-content-center">

@@ -87,11 +87,11 @@
     margin: 2px;
   }
 
-  .row > [class*="col-md-6"],
+  /* .row > [class*="col-md-6"],
   .row > [class*="col-md-3"] {
     flex: 0 0 100%;
     max-width: 100%;
-  }
+  } */
 
   .text-end.mb-3 {
     text-align: center !important;
@@ -131,3 +131,74 @@
 .card-body .text-center {
   flex-wrap: wrap;
 }
+/* Dashboard Stat Cards */
+.card-stat {
+  border-radius: 20px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Gradient Backgrounds */
+.bg-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+.bg-success {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+}
+.bg-warning {
+  background: linear-gradient(135deg, #ffc107, #d39e00);
+}
+.bg-secondary {
+  background: linear-gradient(135deg, #6c757d, #343a40);
+}
+.bg-info {
+  background: linear-gradient(135deg, #17a2b8, #117a8b);
+}
+.bg-dark {
+  background: linear-gradient(135deg, #343a40, #000);
+}
+.bg-danger {
+  background: linear-gradient(135deg, #dc3545, #a71d2a);
+}
+
+/* Text styles inside cards */
+.card-stat .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.card-stat .card-text {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+/* Responsive Grid Layout (Bootstrap handles most, but customizing spacing) */
+/* Responsive Grid Layout: Ensure at least 2 columns on small screens */
+@media (max-width: 1200px) {
+  .col-md-3 {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+}
+@media (max-width: 768px) {
+  .col-md-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+/* ✅ Minimum 2 columns even on extra small screens */
+@media (max-width: 576px) {
+  .col-md-3 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+

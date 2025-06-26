@@ -9,24 +9,47 @@
     <h2>Forgot Password</h2>
     <form id="forgotForm">
       <input type="email" id="email" placeholder="Email" required />
+
       <select id="role" required>
         <option value="">Select Role</option>
         <option value="buyer">Buyer</option>
         <option value="seller">Seller</option>
       </select>
+
       <button type="button" id="sendBtn">Send OTP</button>
-      <button type="button" id="resendBtn" disabled>Resend OTP (<span id="countdown">60</span>s)</button>
+      <button type="button" id="resendBtn" style="display:none;" disabled>
+        Resend OTP (<span id="countdown">60</span>s)
+      </button>
 
       <input type="text" id="otp" placeholder="Enter OTP" style="display:none;" />
       <button type="button" id="verifyBtn" style="display:none;">Verify OTP</button>
 
-      <input type="password" id="newPassword" placeholder="New Password" style="display:none;" />
-      <input type="password" id="confirmPassword" placeholder="Confirm Password" style="display:none;" />
-      <div class="password-check" id="passwordStrength"></div>
-      <button type="submit" id="resetBtn" style="display:none;">Reset Password</button>
+      <div class="password-wrapper" style="display:none;" id="passwordFields">
+        <div class="password-input">
+          <input type="password" id="newPassword" placeholder="New Password" />
+          <span class="toggle-eye" id="toggleNewPass">&#128065;</span>
+        </div>
+
+        <div class="password-input">
+          <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+          <span class="toggle-eye" id="toggleConfirmPass">&#128065;</span>
+        </div>
+
+        <div id="matchStatus"></div>
+
+        <div id="passwordRules" class="password-check">
+          <p id="rule-length">❌ At least 8 characters</p>
+          <p id="rule-upper">❌ At least one uppercase letter (A-Z)</p>
+          <p id="rule-lower">❌ At least one lowercase letter (a-z)</p>
+          <p id="rule-number">❌ At least one number (0-9)</p>
+          <p id="rule-special">❌ At least one special character (!@#$...)</p>
+        </div>
+
+        <button type="submit" id="resetBtn">Reset Password</button>
+      </div>
     </form>
 
-    <div id="loader">
+    <div id="loader" style="display:none;">
       <div class="spinner"></div>
       <p>Sending OTP...</p>
     </div>
