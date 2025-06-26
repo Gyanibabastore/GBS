@@ -6,29 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const cancelBuyerModal = document.getElementById('cancelBuyerModal');
   const buyerCheckboxes = document.querySelectorAll('.buyer-checkbox');
   const buyerInputs = document.querySelectorAll('.buyer-checkbox-input');
-<<<<<<< HEAD
   const buyerQtyInputs = document.querySelectorAll('.buyer-qty-input');
-=======
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
   const selectAllCheckbox = document.getElementById('selectAllBuyers');
   const searchInput = document.getElementById('buyerSearch');
   const confirmBtn = document.getElementById('confirmCreateDeal');
   const selectedCount = document.getElementById('selectedCount');
   const sendToAllInput = document.getElementById('sendToAllInput');
-<<<<<<< HEAD
 const selectAllQtyInput = document.getElementById('selectAllQtyInput');
-=======
-
-  // ✅ Unlimited Quantity Handling
-  const quantityInput = document.getElementById('quantity');
-  const unlimitedCheckbox = document.getElementById('unlimitedCheckbox');
-  if (unlimitedCheckbox && quantityInput) {
-    unlimitedCheckbox.addEventListener('change', () => {
-      quantityInput.disabled = unlimitedCheckbox.checked;
-      if (unlimitedCheckbox.checked) quantityInput.value = '';
-    });
-  }
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
 
   let isSelectAllActive = false;
 
@@ -49,7 +33,6 @@ const selectAllQtyInput = document.getElementById('selectAllQtyInput');
     if (e.target === buyerModal) hideModal();
   });
 
-<<<<<<< HEAD
 selectAllCheckbox.addEventListener('change', () => {
   isSelectAllActive = selectAllCheckbox.checked;
   buyerInputs.forEach(input => input.checked = isSelectAllActive);
@@ -64,13 +47,6 @@ selectAllCheckbox.addEventListener('change', () => {
   updateSelectionUI();
 });
 
-=======
-  selectAllCheckbox.addEventListener('change', () => {
-    isSelectAllActive = selectAllCheckbox.checked;
-    buyerInputs.forEach(input => input.checked = isSelectAllActive);
-    updateSelectionUI();
-  });
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
 
   buyerInputs.forEach(input => {
     input.addEventListener('change', () => {
@@ -93,11 +69,7 @@ selectAllCheckbox.addEventListener('change', () => {
   function updateSelectionUI() {
     let count = 0;
     buyerCheckboxes.forEach(div => {
-<<<<<<< HEAD
       const input = div.querySelector('input[type="checkbox"]');
-=======
-      const input = div.querySelector('input');
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
       if (input.checked) {
         div.classList.add('selected');
         count++;
@@ -109,7 +81,6 @@ selectAllCheckbox.addEventListener('change', () => {
   }
 
   confirmBtn.addEventListener('click', () => {
-<<<<<<< HEAD
     // Clear previous hidden inputs
     document.querySelectorAll('.hidden-buyer-input').forEach(inp => inp.remove());
 
@@ -171,32 +142,13 @@ else {
 
         dealForm.appendChild(idInput);
         dealForm.appendChild(qtyInput);
-=======
-    document.querySelectorAll('.hidden-buyer-input').forEach(inp => inp.remove());
-    sendToAllInput.value = isSelectAllActive ? 'true' : 'false';
-
-    if (!isSelectAllActive) {
-      buyerInputs.forEach(input => {
-        if (input.checked) {
-          const hiddenInput = document.createElement('input');
-          hiddenInput.type = 'hidden';
-          hiddenInput.name = 'buyerIds';
-          hiddenInput.value = input.value;
-          hiddenInput.classList.add('hidden-buyer-input');
-          dealForm.appendChild(hiddenInput);
-        }
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
       });
     }
 
     dealForm.submit();
   });
 
-<<<<<<< HEAD
   // ✅ Toggle Handling for status switches
-=======
-  // ✅ Toggle Handling
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
   const toggleSwitches = document.querySelectorAll('.toggle-status');
   toggleSwitches.forEach(toggle => {
     toggle.addEventListener('change', async () => {
@@ -222,10 +174,6 @@ else {
           const data = await res.json();
           if (data.success) {
             toggle.nextElementSibling.innerText = '🟢 Active';
-<<<<<<< HEAD
-=======
-            toggle.closest('.card-body').querySelector('.add-quantity-form')?.remove();
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
             alert('✅ Quantity added and deal activated.');
           } else {
             alert(data.message || '❌ Failed to activate deal.');
@@ -246,18 +194,8 @@ else {
         });
         const data = await res.json();
         if (data.success) {
-<<<<<<< HEAD
           alert('✅ Status updated.');
           location.reload();
-=======
-  alert('✅ Quantity added and deal activated.');
-  location.reload(); // 🔄 Reload the page to reflect changes
-
-
-
-          
-          
->>>>>>> cd573ee12ea5d10772ada60cf09242d9dc9b026e
         } else {
           alert(data.message || '❌ Failed to update deal status.');
           toggle.checked = !toggle.checked;
