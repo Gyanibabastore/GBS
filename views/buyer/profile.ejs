@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/buyer/profile.css">
+</head>
+<body>
+  
+  <div class="container mt-5">
+    <div class="profile-heading"><%= buyer.name %></div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-user info-icon"></i><strong>Name:</strong> <%= buyer.name %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-envelope info-icon"></i><strong>Email:</strong> <%= buyer.email %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-phone info-icon"></i><strong>Mobile:</strong> <%= buyer.mobile %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-money-bill-wave info-icon"></i><strong>UPI:</strong> <%= buyer.upi %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-map-marker-alt info-icon"></i><strong>Address:</strong> <%= buyer.address %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-location-dot info-icon"></i><strong>Pincode:</strong> <%= buyer.pincode %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-coins info-icon"></i><strong>Due Amount:</strong> ₹<%= buyer.dueAmount %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-wallet info-icon"></i><strong>Total Earnings:</strong> ₹<%= buyer.totalEarning %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <p><i class="fa fa-calendar-check info-icon"></i><strong>Account Created At:</strong> <%= buyer.createdAt.toDateString() %></p>
+        </div>
+      </div>
+    </div>
+
+    <a href="/buyer/<%= buyer._id %>/profile/edit" class="edit-btn">
+      ✏️ Edit Profile
+    </a>
+  </div>
+
+  <script src="/js/buyer/profile.js"></script>
+</body>
+</html>

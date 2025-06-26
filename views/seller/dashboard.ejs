@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seller Panel - Gyanibaba Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/seller/sellerPanel.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container py-4">
+  <h2 class="text-primary mb-4">📦 Welcome - <%= name %> -(<%=shopname%>)</h2>
+  <div><a href="/seller/addpayment?sellerId=<%= sellerId%>" class="btn btn-primary">➕ Add Payment</a></div>
+  <hr>
+
+  
+
+  <!-- 🟡 Due Amount Card -->
+  <div class="alert alert-warning d-flex justify-content-between align-items-center px-4 py-3 rounded-3 shadow-sm mb-4">
+    <div>
+      <h5 class="mb-0">🧾 Your Due Amount</h5>
+    </div>
+    <div class="text-end">
+      <h4 class="mb-0 text-danger fw-bold">₹<%= dueAmount %></h4>
+    </div>
+  </div>
+
+  <!-- Search Box -->
+  <div class="mb-4">
+    <input type="text" class="form-control" placeholder="Search by model name..." id="search-box" />
+  </div>
+
+  <!-- Available Models -->
+  <div class="row" id="model-list">
+    <% models.forEach((model, index) => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card model-card h-100 position-relative">
+          <% if (model.discount && model.discount > 0) { %>
+            <div class="discount-badge">-<%= model.discount %>%</div>
+          <% } %>
+          <img src="<%= model.image %>" class="card-img-top" alt="<%= model.title %>" />
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title"><%= model.brand %> - <%= model.title %></h5>
+            <p>Color: <strong><%= model.color %></strong></p>
+            <p>Booking Price: ₹<%= model.booking %></p>
+            <% if (model.stock <= 2) { %>
+              <div class="alert alert-danger py-1 px-2 small fw-bold mb-2">
+                ⚠ Hurry up! Only <%= model.stock %> piece<%= model.stock === 1 ? '' : 's' %> left
+              </div>
+            <% } %>
+            <button
+              class="btn mt-auto w-100 add-to-cart-btn <%= model.stock === 0 ? 'btn-out-of-stock' : 'btn-primary' %>"
+              data-index="<%= index %>"
+              <%= model.stock === 0 ? 'disabled' : '' %>>
+              <%= model.stock === 0 ? 'Out of Stock' : 'Add to Cart' %>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Cart Section -->
+  <div class="mt-4 p-4 bg-light rounded shadow-sm">
+    <h5>🛒 Your Cart</h5>
+    <ul id="cart-list" class="list-group mb-3"></ul>
+    <p><strong>Total Amount:</strong> ₹<span id="total-amount">0</span></p>
+    <button class="btn btn-success" id="place-order-btn">Place Order</button>
+  </div>
+
+  <!-- Order Tabs -->
+  <div class="mt-5">
+    <ul class="nav nav-tabs order-tabs" id="orderTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">Pending Orders</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered" type="button" role="tab">Delivered Orders</button>
+      </li>
+    </ul>
+
+    <div class="tab-content pt-3">
+      <div class="row">
+        <% pendingOrders.forEach(order => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card model-card p-3">
+              <div class="card-body">
+                <h5 class="card-title text-primary mb-2">
+                  <%= order.brand %> - <%= order.modelTitle %>
+                </h5>
+                <p class="mb-1"><strong>Color:</strong> <%= order.color %></p>
+                <p class="mb-1"><strong>Quantity:</strong> <%= order.quantity %></p>
+                <p class="mb-1"><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                <p class="text-muted small"><%= new Date(order.date).toLocaleDateString() %></p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="tab-pane fade" id="delivered" role="tabpanel">
+        <div class="row" id="delivered-orders">
+          <% deliveredOrders.forEach((order, index) => { %>
+            <div class="col-md-6 mb-3 order-card delivered-order <%= index >= 5 ? 'd-none' : '' %>">
+              <div class="card shadow-sm border-success">
+                <div class="card-body">
+                  <h5 class="card-title text-success"><%= order.brand %> -<%= order.modelTitle %></h5>
+                  <p><strong>Quantity:</strong> <%= order.quantity %></p>
+                  <p><strong>Total Price:</strong> ₹<%= order.totalPrice %></p>
+                  <p><strong>Delivered Date:</strong> <%= new Date(order.date).toLocaleDateString() %></p>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+        <% if (deliveredOrders.length > 5) { %>
+          <div class="text-center mt-3">
+            <button class="btn btn-outline-success" id="showMoreDelivered">Show More</button>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script id="models-data" type="application/json"><%- JSON.stringify(models) %></script>
+<script src="/js/seller/sellerPanel.js"></script>
+</body>
+</html>

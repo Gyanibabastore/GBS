@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/buyers.css">
+</head>
+<body>
+  <!-- ✅ Admin Navbar -->
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="overlay">
+    <div class="container">
+      <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+      <h2 class="text-center mb-4">Buyers</h2>
+
+      <!-- Search -->
+      <div class="mb-4">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search by Name or Mobile">
+      </div>
+
+      <!-- Buyer Cards -->
+      <div id="buyerList" class="row">
+        <% buyers.forEach((buyer, index) => { %>
+       <div class="col-12 mb-3 buyer-card-container">
+             <div class="card buyer-card w-100">
+              <div class="card-body">
+                <h5 class="card-title"><%= buyer.name %></h5>
+                <p class="card-text mb-1">Mobile: <%= buyer.mobile %></p>
+                <p class="card-text mb-1">Email: <%= buyer.email %></p>
+                <p class="card-text">UPI: <%= buyer.upi %></p>
+                <a href="/admin/buyer-details/<%= buyer.id %>" class="btn btn-info btn-sm">View Details</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin/buyers.js"></script>
+</body>
+</html>

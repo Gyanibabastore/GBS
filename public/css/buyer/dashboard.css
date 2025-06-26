@@ -1,0 +1,160 @@
+/* 🔷 Glassmorphic Overlay */
+.overlay {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 2.5rem;
+  border-radius: 25px;
+  color: #111827;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 💠 Decorative Bubble */
+.overlay::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle at top left, #4f46e5 10%, transparent 60%);
+  top: -40px;
+  left: -40px;
+  z-index: 0;
+  opacity: 0.15;
+}
+
+/* ⏬ Section Margin */
+.section {
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ✨ Gradient Border Card */
+.card {
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 248, 255, 0.8));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+  padding: 1.8rem;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6, #9333ea);
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* 🏷️ Emoji Sticker (Individual per card) */
+.card[data-sticker]::after {
+  content: attr(data-sticker);
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 2rem;
+  opacity: 0.15;
+  transform: rotate(10deg);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
+}
+
+/* 📝 Card Content */
+.card-title {
+  font-weight: 700;
+  color: #4338ca;
+  font-size: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.value {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #1d4ed8;
+}
+
+.card p {
+  color: #374151;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* 🧠 Header */
+h2 {
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(135deg, #4f46e5, #2563eb);
+  padding: 1.2rem 2.5rem;
+  border-radius: 20px;
+  display: inline-block;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  font-size: 2.2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* 📱 Responsive Tweaks */
+@media (max-width: 768px) {
+  .row.section > div {
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .value {
+    font-size: 1.6rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .value {
+    font-size: 1.4rem;
+  }
+}
+
+/* 📌 Sticky Navbar */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+  height: 42px;
+  margin-right: 12px;
+}

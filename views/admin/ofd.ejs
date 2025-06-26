@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/ofd.css" />
+
+</head>
+
+<body>
+
+  <%- include('../partials/adminNavbar') %>
+  <div class="container py-4">
+         <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+
+    <h2 class="mb-4">📦 Out for Delivery</h2>
+
+    <!-- Summary Count -->
+    <div class="summary-bar d-flex justify-content-between mb-3">
+
+      <div><strong>Pending:</strong> <span id="pendingCount"><%= pendingCount %></span></div>
+    </div>
+
+    <!-- Delivery Cards -->
+    <% deliveries.forEach(function(delivery, index) { %>
+     <div 
+  class="delivery-card mb-4 <%= delivery.delivered ? 'disabled-card bg-light' : '' %>" 
+  data-id="<%= delivery.id %>" 
+  data-buyer="<%= delivery.buyer %>" 
+  data-tracking="<%= delivery.trackingId %>" 
+  data-brand="<%= delivery.brand %>"
+  data-model="<%= delivery.model %>"
+  data-variant="<%= delivery.variant %>"
+  data-color="<%= delivery.color %>"
+  data-pincode="<%= delivery.pincode %>"
+>
+
+  <!-- 🔖 Status Badge -->
+  <span class="badge-status <%= delivery.delivered ? 'badge-delivered' : 'badge-pending' %>">
+    <%= delivery.delivered ? 'Delivered' : 'Pending' %>
+  </span>
+
+  <h5>👤 Buyer: <%= delivery.buyer %></h5>
+  <p><strong>📱 Brand:</strong> <%= delivery.brand %></p>
+  <p><strong>📦 Model:</strong> <%= delivery.model %></p>
+  <p><strong>🔢 Variant:</strong> <%= delivery.variant %></p>
+  <p><strong>🎨 Color:</strong> <%= delivery.color %></p>
+  <p><strong>📍 Pincode:</strong> <%= delivery.pincode %></p>
+  <p><strong>🚚 Tracking ID:</strong> <%= delivery.trackingId %></p>
+  <p><strong>📞 Mobile:</strong> <%= delivery.mobile %></p>
+  <p><strong>🔐 OTP:</strong> <%= delivery.otp %></p>
+
+  <div class="form-check form-switch mt-3">
+    <input class="form-check-input delivery-toggle" type="checkbox" id="deliverySwitch<%= index %>" <%= delivery.delivered ? 'checked disabled' : '' %>>
+    <label class="form-check-label" for="deliverySwitch<%= index %>">Mark as Delivered</label>
+  </div>
+</div>
+
+    <% }); %>
+
+    <!-- Modal for verification -->
+    <div class="modal fade" id="verifyModal" tabindex="-1" aria-labelledby="verifyModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="verifyModalLabel">Verify Delivery</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="verifyBody">
+            <!-- Dynamic content inserted here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success" id="confirmDelivery">Yes, Delivered</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin/ofd.js"></script>
+</body>
+</html>

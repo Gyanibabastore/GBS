@@ -1,0 +1,101 @@
+/* outForDelivery.css */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f7f9fc;
+}
+
+.container {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.delivery-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+  overflow: hidden;
+}
+
+.delivery-card:hover {
+  transform: scale(1.02);
+}
+
+.status-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 8px 20px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  border-bottom-right-radius: 10px;
+  z-index: 10;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+}
+
+.status-ribbon.out {
+  background-color: #17a2b8;
+}
+
+.card-body p {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.expand-card {
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.expand-card input,
+.expand-card select {
+  margin-bottom: 10px;
+}
+
+.out-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: background-color 0.3s;
+}
+
+.out-btn:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 480px) {
+  .out-btn {
+    padding: 12px;
+    font-size: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .out-btn::before {
+    content: "+";
+    font-size: 20px;
+    color: white;
+  }
+}

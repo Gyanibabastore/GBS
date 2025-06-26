@@ -1,0 +1,193 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Light Theme Defaults */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.6;
+}
+
+.overlay {
+  padding: 30px;
+  min-height: 100vh;
+}
+
+h2.text-center {
+  color: #343a40;
+  font-size: 1.75rem;
+}
+
+.btn-warning {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+/* Table Container */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #212529;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+}
+
+.table thead {
+  background-color: #343a40;
+  color: white;
+}
+
+.table td,
+.table th {
+  padding: 0.75rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Chart Card */
+.card {
+  margin-top: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #ffc107;
+  font-weight: 600;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: #000;
+}
+
+.card-body {
+  background-color: #ffffff;
+  padding: 1rem;
+}
+
+canvas {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  h2.text-center {
+    font-size: 1.5rem;
+  }
+
+  .btn-warning {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+  .card-header {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 20px 10px;
+  }
+
+  h2.text-center {
+    font-size: 1.3rem;
+  }
+
+  .btn-warning {
+    width: 100%;
+    text-align: center;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+}
+
+/* 🌙 Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+
+  h2.text-center,
+  .card-header,
+  .table td,
+  .table th,
+  label {
+    color: #e0e0e0;
+  }
+
+  .table-responsive {
+    background-color: #1e1e1e;
+  }
+
+  .table thead {
+    background-color: #2c2c2c;
+  }
+
+  .card {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.05);
+  }
+
+  .card-header {
+    background-color: #ffca28;
+    color: #000;
+  }
+
+  .card-body {
+    background-color: #2b2b2b;
+  }
+
+  canvas {
+    background-color: #333;
+    color: #fff;
+  }
+
+  .btn-warning {
+    background-color: #ffca28;
+    color: #000;
+  }
+
+  .btn-warning:hover {
+    background-color: #fbc02d;
+  }
+}

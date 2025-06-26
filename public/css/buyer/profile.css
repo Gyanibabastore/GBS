@@ -1,0 +1,76 @@
+.profile-heading {
+  font-size: 2.7rem;
+  font-weight: 800;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  color: #2c3e50;
+  text-transform: uppercase;
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+}
+
+.profile-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: #2980b9;
+  border-radius: 2px;
+}
+
+.info-card {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-left: 6px solid #3498db;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.info-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.info-card p {
+  font-size: 1.1rem;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.info-card p strong {
+  color: #1e272e;
+  font-family: 'Poppins', sans-serif;
+}
+
+.edit-btn {
+  display: block;
+  width: fit-content;
+  margin: 2.5rem auto 0;
+  padding: 0.7rem 1.6rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #27ae60;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.edit-btn:hover {
+  background-color: #1e8449;
+  transform: scale(1.05);
+}
+
+.info-icon {
+  margin-right: 8px;
+  color: #2980b9;
+}

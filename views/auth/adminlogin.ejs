@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <<%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/auth/adminlogin.css">
+</head>
+<body>
+   
+  <div class="login-wrapper">
+    <div class="logo">GBStore</div>
+    <div class="container">
+      <h2>Hii Ritik</h2>
+      <form method="POST" action="/auth/admin/login">
+        <input type="hidden" name="role" value="admin" />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

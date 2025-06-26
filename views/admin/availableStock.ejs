@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/admin/availableStock.css" rel="stylesheet"/>
+</head>
+<body>
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="overlay">
+    <div class="container">
+      <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+      <h2 class="text-center mb-4">Available Stock - Category Wise</h2>
+
+      <div class="table-responsive mb-4">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Variant</th>
+              <th>Color</th>
+              <th>Quantity In Stock</th>
+            </tr>
+          </thead>
+          <tbody id="stockTable">
+            <% stockData.forEach(item => { %>
+              <tr>
+                <td><%= item.brand %></td>
+                <td><%= item.model %></td>
+                <td><%= item.variant %></td>
+                <td><%= item.color %></td>
+                <td><%= item.quantity %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Stock Quantity by Brand</div>
+        <div class="card-body">
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Safe JSON injection -->
+  <script id="stockDataScript" type="application/json">
+    <%- JSON.stringify(stockData) %>
+  </script>
+
+  <script src="/js/admin/availableStock.js"></script>
+</body>
+</html>

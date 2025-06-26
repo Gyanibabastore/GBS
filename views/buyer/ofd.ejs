@@ -1,0 +1,94 @@
+<!-- EJS Template for Out for Delivery Page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/buyer/outForDelivery.css" rel="stylesheet" />
+</head>
+<body>
+
+  <%- include('../partials/navbar') %>
+
+  <div id="flash-messages"
+     data-success="<%= success && success.length ? success[0] : '' %>"
+     data-error="<%= error && error.length ? error[0] : '' %>">
+  </div>
+
+  <% if (success && success.length) { %>
+    <div class="alert alert-success mt-2"><%= success[0] %></div>
+  <% } %>
+  <% if (error && error.length) { %>
+    <div class="alert alert-danger mt-2"><%= error[0] %></div>
+  <% } %>
+
+  <div class="container py-5">
+    <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="mb-4">🚚 Out for Delivery</h2>
+
+    <div id="delivery-list" class="row gy-4">
+      <% deliveries.forEach(function(delivery) { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card delivery-card p-4 position-relative">
+            <!-- 🎀 Status Ribbon -->
+            <div class="status-ribbon out">🚚 Out for Delivery</div>
+
+            <!-- 📦 Order Details -->
+            <div class="card-body">
+              <h5 class="fw-bold mb-2"><i class="bi bi-phone"></i> <%= delivery.brand %> - <%= delivery.deviceName %>, <%= delivery.variant %>, <%= delivery.color %></h5>
+              <p><i class="bi bi-person-fill"></i> <strong>Customer:</strong> <%= delivery.outForDelivery?.name || 'N/A' %></p>
+              <p><i class="bi bi-truck"></i> <strong>Tracking:</strong> <%= delivery.outForDelivery?.tracking || 'N/A' %></p>
+              <p><i class="bi bi-geo-alt"></i> <strong>Pincode:</strong> <%= delivery.outForDelivery?.pincode || 'N/A' %></p>
+              <p><i class="bi bi-key"></i> <strong>OTP:</strong> <%= delivery.outForDelivery?.otp || 'N/A' %></p>
+              <p><i class="bi bi-phone"></i> <strong>Mobile Last 4:</strong> <%= delivery.outForDelivery?.last4Digit || 'N/A' %></p>
+              <p class="text-success fw-semibold mt-2"><i class="bi bi-check-circle"></i> Status: Out for Delivery</p>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+  <button class="out-btn" id="toggleExpandBtn" title="Add Out for Delivery">+ Out for Delivery</button>
+
+
+    <form class="expand-card" id="expand-card" action="/buyer/out-for-delivery" method="POST" style="display: none;">
+      <h5 class="mb-3">📋 Add Out for Delivery Entry</h5>
+      <input type="text" class="form-control" placeholder="Name" name="name" required />
+
+      <select class="form-control" name="brand" id="brandSelect" required>
+        <option selected disabled>Select Brand</option>
+        <% brands.forEach(function(brand) { %>
+          <option value="<%= brand %>"><%= brand %></option>
+        <% }) %>
+      </select>
+
+      <select class="form-control" name="model" required>
+        <option selected disabled>Select Model</option>
+      </select>
+
+      <select class="form-control" name="variant" required>
+        <option selected disabled>Select Variant</option>
+      </select>
+
+      <select class="form-control" name="color" required>
+        <option selected disabled>Select Color</option>
+      </select>
+
+      <select class="form-control" name="pincode" required>
+        <option selected disabled>Select Pincode</option>
+      </select>
+
+      <input type="text" class="form-control" placeholder="OTP" name="otp" required />
+      <input type="text" class="form-control" placeholder="Tracking ID" name="trackingId" required />
+      <input type="text" class="form-control" placeholder="Mobile Last 4 Digit" name="mobileLast4" required />
+
+      <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+  <script>
+    const dropdownMap = <%- JSON.stringify(dropdownMap || {}) %>;
+  </script>
+  <script src="/js/buyer/outForDelivery.js"></script>
+</body>
+</html>

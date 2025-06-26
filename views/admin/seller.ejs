@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/admin/sellerList.css" rel="stylesheet" />
+</head>
+
+<body>
+<!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="overlay">
+        
+
+    <div class="container py-4">
+       <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+      <h2 class="mb-4">Seller List</h2>
+
+      <!-- Search Bar -->
+      <div class="row search-bar">
+        <div class="col-md-6">
+          <input id="searchInput" type="text" class="form-control" placeholder="Search by name or mobile number" />
+        </div>
+      </div>
+
+      <!-- Seller Cards -->
+      <div id="sellerCards" class="row">
+        <% sellers.forEach(seller => { %>
+          <div class="col-12 mb-3 seller-card-container">
+            <div class="card seller-card w-100">
+              <div class="card-body">
+                <h5 class="card-title"><%= seller.name %></h5>
+                <p class="card-text">📱 Mobile: <%= seller.mobile %></p>
+                <p class="card-text">📧 Email: <%= seller.email %></p>
+                <p class="card-text">💳 UPI ID: <%= seller.upi %></p>
+                <a href="/admin/sellers-details/<%= seller.id %>" class="btn btn-light">View Details</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin/sellerList.js"></script>
+</body>
+
+</html>

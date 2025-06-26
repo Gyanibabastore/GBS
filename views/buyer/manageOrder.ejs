@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/buyer/manageOrders.css" rel="stylesheet" />
+  
+</head>
+<body>
+
+  <%- include('../partials/navbar') %> 
+  <div class="container py-5">
+    <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="mb-4">📦 Manage Your Orders</h2>
+    <button class="btn btn-primary mb-4" id="toggle-pending-btn">Show Pending Orders</button>
+
+    <form action="/buyer/<%= buyerId %>/orders" method="POST" id="bulk-order-form">
+      <div id="product-list" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <% for (let i = 0; i < products.length; i++) { const product = products[i]; %>
+        <div class="col">
+          <div class="card h-100 p-3 d-flex flex-column justify-content-between align-items-stretch">
+            <img src="<%= product.imageUrl %>" alt="<%= product.deviceName %>" class="card-img-top product-img mx-auto mb-3" />
+            <div class="card-body p-2">
+              <h5 class="card-title"><%= product.deviceName %></h5>
+              <p><span class="badge bg-primary me-1">Brand</span><%= product.brand %></p>
+              <p><span class="badge bg-secondary me-1">Variant</span><%= product.variant %></p>
+              <p><span class="badge bg-info me-1">Booking</span>₹<%= product.bookingAmount %></p>
+              <p><span class="badge bg-warning me-1">Return</span>₹<%= product.returnAmount %></p>
+              <p><span class="badge bg-dark me-1">Margin</span>₹<%= product.margin %></p>
+              <p><span class="badge bg-success me-1">Available</span><%= product.quantity %> pcs</p>
+              <div class="cart-actions">
+                <button type="button" class="btn btn-outline-danger qty-decrease" data-index="<%= i %>">−</button>
+                <span id="qty-<%= i %>" class="badge bg-light text-dark border border-secondary">0</span>
+                <button type="button" class="btn btn-outline-success qty-increase" data-index="<%= i %>">+</button>
+              </div>
+              <input type="hidden" name="orders[<%= i %>][deviceName]" value="<%= product.deviceName %>" />
+              <input type="hidden" name="orders[<%= i %>][brand]" value="<%= product.brand %>" />
+              <input type="hidden" name="orders[<%= i %>][variant]" value="<%= product.variant %>" />
+              <input type="hidden" name="orders[<%= i %>][color]" value="<%= product.color %>" />
+              <input type="hidden" name="orders[<%= i %>][bookingAmount]" value="<%= product.bookingAmount %>" />
+              <input type="hidden" name="orders[<%= i %>][returnAmount]" value="<%= product.returnAmount %>" />
+              <input type="hidden" name="orders[<%= i %>][margin]" value="<%= product.margin %>" />
+              <input type="hidden" name="orders[<%= i %>][imageUrl]" value="<%= product.imageUrl %>" />
+              <input type="hidden" name="orders[<%= i %>][quantity]" id="form-qty-<%= i %>" value="1" />
+              <input type="hidden" id="max-qty-<%= i %>" value="<%= product.quantity %>" />
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-success btn-lg mt-4">🛒 Submit All Orders</button>
+      </div>
+    </form>
+
+    <hr>
+
+    <div id="pending-orders" style="display: none;">
+      <h3 class="mt-5 mb-3">🕒 Pending Orders</h3>
+      <% if (pendingOrders && pendingOrders.length > 0) { %>
+        <div class="row" id="pending-orders-container">
+          <% pendingOrders.forEach((order, index) => { %>
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4 pending-order-card" style="display: <%= index < 8 ? 'block' : 'none' %>">
+              <div class="card h-100 p-3 d-flex flex-column align-items-stretch text-center">
+                <img src="<%= order.imageUrl %>" alt="<%= order.deviceName || 'Unknown' %>" class="card-img-top img-fluid mb-2 mx-auto" style="height: 150px; object-fit: contain;" />
+                <div class="card-body">
+                  <h5 class="text-primary"><%= order.deviceName || 'Unknown' %></h5>
+                  <p><span class="badge bg-secondary me-1">🟣 Variant</span> <%= order.variant %></p>
+                  <p><span class="badge bg-dark me-1">🎨 Color</span> <%= order.color %></p>
+                  <p><span class="badge bg-light text-dark me-1">📅 Date</span> <%= new Date(order.date).toLocaleDateString() %></p>
+                  <p><span class="badge bg-info text-dark me-1">🔢 Qty</span> <%= order.quantity %></p>
+                  <p><span class="badge bg-warning text-dark">₹Booking:</span> <%= order.bookingAmount %></p>
+                  <p><span class="badge bg-success">₹Return:</span> <%= order.returnAmount %></p>
+                  <p><span class="badge bg-danger">₹Margin:</span> <%= order.margin %></p>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+        <% if (pendingOrders.length > 8) { %>
+          <div class="text-center mt-3">
+            <button id="show-more-btn" class="btn btn-outline-primary">Show More</button>
+          </div>
+        <% } %>
+      <% } else { %>
+        <p class="text-muted">No pending orders.</p>
+      <% } %>
+    </div>
+  </div>
+  <script src="/js/buyer/manageOrders.js"></script>
+</body>
+</html>

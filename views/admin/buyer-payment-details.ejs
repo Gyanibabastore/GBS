@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/buyer-payment-details.css">
+</head>
+
+<body>
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+  <div class="container">
+     <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="mb-4 text-warning">📤 Payment Given to  - <%= buyer.name %></h2>
+   
+    <!-- Buyer Info -->
+    <div class="mb-4">
+      <h5>Buyer Information</h5>
+      <p>
+        Name: <strong><%= buyer.name %></strong><br>
+        Mobile: <strong><%= buyer.mobile %></strong><br>
+        Email: <strong><%= buyer.email %></strong><br>
+        UPI ID: <strong><%= buyer.upi%></strong>
+      </p>
+      <!-- Add Payment Button -->
+<!-- Add Payment Button (GET with buyerId) -->
+<div class="mb-4 text-end">
+  <a href="/admin/addpayment?buyerId=<%= buyer._id %>" class="btn btn-primary">
+    ➕ Add Payment to Buyer
+  </a>
+</div>
+
+    </div>
+    <!-- Summary -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="summary-card bg-success">
+          <h5>Total Paid</h5>
+          <p class="h4">₹<%= totalPayment.toLocaleString() %></p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="summary-card">
+          <h5>Total Due to Buyer</h5>
+<p class="h4 ">₹<%= totalDue %></p>
+        </div>
+      </div>
+    </div>
+
+    
+    <!-- Payment Transactions -->
+   <div class="row g-4">
+  <% payments.forEach((txn, index) => { %>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <img src="<%= txn.image %>" class="card-img-top transaction-img rounded-top" alt="Proof" style="object-fit: cover; height: 180px;">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold text-primary mb-3">Payment <%= index + 1 %></h5>
+          <ul class="list-unstyled mb-0">
+            <li><strong>Name:</strong> <%= txn.receivedFromName %></li>
+            <li><strong>Amount:</strong> ₹<%= txn.amount %></li>
+            <li><strong>Mode:</strong> <%= txn.mode %></li>
+            <li><strong>Date:</strong> <%= txn.date.toISOString().split('T')[0] %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+
+  </div>
+  <script src="/js/admin/buyer-payment-details.js"></script>
+</body>
+
+</html>

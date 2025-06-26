@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/admin/createDeal.css" rel="stylesheet" />
+</head>
+<body>
+  <%- include('../partials/adminNavbar') %>
+  <div class="container py-4">
+    <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="mb-4 text-center text-primary">📦 Create New Deal</h2>
+
+    <!-- Deal Form -->
+    <form id="dealForm" method="POST" action="/admin/deals/create">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="brand" class="form-label">Brand</label>
+          <input type="text" class="form-control" id="brand" name="brand" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="modelName" class="form-label">Model Name</label>
+          <input type="text" class="form-control" id="modelName" name="modelName" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="variant" class="form-label">Variant</label>
+          <input type="text" class="form-control" id="variant" name="variant" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="color" class="form-label">Color</label>
+          <input type="text" class="form-control" id="color" name="color" required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="buyLink" class="form-label">Buy Now Link</label>
+        <input type="url" class="form-control" id="buyLink" name="buyLink" required>
+      </div>
+      <div class="mb-3">
+        <label for="modelImage" class="form-label">Model Image Link</label>
+        <input type="url" class="form-control" id="modelImage" name="modelImage" required>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label for="bookingAmount" class="form-label">Booking Amount</label>
+          <input type="number" class="form-control" id="bookingAmount" name="bookingAmount" min="0" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="returnAmount" class="form-label">Return Amount</label>
+          <input type="number" class="form-control" id="returnAmount" name="returnAmount" min="0" required>
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="margin" class="form-label">Buyer Margin</label>
+          <input type="number" class="form-control" id="margin" name="margin" min="0" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="pincode" class="form-label">Pincode</label>
+          <input type="text" class="form-control" id="pincode" name="pincode" pattern="\d{6}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="address" class="form-label">Address</label>
+          <input type="text" class="form-control" id="address" name="address" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="cardWorking" class="form-label">Card Working</label>
+        <input type="text" class="form-control" id="cardWorking" name="cardWorking" required>
+        <div class="col-md-4 mt-3">
+          <label for="quantity" class="form-label">Quantity</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="checkbox" id="unlimitedCheckbox">
+              <label class="ms-2" for="unlimitedCheckbox" style="font-size: 0.9rem;">Unlimited</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-check form-switch mb-4">
+        <input class="form-check-input" type="checkbox" id="status" name="status" checked>
+        <label class="form-check-label" for="status">Active</label>
+      </div>
+
+      <button type="button" class="btn btn-primary w-100" id="triggerBuyerModal">Create Deal</button>
+    </form>
+
+    <% if (deals.length > 0) { %>
+      <div class="mt-5">
+        <h4 class="mb-4 text-center text-secondary">💼 All Deals</h4>
+        <div class="row g-4">
+         <% deals.forEach(deal => { %>
+  <div class="col-md-4">
+    <div class="card shadow deal-card border-0 rounded-4 h-100">
+      <div class="position-relative">
+<img src="<%= deal.imageUrl %>" class="card-img-top rounded-top-4" alt="Image">
+        <span class="badge position-absolute top-0 end-0 m-2 px-3 py-1 rounded-pill fw-bold fs-6 
+          <%= deal.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+          <%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %>
+        </span>
+      </div>
+
+      <div class="card-body px-3 pt-3">
+        <h5 class="card-title fw-bold mb-1"><%= deal.brand %> <%= deal.deviceName %> - <%= deal.variant %></h5>
+        <p class="mb-2 text-muted">Color: <strong><%= deal.color %></strong></p>
+
+        <div class="d-flex justify-content-between text-center mb-3">
+          <div><small class="text-muted">Booking</small><br><span class="fw-semibold text-primary">₹<%= deal.bookingAmount %></span></div>
+          <div><small class="text-muted">Return</small><br><span class="fw-semibold text-success">₹<%= deal.returnAmount %></span></div>
+          <div><small class="text-muted">Margin</small><br><span class="fw-semibold text-danger">₹<%= deal.margin %></span></div>
+        </div>
+
+        <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary w-100 mb-2">🔗 Buy Now</a>
+
+        <% if (deal.buyerIds && deal.buyerIds.length > 0) { %>
+          <p class="mt-2 mb-1 text-muted fw-bold">👥 Sent To:</p>
+          <ul class="ps-3 mb-2 small">
+            <% deal.buyerIds.forEach(buyer => { %>
+              <li><%= buyer.name %></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="mt-2 mb-2 text-muted small">👥 Sent to <strong>All Buyers</strong></p>
+        <% } %>
+
+        <div class="form-check form-switch d-flex align-items-center justify-content-between mt-2">
+          <input 
+            class="form-check-input toggle-status" 
+            type="checkbox" 
+            data-id="<%= deal._id %>" 
+            data-quantity="<%= deal.quantity === 'unlimited' ? -1 : deal.quantity %>"
+            <%= deal.status === 'active' ? 'checked' : '' %>
+          >
+          <label class="form-check-label ms-2"><%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %></label>
+        </div>
+      </div>
+    </div>
+  </div>
+<% }) %>
+
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Buyer Selection Modal -->
+  <div id="buyerModal" class="modal" style="display: none;">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Select Buyers</h5>
+          <button type="button" class="btn-close" id="closeBuyerModal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control mb-2" id="buyerSearch" placeholder="Search buyer by name">
+          <div class="form-check mb-2">
+            <input type="checkbox" class="form-check-input" id="selectAllBuyers">
+            <label class="form-check-label" for="selectAllBuyers">Select All Buyers</label>
+          </div>
+          <div class="buyer-list border rounded p-2" style="max-height: 300px; overflow-y: auto;">
+            <% buyers.forEach(buyer => { %>
+              <div class="buyer-checkbox d-flex justify-content-between align-items-center border-bottom px-2 py-2">
+                <span><%= buyer.name %></span>
+                <input type="checkbox" class="form-check-input buyer-checkbox-input" value="<%= buyer._id %>">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <input type="hidden" id="sendToAllInput" name="sendToAll" value="false">
+          <p id="selectedCount" class="text-muted mb-1">Selected: 0 buyers</p>
+          <button type="button" class="btn btn-secondary" id="cancelBuyerModal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmCreateDeal">Confirm & Create Deal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin/createDeal.js"></script>
+</body>
+</html>

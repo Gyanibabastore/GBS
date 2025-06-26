@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/buyer/dashboard.css" rel="stylesheet" />
+</head>
+
+<body>
+
+
+ <%- include('../partials/navbar') %> 
+
+
+  <div class="container py-5">
+    <div class="overlay">
+      <h2 class="mb-5">👤  <%= dashboardData.name %></h2>
+
+      <!-- Summary Section -->
+      <div class="row section">
+        <div class="col-md-3">
+          <a href="/buyer/<%= dashboardData._id %>/orders" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="📦">
+
+            <h5 class="card-title">📦 My Orders</h5>
+            <p class="value"><%= dashboardData.deliveredOrdersCount.toLocaleString() %></p>
+          </a>
+        </div>
+
+        <div class="col-md-3">
+          <a href="/buyer/payment-history" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="💳">
+
+            <h5 class="card-title">📉 Due Payment</h5>
+            <p class="value text-danger">₹<%= dashboardData.totalDue.toLocaleString() %></p>
+          </a>
+        </div>
+
+        <div class="col-md-3">
+          <a href="/buyer/dashboard/<%= dashboardData._id %>" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="💸">
+
+            <h5 class="card-title">💰 My Earnings</h5>
+            <p class="value text-success">₹<%= dashboardData.totalEarning.toLocaleString() %></p>
+          </a>
+        </div>
+
+        <div class="col-md-3">
+        <a href="/buyer/out-for-delivery" class="card p-4 text-center text-decoration-none text-dark d-block" data-sticker="🚚">
+
+            <h5 class="card-title">🚚 Out For Delivery</h5>
+            <p class="value text-warning"><%= dashboardData.pendingOrdersCount.toLocaleString() %></p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Order Management Section -->
+      <div class="section">
+        <h4 class="mb-3">🛠 Manage My Orders</h4>
+        <a href="/buyer/manage-orders/<%= dashboardData._id %>" class="card p-4 text-decoration-none text-dark d-block">
+          <p>View and manage all your placed orders. Update status or cancel if needed.</p>
+        </a>
+      </div>
+
+      <!-- Payment History Section -->
+      <div class="section">
+        <h4 class="mb-3">📜 My Payment History</h4>
+        <a href="/buyer/payment-history" class="card p-4 text-decoration-none text-dark d-block">
+          <p>Track all the payments you have made to sellers.</p>
+        </a>
+      </div>
+
+      <!-- Deals and Offers Section -->
+      <div class="section">
+        <h4 class="mb-3">🎁 Deals & Offers for Me</h4>
+        <a href="/buyer/deals" class="card p-4 text-decoration-none text-dark d-block">
+          <p>Latest exclusive deals tailored for you.</p>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</body>
+
+</html>

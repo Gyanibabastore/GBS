@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/dashboard.css" />
+</head>
+<body>
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+
+  <div class="overlay">
+    <div class="container mt-4">
+
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <img src="https://cdn-icons-png.flaticon.com/512/34/34627.png" class="logo" alt="Logo" style="height: 60px;" />
+        <h1 class="dashboard-title mt-2">Gyanibaba Store Dashboard</h1>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="text-end mb-3">
+        <a href="/admin/deals" class="btn btn-outline-primary fw-bold">➕ Create New Deal</a>
+        <a href="/admin/sellerdeals" class="btn btn-outline-primary fw-bold">➕ Create Seller Deal</a>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Filter by Month</label>
+          <input type="month" class="form-control" id="monthFilter" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Filter by Date</label>
+          <input type="date" class="form-control" id="dateFilter" />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button id="resetFilters" class="btn btn-outline-secondary w-100">Reset Filters</button>
+        </div>
+      </div>
+
+      <!-- Dashboard Cards -->
+      <div class="row flex-wrap">
+        <% const cards = [
+          { title: "Total Orders", value: totalOrders, class: "primary", link: "/admin/orders" },
+          { title: "Sold Devices", value: soldStock, class: "success", link: "/admin/sold-devices" },
+          { title: "Available Stock", value: availableStock, class: "warning", link: "/admin/stock" },
+          { title: "Out For Delivery", value: outForDeliveryCount, class: "secondary", link: "/admin/ofd" },
+          { title: "Total Buyers", value: buyerCount, class: "info", link: "/admin/buyers" },
+          { title: "Total Sellers", value: sellerCount, class: "dark", link: "/admin/sellers" },
+          { title: "Total seller Due", value: `₹${totalOrderValue}`, class: "success", link: "/admin/payments" },
+          { title: "Total Dues", value: `₹${totalDue}`, class: "danger", link: "/admin/dues" }
+        ]; %>
+        <% cards.forEach(card => { %>
+          <div class="col-6 col-md-3 mb-4 d-flex">
+            <div class="card card-stat bg-<%= card.class %> text-white w-100">
+              <div class="card-body">
+                <h5 class="card-title"><%= card.title %></h5>
+                <p class="card-text"><%= card.value %></p>
+                <a href="<%= card.link %>" class="stretched-link"></a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Pie Charts -->
+      <div class="row mt-5 justify-content-center">
+        <div class="col-md-6 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title text-center">Sold Devices (Brand-wise)</h5>
+              <canvas id="soldPieChart" height="250"></canvas>
+              <div class="text-center mt-2">
+                <button class="btn btn-sm btn-outline-primary download-btn" data-download="soldPieChart" data-type="png">Download PNG</button>
+                <button class="btn btn-sm btn-outline-danger download-btn" data-download="soldPieChart" data-type="pdf">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title text-center">Available Stock (Brand-wise)</h5>
+              <canvas id="availablePieChart" height="250"></canvas>
+              <div class="text-center mt-2">
+                <button class="btn btn-sm btn-outline-primary download-btn" data-download="availablePieChart" data-type="png">Download PNG</button>
+                <button class="btn btn-sm btn-outline-danger download-btn" data-download="availablePieChart" data-type="pdf">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="row mt-3">
+        <div class="col-12">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title text-center">Sold vs Available Devices (Brand-wise)</h5>
+              <canvas id="barChart" height="350"></canvas>
+              <div class="text-center mt-3">
+                <button class="btn btn-sm btn-outline-primary download-btn" data-download="barChart" data-type="png">Download PNG</button>
+                <button class="btn btn-sm btn-outline-danger download-btn" data-download="barChart" data-type="pdf">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dynamic Chart Data -->
+  <script>
+    window.soldBrandData = <%- JSON.stringify(soldBrandData) %>;
+    window.availableBrandData = <%- JSON.stringify(availableBrandData) %>;
+    window.barChartData = <%- JSON.stringify(barChartData) %>;
+  </script>
+
+  <script src="/js/admin/dashboard.js"></script>
+</body>
+</html>

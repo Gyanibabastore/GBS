@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/admin/buyer-details.css" rel="stylesheet"/>
+  
+</head>
+<body>
+   <!-- ✅ Admin Navbar -->
+  <%- include('../partials/adminNavbar') %>
+  <div class="overlay">
+    <div class="container py-4">
+      <a href="/admin/buyers" class="btn btn-outline-dark mb-3">⬅ Back to Buyer List</a>
+      <h2 class="mb-4">Buyer Details: <%= buyer.name %></h2>
+
+      <!-- Buyer Info -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card buyer-info-card w-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= buyer.name %></h5>
+              <p class="card-text">📱 Mobile: <%= buyer.mobile %></p>
+              <p class="card-text">📧 Email: <%= buyer.email %></p>
+              <p class="card-text">💳 UPI ID: <%= buyer.upi %></p>
+              <div class="row mt-4">
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💸 Due Amount</h6>
+                    <a href="/admin/buyer-payment/<%= buyer._id %>/">
+                      <p class="mb-0 fw-bold">₹<%= buyer.dueAmount %></p>
+                    </a>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💰 Total Earnings</h6>
+                    <p class="mb-0 fw-bold">₹<%= buyer.totalEarning %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="row filter-bar mb-4">
+        <div class="col-md-4">
+          <label for="monthSelect" class="form-label">Select Month</label>
+          <select id="monthSelect" class="form-select">
+            <% monthOptions.forEach(month => { %>
+              <option value="<%= month %>" <%= selectedMonth === month ? "selected" : "" %>><%= month %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+     
+   
+
+
+      <!-- Charts -->
+      <div class="row mt-4">
+        <!-- Pie Chart -->
+        <div class="col-lg-4 col-md-5 mb-4 d-flex justify-content-center align-items-center">
+          <div class="card p-3 w-100 text-center">
+            <h5>📦 Out for Delivery (Brand Wise)</h5>
+            <canvas id="outForDeliveryPie" class="small-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Bar Chart -->
+        <div class="col-lg-8 col-md-7 mb-4">
+          <div class="card p-3">
+            <h5 class="text-center">📊 Total Orders (Brand Wise)</h5>
+            <canvas id="totalOrdersBar"></canvas>
+          </div>
+        </div>
+      </div>
+
+    
+       <!-- Orders -->
+<div class="row">
+  <% buyer.orders.forEach(order => { %>
+    <div class="col-md-4 mb-3">
+      <div class="card order-card h-100" style="border-left: 5px solid <%= order.colorCode %>;">
+        <img src="<%= order.image %>" class="card-img-top" alt="Product Image" style="height: 200px; object-fit: contain; background: #f8f9fa;">
+        <div class="card-body">
+          <h5 class="card-title"><%= order.brand %> <%= order.deviceName %></h5>
+          <p class="card-text">📦 Variant: <%= order.variant %></p>
+          <p class="card-text">🎨 Color: <%= order.color %></p>
+          <p class="card-text">🔢 Quantity: <%= order.count %></p>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+</div>
+  </div>
+
+
+  <!-- Chart Data passed from backend -->
+  <script>
+    const pieChartLabels = <%- JSON.stringify(pieChartLabels) %>;
+    const pieChartData = <%- JSON.stringify(pieChartData) %>;
+    const barChartLabels = <%- JSON.stringify(barChartLabels) %>;
+    const barChartData = <%- JSON.stringify(barChartData) %>;
+  </script>
+
+  <!-- External JS -->
+  <script src="/js/admin/buyer-details.js" defer></script>
+</body>
+</html>

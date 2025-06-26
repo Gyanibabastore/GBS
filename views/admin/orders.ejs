@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/totalOrders.css" />
+</head>
+
+<body>
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+  <div class="overlay">
+    <div class="container">
+      <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+      <h2 class="text-center mb-4">Total Orders - Category Wise</h2>
+
+      <!-- Filters -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Filter by Month</label>
+          <input type="month" class="form-control" id="monthFilter" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Filter by Date</label>
+          <input type="date" class="form-control" id="dateFilter" />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button id="resetFilters" class="btn btn-outline-secondary w-100">Reset Filters</button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive mb-4">
+        <table class="table table-striped table-dark">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Variant</th>
+              <th>Color</th>
+              <th>Stock</th>
+              <th>Sold</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <% orders.forEach(order => { %>
+              <tr>
+                <td><%= order.brand %></td>
+                <td><%= order.model %></td>
+                <td><%= order.variant %></td>
+                <td><%= order.color %></td>
+                <td class="stock"><%= order.available %></td>
+                <td class="sold"><%= order.sold %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Charts -->
+      <div class="row mt-4">
+        <div class="col-md-6 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title text-center">Sold Devices (Brand-wise)</h5>
+              <canvas id="soldPieChart" height="250"></canvas>
+              <div class="text-center mt-2">
+                <button class="btn btn-sm btn-outline-primary download-btn" data-chart="soldPieChart" data-type="png">Download PNG</button>
+                <button class="btn btn-sm btn-outline-danger download-btn" data-chart="soldPieChart" data-type="pdf">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title text-center">Available Stock (Brand-wise)</h5>
+              <canvas id="availablePieChart" height="250"></canvas>
+              <div class="text-center mt-2">
+                <button class="btn btn-sm btn-outline-primary download-btn" data-chart="availablePieChart" data-type="png">Download PNG</button>
+                <button class="btn btn-sm btn-outline-danger download-btn" data-chart="availablePieChart" data-type="pdf">Download PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    window.soldBrandData = <%- JSON.stringify(soldBrandData) %>;
+    window.availableBrandData = <%- JSON.stringify(availableBrandData) %>;
+  </script>
+  <script src="/js/admin/totalOrders.js"></script>
+</body>
+</html>

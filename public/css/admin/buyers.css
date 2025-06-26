@@ -1,0 +1,86 @@
+/* Overlay and Container */
+.overlay {
+  background: linear-gradient(to right, #e0f7fa, #ffffff);
+  min-height: 100vh;
+  padding: 30px 15px;
+  border-radius: 10px;
+}
+
+/* Seller Card Base Style */
+.buyer-card {
+  color: white;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* Hover effect */
+.buyer-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Search Bar */
+.search-bar {
+  margin-bottom: 20px;
+}
+
+/* Button inside card */
+.buyer-card .btn {
+  font-weight: 600;
+}
+
+/* Different background colors for cards */
+.buyer-card-container:nth-child(6n+1) .buyer-card {
+  background: linear-gradient(135deg, #6f42c1, #d63384); /* Purple-Pink */
+}
+.buyer-card-container:nth-child(6n+2) .buyer-card {
+  background: linear-gradient(135deg, #198754, #20c997); /* Green-Teal */
+}
+.buyer-card-container:nth-child(6n+3) .buyer-card {
+  background: linear-gradient(135deg, #0d6efd, #6610f2); /* Blue-Violet */
+}
+.buyer-card-container:nth-child(6n+4) .buyer-card {
+  background: linear-gradient(135deg, #fd7e14, #ffc107); /* Orange-Yellow */
+}
+.sbuyereller-card-container:nth-child(6n+5) .buyer-card {
+  background: linear-gradient(135deg, #dc3545, #f06595); /* Red-Pink */
+}
+.buyer-card-container:nth-child(6n+6) .buyer-card {
+  background: linear-gradient(135deg, #343a40, #6c757d); /* Dark-Grey */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .search-bar {
+    text-align: center;
+  }
+
+  .buyer-card .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .buyer-card-container {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .card-text {
+    font-size: 0.95rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+}

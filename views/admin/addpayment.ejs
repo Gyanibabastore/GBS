@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/addpayment.css">
+</head>
+<body>
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+  
+  <div class="form-container">
+    <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2>Submit Payment</h2>
+
+    <form action="/admin/<%= adminId %>/payments" method="POST" enctype="multipart/form-data">
+      <!-- TO INFO -->
+      <input type="hidden" name="toRole" value="buyer">
+      <input type="hidden" name="toId" value="<%= buyerId %>">
+
+      <label>Name</label>
+      <input type="text" name="receivedFromName" required>
+
+      <label>Amount</label>
+      <input type="number" name="amount" required>
+
+      <label>Payment Mode</label>
+      <select name="mode" required>
+        <option value="UPI">UPI</option>
+        <option value="Cash">Cash</option>
+        <option value="Bank">Bank</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>Payment Proof (Image)</label>
+      <input type="file" name="image" accept="image/*" required>
+
+      <button type="submit">Submit Payment</button>
+    </form>
+  </div>
+</body>
+</html>

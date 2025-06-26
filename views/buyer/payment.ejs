@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link href="/css/buyer/paymentHistory.css" rel="stylesheet" />
+</head>
+<body>
+  <%- include('../partials/navbar') %> 
+
+  <div class="container">
+          <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="mb-4">💰 Payment History</h2>
+
+    <!-- Summary Cards -->
+    <div class="summary mb-4 d-flex gap-4">
+      <div class="summary-card">
+        <h5>Total Earning</h5>
+        <h3>₹<%= totalEarning %></h3>
+      </div>
+      <div class="summary-card">
+        <h5>Total Due</h5>
+        <h3>₹<%= totalDue %></h3>
+      </div>
+    </div>
+
+    <!-- Filter by Date -->
+    <div class="filter-bar mb-4">
+      <input 
+        type="date" 
+        class="form-control w-auto" 
+        onchange="filterByDate(this.value)"
+        value="<%= selectedDate ? new Date(selectedDate).toISOString().slice(0, 10) : '' %>"
+      />
+    </div>
+
+    <!-- No Payments Message -->
+    <% if (payments.length === 0) { %>
+      <div class="alert alert-info">No payments found for selected date.</div>
+    <% } %>
+
+    <!-- Payment Cards -->
+    <div class="row" id="payment-cards">
+      <% payments.forEach(function(payment) { %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card">
+            <img src="<%= payment.image %>" class="card-img-top" alt="Proof Image" />
+            <div class="card-body">
+              <h5 class="card-title">Received From: <%= payment.receivedFromName %></h5>
+              <p>Amount: ₹<%= payment.amount %></p>
+              <p>Payment Mode: <%= payment.mode %></p>
+              <p>Date: <%= payment.date.toLocaleDateString('en-IN') %></p>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <script src="/js/buyer/paymentHistory.js"></script>
+</body>
+</html>

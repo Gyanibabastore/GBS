@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/admin/seller-details.css" />
+  <style>
+    .small-chart {
+      max-width: 100%;
+      width: 250px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ Admin Navbar Include -->
+  <%- include('../partials/adminNavbar') %>
+  <div class="overlay">
+    <div class="container py-4">
+      <a href="/admin/sellers" class="btn btn-outline-dark mb-3">⬅ Back to Seller List</a>
+      <h2 class="mb-4">Seller Details: <%= seller.name %></h2>
+
+      <!-- Seller Info -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card seller-info-card w-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= seller.name %></h5>
+              <p class="card-text">📱 Mobile: <%= seller.mobile %></p>
+              <p class="card-text">📧 Email: <%= seller.email %></p>
+              <p class="card-text">💳 UPI ID: <%= seller.upi%></p>
+              <div class="row mt-4">
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💸 Due Amount</h6>
+                    <a href="/admin/seller-payment/<%= seller._id %>"><p class="mb-0 fw-bold">₹<%= seller.advance %></p></a>
+                  </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                  <div class="bg-white text-dark p-3 rounded shadow-sm">
+                    <h6>💰 Total Earnings</h6>
+                    <p class="mb-0 fw-bold">₹<%= seller.earning %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="row filter-bar">
+        <div class="col-md-4">
+          <label for="monthSelect" class="form-label">Select Month</label>
+          <select id="monthSelect" class="form-select">
+            <% months.forEach(function(month) { %>
+              <option value="<%= month.value %>" <%= month.value === selectedMonth ? 'selected' : '' %>><%= month.label %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+    
+      
+      <!-- Charts -->
+      <div class="row mt-4">
+        <div class="col-lg-4 col-md-5 mb-4 d-flex justify-content-center align-items-center">
+          <div class="card p-3 w-100 text-center">
+            <h5>📦 Out for Delivery (Brand Wise)</h5>
+            <canvas id="outForDeliveryPie" class="small-chart"></canvas>
+          </div>
+        </div>
+        <div class="col-lg-8 col-md-7 mb-4">
+          <div class="card p-3">
+            <h5 class="text-center">📊 Total Orders (Brand Wise)</h5>
+            <canvas id="totalOrdersBar"></canvas>
+          </div>
+        </div>
+      </div>
+
+    <!-- Orders Section -->
+<!-- Inside <body> ... existing content unchanged -->
+
+<!-- Orders Section -->
+<div class="row mt-4">
+  <h4>🟡 Out for Delivery Devices</h4>
+  <% if (outForDeliveryDevices.length === 0) { %>
+    <p class="text-muted">No devices currently out for delivery.</p>
+  <% } %>
+  <% outForDeliveryDevices.forEach(device => { %>
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 border-start border-4 shadow-sm border-warning position-relative">
+        <% if (device.count <= 3) { %>
+          <span class="card-sticker limited">📦 Ofd</span>
+        <% } else if (device.isNew) { %>
+          <span class="card-sticker new">🆕 Ofd</span>
+        <% } else { %>
+          <span class="card-sticker hot">🔥 Ofd</span>
+        <% } %>
+
+        <img src="<%= device.image || '/images/default-phone.png' %>" class="card-img-top" alt="Product Image">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            <span><%= device.brand %> <%= device.name %></span>
+            <span class="badge bg-dark">x<%= device.count %></span>
+          </h5>
+          <p class="card-text mb-1">📅 Order Date: <%= device.orderDate %></p>
+          <p class="card-text mb-1">🧾 Variant: <%= device.variant %> | 🎨 Color: <%= device.color %></p>
+          <p class="card-text mb-1">💰 Return Amount to buyer: ₹<%= device.bookingAmount %></p>
+          <p class="card-text mb-1">💰 Booking Amount to seller: ₹<%= device.bookingAmountSeller %></p>
+
+
+          <p class="card-text fw-bold mb-2 text-warning">Status: Out for Delivery</p>
+
+          <% if (String(device.sellerId) === String(seller._id)) { %>
+            <form method="POST" action="/admin/orders/mark-sold?sellerId=<%= seller._id %>">
+              <input type="hidden" name="brand" value="<%= device.brand %>">
+              <input type="hidden" name="deviceName" value="<%= device.name %>">
+              <input type="hidden" name="variant" value="<%= device.variant %>">
+              <input type="hidden" name="color" value="<%= device.color %>">
+              <input type="hidden" name="bookingAmountSeller" value="<%= device.bookingAmountSeller %>">
+              
+              <input type="hidden" name="bookingAmountBuyer" value="<%= device.bookingAmount %>">
+
+              <div class="mb-2">
+                <label class="form-label">Quantity to Mark as Sold</label>
+                <input type="number" name="customCount" class="form-control" value="<%= device.count %>" min="1" max="<%= device.count %>" required>
+              </div>
+
+              <button type="submit" class="btn btn-sm btn-outline-primary w-100">✅ Mark as Sold</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+
+
+<div class="row mt-5">
+  <h4>🟢 Sold Devices</h4>
+  <% if (soldDevices.length === 0) { %>
+    <p class="text-muted">No devices sold yet.</p>
+  <% } %>
+  <% soldDevices.forEach(device => { %>
+    <div class="col-md-6 mb-3">
+      <div class="card h-100 border-start border-4 shadow-sm border-success position-relative">
+        <% if (device.count >= 5) { %>
+          <span class="card-sticker featured">⭐ Sold</span>
+        <% } else { %>
+          <span class="card-sticker limited">📦 Sold</span>
+        <% } %>
+
+        <img src="<%= device.image || '/images/default-phone.png' %>" class="card-img-top" alt="Product Image">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            <span><%= device.brand %> <%= device.name %></span>
+            <span class="badge bg-dark">x<%= device.count %></span>
+          </h5>
+          <p class="card-text mb-1">📅 Order Date: <%= device.orderDate %></p>
+          <p class="card-text mb-1">🧾 Variant: <%= device.variant %> | 🎨 Color: <%= device.color %></p>
+          <p class="card-text mb-1">💰 Booking Amount: ₹<%= device.bookingAmount %></p>
+          <p class="card-text fw-bold mb-2 text-success">Status: Sold</p>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+
+
+  <!-- Scripts -->
+  <script src="/js/admin/seller-details.js"></script>
+  <script>
+    window.chartData = {
+      pie: {
+        labels: <%- JSON.stringify(pieChartLabels) %>,
+        data: <%- JSON.stringify(pieChartData) %>
+      },
+      bar: {
+        labels: <%- JSON.stringify(barChartLabels) %>,
+        data: <%- JSON.stringify(barChartData) %>
+      }
+    };
+  </script>
+</body>
+</html>

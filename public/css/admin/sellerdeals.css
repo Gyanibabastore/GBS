@@ -1,0 +1,203 @@
+/* ---------- Container ---------- */
+.container {
+  background: linear-gradient(to right, #fefefe, #e0f7fa);
+  padding: 40px 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------- Headings ---------- */
+h2 {
+  font-weight: 800;
+  font-size: 2rem;
+  color: #007bff;
+}
+
+/* ---------- Product Cards ---------- */
+.product-card .card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.product-card .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- Ribbon Badge ---------- */
+.product-card .card::before {
+  content: attr(data-status);
+  position: absolute;
+  top: 15px;
+  left: -50px;
+  background: #28a745;
+  color: white;
+  font-weight: bold;
+  padding: 5px 60px;
+  transform: rotate(-45deg);
+  text-align: center;
+  font-size: 0.75rem;
+  z-index: 1;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.product-card[data-deal="inactive"] .card::before {
+  background: #9e9e9e;
+}
+
+/* ---------- Image Styling ---------- */
+.card-img-top {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+/* ---------- Text & Form ---------- */
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.text-muted {
+  font-size: 0.95rem;
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  border-radius: 8px;
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+}
+
+/* ---------- Toggle ---------- */
+.form-check-input {
+  width: 2.4em;
+  height: 1.2em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ---------- Load More ---------- */
+#loadMoreBtn {
+  max-width: 280px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+}
+.deal-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4caf50;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateY(20px); }
+  10%  { opacity: 1; transform: translateY(0); }
+  90%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(20px); }
+}
+/* 🌟 Modern Load More Button */
+.load-more-btn {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.load-more-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #0096c7);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.4);
+}
+
+.load-more-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.25);
+}
+
+@media (max-width: 576px) {
+  .load-more-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .card-img-top {
+    height: 160px;
+    padding: 8px;
+  }
+
+  .form-label,
+  .form-check-label {
+    font-size: 0.85rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-card {
+    padding: 0 6px;
+  }
+
+  .container {
+    padding: 20px 10px;
+  }
+
+  .btn-warning,
+  .btn-primary {
+    width: 100%;
+  }
+
+  .card-img-top {
+    height: 150px;
+    padding: 6px;
+  }
+
+  .card-title {
+    text-align: center;
+  }
+}

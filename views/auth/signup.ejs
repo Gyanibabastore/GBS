@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signup - Gyanibaba Store</title>
+  <link rel="stylesheet" href="/css/auth/signup.css" />
+  <style>
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .checklist {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .checklist span {
+      display: block;
+    }
+
+    .resend-info {
+      font-size: 0.9rem;
+      margin-top: 5px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2 id="formHeading">Create Buyer Account</h2>
+
+    <!-- Role Switch -->
+    <div class="role-buttons">
+      <button type="button" id="buyerBtn" class="active">Buyer</button>
+      <button type="button" id="sellerBtn">Seller</button>
+    </div>
+
+    <!-- Signup Form -->
+    <form name="signupForm" id="signupForm" action="/auth/signup" method="POST">
+      <input type="hidden" name="role" id="selectedRole" value="buyer" />
+
+      <input type="text" name="name" placeholder="Full Name" required />
+
+      <div class="email-otp-wrapper">
+        <input type="email" name="email" placeholder="Email Address" required />
+        <button type="button" id="otpBtn">Verify Email</button>
+      </div>
+
+      <div id="otpSection" style="display: none;">
+        <input type="text" name="otp" placeholder="Enter OTP" required />
+        <button type="button" id="verifyOtpBtn">Submit OTP</button>
+      </div>
+
+      <div id="resendInfo" class="resend-info" style="display: none;">
+        You can resend OTP in <span id="countdown">30</span> seconds
+      </div>
+
+      <input type="text" name="mobile" placeholder="Mobile Number" required />
+
+      <!-- Conditional Fields -->
+      <div id="buyerFields"></div>
+
+      <div id="sellerFields" style="display: none;">
+        <input type="text" name="shopName" placeholder="Shop Name" />
+      </div>
+
+      <input type="text" name="upi" placeholder="UPI ID (e.g. name@bank)" required />
+
+      <!-- Password Fields with Show/Hide -->
+      <div class="password-wrapper">
+        <input type="password" name="password" placeholder="Password" required />
+        <span class="toggle-eye" id="togglePassword">👁️</span>
+      </div>
+
+      <!-- Password Strength Checklist -->
+      <div class="checklist" id="passwordError"></div>
+
+      <div class="password-wrapper">
+        <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
+        <span class="toggle-eye" id="toggleConfirmPassword">👁️</span>
+      </div>
+      <div class="checklist" id="confirmPasswordError" style="color: red;"></div>
+
+      <button type="submit">Signup</button>
+    </form>
+
+    <div class="login-link">
+      <p>Already have an account? <a href="/auth/login">Login here</a></p>
+    </div>
+  </div>
+
+  <script src="/js/auth/signup.js"></script>
+</body>
+</html>

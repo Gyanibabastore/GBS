@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <link rel="stylesheet" href="/css/buyer/deals.css" />
+</head>
+<body>
+
+  <%- include('../partials/navbar') %> 
+  <div class="container">
+      <a href="/buyer/dashboard/<%= buyer._id %>" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+
+    <h2 class="mb-4 text-primary">🔥 Hot Deals</h2>
+    <div class="row" id="deals-list">
+      <% deals.forEach(function(deal) { 
+           const margin = deal.returnAmount - deal.bookingAmount; 
+      %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card">
+            <img src="<%= deal.imageUrl %>" class="card-img-top" alt="<%= deal.deviceName %>" />
+            <div class="card-body">
+              <h5 class="card-title"><%= deal.deviceName %> (<%= deal.brand %> - <%= deal.variant %>, <%= deal.color %>)</h5>
+              <p>
+                <strong>Booking Amount:</strong> ₹<%= deal.bookingAmount %><br />
+                <strong>Return Amount:</strong> <span class="highlight-green">₹<%= deal.returnAmount %></span><br />
+                <strong>Margin:</strong> ₹<%= margin %><br />
+                <strong>Pincode:</strong> <span class="highlight-blue"><%= deal.pincode %></span><br />
+                <strong>Address:</strong> <%= deal.address %><br />
+                <strong>Card Working:</strong> <span class="highlight-purple"><%= deal.cardWorking %></span>
+              </p>
+              <a class="btn btn-success" href="<%= deal.buyLink %>" target="_blank">Buy Now</a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <script src="/js/buyer/deals.js"></script>
+</body>
+</html>

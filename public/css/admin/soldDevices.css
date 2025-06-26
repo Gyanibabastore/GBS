@@ -1,0 +1,174 @@
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.6;
+}
+
+/* Overlay Container */
+.overlay {
+  padding: 30px;
+  min-height: 100vh;
+}
+
+/* Headings */
+h2.text-center {
+  color: #343a40;
+  font-size: 1.75rem;
+}
+
+/* Back Button */
+.btn-warning {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Filters Section */
+.form-label {
+  font-weight: 600;
+  color: #343a40;
+}
+
+input[type="month"],
+input[type="date"] {
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* Reset Button */
+#resetFilters {
+  padding: 0.55rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Table Container */
+.table-responsive {
+  overflow-x: auto;
+  background-color: #212529;
+  border-radius: 12px;
+  padding: 10px;
+  margin-top: 1rem;
+}
+
+/* Table Styles */
+.table {
+  margin-bottom: 0;
+  border-collapse: collapse;
+  width: 100%;
+  color: #fff;
+}
+
+.table thead {
+  background-color: #343a40;
+  color: white;
+}
+
+.table td,
+.table th {
+  padding: 0.75rem;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* Hover Effect */
+.table tbody tr:hover {
+  background-color: #495057;
+  transition: background-color 0.3s ease;
+}
+
+/* Chart Card */
+.card {
+  margin-top: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #ffc107;
+  font-weight: 600;
+  padding: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.card-body {
+  background-color: #ffffff;
+  padding: 1rem;
+}
+
+/* Chart Canvas */
+canvas {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+
+
+/* Media Queries */
+@media (max-width: 768px) {
+  h2.text-center {
+    font-size: 1.5rem;
+  }
+
+  .btn-warning {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+
+  .card-header {
+    font-size: 1rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 20px 10px;
+  }
+
+  h2.text-center {
+    font-size: 1.3rem;
+  }
+
+  .btn-warning {
+    width: 100%;
+    text-align: center;
+  }
+
+  .card-body {
+    padding: 0.75rem;
+  }
+
+  input[type="month"],
+  input[type="date"] {
+    font-size: 0.85rem;
+  }
+}
