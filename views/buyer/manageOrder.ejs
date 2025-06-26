@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <<%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
   <link href="/css/buyer/manageOrders.css" rel="stylesheet" />
   
 </head>
@@ -14,6 +14,9 @@
     <button class="btn btn-primary mb-4" id="toggle-pending-btn">Show Pending Orders</button>
 
     <form action="/buyer/<%= buyerId %>/orders" method="POST" id="bulk-order-form">
+       <div class="text-center">
+        <button type="submit" class="btn btn-success btn-lg mb-4">🛒 Submit All Orders</button>
+      </div>
       <div id="product-list" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <% for (let i = 0; i < products.length; i++) { const product = products[i]; %>
         <div class="col">
@@ -47,9 +50,7 @@
         </div>
         <% } %>
       </div>
-      <div class="text-center">
-        <button type="submit" class="btn btn-success btn-lg mt-4">🛒 Submit All Orders</button>
-      </div>
+     
     </form>
 
     <hr>

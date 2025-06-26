@@ -239,7 +239,23 @@ exports.getManageOrders = async (req, res) => {
     }
 
     // Get all active deals
-    const deals = await Deal.find({ status: 'active' }).lean();
+    let deals = await Deal.find({ status: 'active' }).lean();
+
+    // Inject private deal quantities from buyer schema
+    if (buyer.dealQuantities && buyer.dealQuantities.length > 0) {
+      deals = deals.map(deal => {
+        if (deal.buyerIds && deal.buyerIds.length > 0) {
+          const match = buyer.dealQuantities.find(q => q.dealId.toString() === deal._id.toString());
+          if (match) {
+            return {
+              ...deal,
+              quantity: match.quantity
+            };
+          }
+        }
+        return deal;
+      });
+    }
 
     // Get all pending orders for this buyer
     const rawOrders = await Order.find({
@@ -251,30 +267,26 @@ exports.getManageOrders = async (req, res) => {
     const groupedOrdersMap = new Map();
 
     rawOrders.forEach(order => {
-      // Handle missing or invalid date safely
       let dateKey = 'unknown';
       if (order.date && !isNaN(new Date(order.date))) {
-        dateKey = new Date(order.date).toISOString().slice(0, 10); // YYYY-MM-DD
+        dateKey = new Date(order.date).toISOString().slice(0, 10);
       }
 
       const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}|${dateKey}`;
 
       if (!groupedOrdersMap.has(key)) {
-        // Initialize quantity
         groupedOrdersMap.set(key, {
           ...order,
           quantity: order.quantity || 1,
-          date: order.date || new Date() // default date for rendering
+          date: order.date || new Date()
         });
       } else {
-        // Increase quantity if already grouped
         groupedOrdersMap.get(key).quantity += order.quantity || 1;
       }
     });
 
     const groupedPendingOrders = Array.from(groupedOrdersMap.values());
 
-    // Send to view
     res.render('buyer/manageOrder', {
       products: deals,
       pendingOrders: groupedPendingOrders,
@@ -494,14 +506,29 @@ exports.getDeals = async (req, res) => {
   try {
     const buyer = await Buyer.findById(req.user.id).lean();
 
-    const deals = await Deal.find({
+    let deals = await Deal.find({
       status: 'active',
       $or: [
-        { buyerIds: { $exists: false } },             // no buyerIds field
-        { buyerIds: { $size: 0 } },                   // empty array
-        { buyerIds: buyer._id }                       // specific to this buyer
+        { buyerIds: { $exists: false } },
+        { buyerIds: { $size: 0 } },
+        { buyerIds: buyer._id }
       ]
     }).lean();
+
+    if (buyer.dealQuantities && buyer.dealQuantities.length > 0) {
+      deals = deals.map(deal => {
+        if (deal.buyerIds && deal.buyerIds.length > 0) {
+          const match = buyer.dealQuantities.find(q => q.dealId.toString() === deal._id.toString());
+          if (match) {
+            return {
+              ...deal,
+              quantity: match.quantity
+            };
+          }
+        }
+        return deal;
+      });
+    }
 
     res.render('buyer/deals', { deals, buyer });
   } catch (error) {
@@ -509,7 +536,6 @@ exports.getDeals = async (req, res) => {
     res.status(500).render('error/500', { msg: 'Unable to fetch deals' });
   }
 };
-
 
 // Get Payment History
 exports.getPaymentHistory = async (req, res) => {

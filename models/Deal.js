@@ -24,7 +24,7 @@ const dealSchema = new mongoose.Schema({
   },
 quantity: {
   type: String,
-  required: true
+
 }
 ,
   bookingAmount: {

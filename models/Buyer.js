@@ -21,6 +21,19 @@ const BuyerSchema = new Schema({
     type: Number,
     default: 0
   },
+  dealQuantities: [
+    {
+      dealId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Deal',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        
+      }
+    }
+  ],
 
   createdAt: {
     type: Date,

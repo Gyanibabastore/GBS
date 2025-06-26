@@ -1057,48 +1057,38 @@ exports.toggleDealStatus = async (req, res) => {
 
 
 
+
 exports.createDeal = async (req, res) => {
+  console.log("📩 Raw Request Body:", req.body);
   try {
     const {
-      brand,
-      modelName,
-      variant,
-      color,
-      modelImage,
-      buyLink,
-      bookingAmount,
-      returnAmount,
-      margin,
-      pincode,
-      address,
-      cardWorking,
-      status,
-      sendToAll,
-      buyerIds,
-      quantity,
-      unlimitedCheckbox
+      brand, modelName, variant, color,
+      modelImage, buyLink, bookingAmount, returnAmount, margin,
+      pincode, address, cardWorking, status,
+      sendToAll, buyerIds, allBuyerQty, buyerQuantities, unlimitedCheckbox
     } = req.body;
 
-    console.log("📩 Raw Request Body:", req.body);
-
-    // 🛠️ Fix: handle missing sendToAll or buyerIds
     const sendToAllFinal = sendToAll === 'true' || (!buyerIds && !sendToAll);
     console.log("🟠 Final sendToAll value:", sendToAllFinal);
 
     let assignedBuyers = [];
-
     if (sendToAllFinal) {
       assignedBuyers = [];
       console.log("✅ 'Send to all' selected. Will send to all buyers.");
     } else if (buyerIds) {
       assignedBuyers = Array.isArray(buyerIds) ? buyerIds : [buyerIds];
       console.log("✅ Specific buyers selected:", assignedBuyers);
-    } else {
-      console.warn("⚠️ No buyers selected and sendToAllFinal is false");
     }
 
-    const finalQuantity = unlimitedCheckbox === 'on' ? 'unlimited' : Number(quantity);
-    console.log("📦 Final deal quantity:", finalQuantity);
+    // Handle quantity
+    let finalQuantity = 'unlimited';
+    if (unlimitedCheckbox !== 'on') {
+      if (sendToAllFinal && allBuyerQty) {
+        finalQuantity = parseInt(allBuyerQty);
+      } else {
+        finalQuantity = null; // Don't store in deal
+      }
+    }
 
     const dealData = {
       deviceName: modelName,
@@ -1120,15 +1110,36 @@ exports.createDeal = async (req, res) => {
     };
 
     console.log("📝 Deal to be saved:", dealData);
-
     const newDeal = new Deal(dealData);
     await newDeal.save();
-
     console.log("✅ Deal saved to DB");
 
-    // 📤 Send WhatsApp to buyers
-    let buyersToNotify = [];
+    // Save buyer-quantity mapping in Buyer schema if not sendToAll
+    if (!sendToAllFinal && Array.isArray(buyerIds) && Array.isArray(buyerQuantities)) {
+      for (let i = 0; i < buyerIds.length; i++) {
+        const buyerId = buyerIds[i];
+        const qty = parseInt(buyerQuantities[i]);
 
+        if (!isNaN(qty) && qty > 0) {
+          await Buyer.updateOne(
+            { _id: buyerId },
+            {
+              $push: {
+                dealQuantities: {
+                  dealId: newDeal._id,
+                  quantity: qty
+                }
+              }
+            }
+          );
+
+          console.log(`🧾 Quantity ${qty} saved for buyer ${buyerId} in deal ${newDeal._id}`);
+        }
+      }
+    }
+
+    // Send WhatsApp notifications
+    let buyersToNotify = [];
     if (sendToAllFinal) {
       buyersToNotify = await Buyer.find({}, 'mobile name').lean();
       console.log(`📨 Found ${buyersToNotify.length} buyers (ALL)`);
@@ -1144,21 +1155,21 @@ exports.createDeal = async (req, res) => {
       `💰 Booking: ₹${bookingAmount}\n\n` +
       `🌐 Visit us: https://gyanibabastore.in`;
 
-    console.log("📨 WhatsApp Message:\n", message);
-
     for (const buyer of buyersToNotify) {
       if (buyer.mobile) {
-        console.log(`📲 Sending WhatsApp to ${buyer.name || 'Unnamed'} (${buyer.mobile})`);
-        await sendWhatsApp(
-          buyer.mobile,
-          message,
-          modelImage,
-          'Buy Now',
-          buyLink || 'https://gyanibabastore.in'
-        );
-        console.log(`✅ Sent to ${buyer.mobile}`);
-      } else {
-        console.warn(`⚠️ Skipped buyer ${buyer._id} — no mobile`);
+        console.log(`📞 Sending WhatsApp to ${buyer.name || 'Unnamed'} (${buyer.mobile})`);
+        try {
+          await sendWhatsApp(
+            buyer.mobile,
+            message,
+            modelImage,
+            'Buy Now',
+            buyLink || 'https://gyanibabastore.in'
+          );
+          console.log(`✅ Sent to ${buyer.mobile}`);
+        } catch (err) {
+          console.warn(`❌ WhatsApp error for ${buyer.mobile}:`, err.message);
+        }
       }
     }
 
@@ -1169,7 +1180,6 @@ exports.createDeal = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
-
 
 
 

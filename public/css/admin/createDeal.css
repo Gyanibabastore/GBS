@@ -236,6 +236,24 @@
 #cancelBuyerModal {
   border-radius: 8px;
 }
+.buyer-checkbox {
+  transition: background 0.2s ease;
+}
+.buyer-checkbox:hover {
+  background-color: #f5f5f5;
+  border-radius: 6px;
+}
+.buyer-qty-input {
+  transition: border-color 0.2s ease;
+}
+.buyer-qty-input:disabled {
+  background-color: #e9ecef;
+}
+.buyer-qty-input.is-invalid {
+  border-color: #dc3545;
+  background-color: #fff0f0;
+}
+
 
 /* ✅ Responsive Tweaks */
 @media (max-width: 576px) {

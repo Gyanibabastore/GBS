@@ -27,6 +27,13 @@
   object-fit: cover;
   border-bottom: 3px solid #eee;
 }
+ .product-img {
+      height: 180px;
+      object-fit: contain;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
 
 .card-body {
   background-color: rgba(255, 255, 255, 0.3); /* semi-transparent */

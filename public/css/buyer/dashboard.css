@@ -1,160 +1,214 @@
-/* 🔷 Glassmorphic Overlay */
-.overlay {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  padding: 2.5rem;
-  border-radius: 25px;
-  color: #111827;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* 💠 Decorative Bubble */
-.overlay::before {
-  content: "";
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle at top left, #4f46e5 10%, transparent 60%);
-  top: -40px;
-  left: -40px;
-  z-index: 0;
-  opacity: 0.15;
-}
-
-/* ⏬ Section Margin */
-.section {
-  margin-bottom: 3rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* ✨ Gradient Border Card */
-.card {
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(240, 248, 255, 0.8));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease-in-out;
-  position: relative;
-  overflow: hidden;
-  padding: 1.8rem;
-  border: 3px solid transparent;
-  background-clip: padding-box;
-}
-
-.card::before {
-  content: "";
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-  background: linear-gradient(135deg, #4f46e5, #3b82f6, #9333ea);
-  border-radius: inherit;
-  z-index: -1;
-}
-
-/* 🏷️ Emoji Sticker (Individual per card) */
-.card[data-sticker]::after {
-  content: attr(data-sticker);
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  font-size: 2rem;
-  opacity: 0.15;
-  transform: rotate(10deg);
-  pointer-events: none;
-}
-
-.card:hover {
-  transform: translateY(-8px) scale(1.03);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.25);
-}
-
-/* 📝 Card Content */
-.card-title {
-  font-weight: 700;
-  color: #4338ca;
-  font-size: 1.25rem;
-  margin-bottom: 0.6rem;
-}
-
-.value {
-  font-size: 2.1rem;
-  font-weight: 900;
-  color: #1d4ed8;
-}
-
-.card p {
-  color: #374151;
-  font-size: 1rem;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #e0eafc, #cfdef3); /* pastel blue gradient */
+  min-height: 100vh;
   margin: 0;
+  padding: 0;
+  color: #2d3748;
 }
 
-/* 🧠 Header */
+.overlay {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+}
+
+/* ✨ Stylish Header */
 h2 {
-  font-weight: 800;
-  color: white;
-  background: linear-gradient(135deg, #4f46e5, #2563eb);
-  padding: 1.2rem 2.5rem;
-  border-radius: 20px;
-  display: inline-block;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-  font-size: 2.2rem;
+  font-weight: 600;
+  color: #44337a; /* Brand Purple */
+  margin-bottom: 2rem;
+}
+
+/* 🟪 Unified Card Style */
+.dashboard-card {
   position: relative;
-  z-index: 2;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  overflow: hidden;
 }
 
-/* 📱 Responsive Tweaks */
-@media (max-width: 768px) {
-  .row.section > div {
-    margin-bottom: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.6rem;
-    padding: 1rem 1.5rem;
-  }
-
-  .value {
-    font-size: 1.6rem;
-  }
-
-  .card-title {
-    font-size: 1.1rem;
-  }
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(68, 51, 122, 0.2); /* brand purple shadow */
 }
 
-@media (max-width: 576px) {
-  .card {
-    padding: 1.5rem;
-    text-align: center;
-  }
-
-  .card-title {
-    font-size: 1rem;
-  }
-
-  .value {
-    font-size: 1.4rem;
-  }
+.dashboard-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2a4365;
+  margin-bottom: 0.5rem;
 }
 
-/* 📌 Sticky Navbar */
-.navbar {
-  position: sticky;
+.dashboard-card .value {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #1a202c;
+}
+
+/* 📍 Status Colors */
+.dashboard-card .value.text-danger {
+  color: #f56565; /* pastel red */
+}
+
+.dashboard-card .value.text-success {
+  color: #48bb78; /* pastel green */
+}
+
+.dashboard-card .value.text-warning {
+  color: #ed8936; /* soft orange */
+}
+
+/* 🎖 "New!" Ribbon in Brand Purple */
+.badge-ribbon {
+  position: absolute;
   top: 0;
-  z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  left: 0;
+  background: #6b46c1; /* GB Store Purple */
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-bottom-right-radius: 12px;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  animation: ribbonFadeIn 0.6s ease-in-out;
+}
+.dashboard-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 1.5rem;
+  color: #2d3748;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  background: linear-gradient(135deg, #f5f7fa, #e4ecf7); /* fallback gentle pastel */
 }
 
-.navbar-brand img {
-  height: 42px;
-  margin-right: 12px;
+/* Smooth hover lift */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(68, 51, 122, 0.15); /* soft shadow */
+}
+
+/* ✅ Per-card pastel radiant background */
+.dashboard-card[data-sticker="🎁"] {
+  background: linear-gradient(135deg, #fdeff9, #ecf2ff); /* pastel pink → lavender */
+}
+
+.dashboard-card[data-sticker="🛠"] {
+  background: linear-gradient(135deg, #e0f9e8, #f0fff3); /* mint green shades */
+}
+
+.dashboard-card[data-sticker="📦"] {
+  background: linear-gradient(135deg, #eaf4ff, #f4f9ff); /* light blue-gray */
+}
+
+.dashboard-card[data-sticker="🚚"] {
+  background: linear-gradient(135deg, #fff6d1, #fef9e7); /* soft yellow-cream */
+}
+
+.dashboard-card[data-sticker="💳"] {
+  background: linear-gradient(135deg, #fbeaff, #f0ecfc); /* soft purple-pink */
+}
+
+.dashboard-card[data-sticker="💰"] {
+  background: linear-gradient(135deg, #f3ffe3, #e9fff9); /* pastel green-white */
+}
+
+.dashboard-card[data-sticker="📜"] {
+  background: linear-gradient(135deg, #f3f0ff, #f5faff); /* soft blurple-white */
+}
+
+/* Title and value text remain dark for contrast */
+.dashboard-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.dashboard-card .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1a202c;
+}
+/* ✨ Overlay Container Gradient Background */
+.overlay {
+  background: linear-gradient(145deg, #fdfbfb, #ebedee); /* soft white-gray */
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.04);
+}
+
+/* Optional: a subtle pastel alternate */
+body .overlay {
+  background: linear-gradient(135deg, #fef9ff, #edf5ff); /* pastel lilac to blue */
+}
+
+/* Keeps consistency with soft cards */
+.container {
+  max-width: 1140px;
+}
+
+/* 🎖 Lighter "New!" Ribbon */
+.badge-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #b794f4; /* light purple */
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-bottom-right-radius: 12px;
+  z-index: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  animation: ribbonFadeIn 0.6s ease-in-out;
+}
+
+@keyframes ribbonFadeIn {
+  0% { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-card {
+    margin-bottom: 1rem;
+  }
+}
+
+
+@keyframes ribbonFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 📱 Responsive Section Padding */
+.section {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-card {
+    margin-bottom: 1rem;
+  }
 }

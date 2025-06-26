@@ -72,14 +72,8 @@
         <label for="cardWorking" class="form-label">Card Working</label>
         <input type="text" class="form-control" id="cardWorking" name="cardWorking" required>
         <div class="col-md-4 mt-3">
-          <label for="quantity" class="form-label">Quantity</label>
-          <div class="input-group">
-            <input type="number" class="form-control" id="quantity" name="quantity" min="0" required>
-            <div class="input-group-text">
-              <input class="form-check-input mt-0" type="checkbox" id="unlimitedCheckbox">
-              <label class="ms-2" for="unlimitedCheckbox" style="font-size: 0.9rem;">Unlimited</label>
-            </div>
-          </div>
+          >
+        
         </div>
       </div>
 
@@ -149,39 +143,70 @@
     <% } %>
   </div>
 
-  <!-- Buyer Selection Modal -->
-  <div id="buyerModal" class="modal" style="display: none;">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Select Buyers</h5>
-          <button type="button" class="btn-close" id="closeBuyerModal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="text" class="form-control mb-2" id="buyerSearch" placeholder="Search buyer by name">
-          <div class="form-check mb-2">
+  <!-- ... everything remains the same before this ... -->
+
+<!-- Buyer Selection Modal -->
+<div id="buyerModal" class="modal" style="display: none;">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Select Buyers</h5>
+        <button type="button" class="btn-close" id="closeBuyerModal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-2" id="buyerSearch" placeholder="Search buyer by name">
+        
+        <div class="form-check mb-2 d-flex align-items-center justify-content-between">
+          <div>
             <input type="checkbox" class="form-check-input" id="selectAllBuyers">
             <label class="form-check-label" for="selectAllBuyers">Select All Buyers</label>
           </div>
-          <div class="buyer-list border rounded p-2" style="max-height: 300px; overflow-y: auto;">
-            <% buyers.forEach(buyer => { %>
-              <div class="buyer-checkbox d-flex justify-content-between align-items-center border-bottom px-2 py-2">
-                <span><%= buyer.name %></span>
-                <input type="checkbox" class="form-check-input buyer-checkbox-input" value="<%= buyer._id %>">
-              </div>
-            <% }) %>
-          </div>
+          <input 
+            type="number" 
+            class="form-control form-control-sm" 
+            id="selectAllQtyInput"
+            placeholder="Qty for All"
+            style="width: 120px; display: none;"
+            min="1"
+          />
         </div>
 
-        <div class="modal-footer">
-          <input type="hidden" id="sendToAllInput" name="sendToAll" value="false">
-          <p id="selectedCount" class="text-muted mb-1">Selected: 0 buyers</p>
-          <button type="button" class="btn btn-secondary" id="cancelBuyerModal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="confirmCreateDeal">Confirm & Create Deal</button>
+        <div class="buyer-list border rounded p-2" style="max-height: 300px; overflow-y: auto;">
+          <% buyers.forEach(buyer => { %>
+            <div class="buyer-checkbox d-flex justify-content-between align-items-center border-bottom px-2 py-2">
+              <span><%= buyer.name %></span>
+              <div class="d-flex align-items-center gap-2">
+                <input 
+                  type="number" 
+                  class="form-control form-control-sm buyer-qty-input" 
+                  min="1" max="999" 
+                  placeholder="Qty" 
+                  style="width: 70px;" 
+                  data-buyer-id="<%= buyer._id %>"
+                >
+                <input 
+                  type="checkbox" 
+                  class="form-check-input buyer-checkbox-input" 
+                  value="<%= buyer._id %>"
+                >
+              </div>
+            </div>
+          <% }) %>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <input type="hidden" id="sendToAllInput" name="sendToAll" value="false">
+        <p id="selectedCount" class="text-muted mb-1">Selected: 0 buyers</p>
+        <button type="button" class="btn btn-secondary" id="cancelBuyerModal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmCreateDeal">Confirm & Create Deal</button>
       </div>
     </div>
   </div>
+</div>
+
+<script src="/js/admin/createDeal.js"></script>
+
 
   <script src="/js/admin/createDeal.js"></script>
 </body>

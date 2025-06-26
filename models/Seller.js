@@ -11,7 +11,7 @@ const SellerSchema = new Schema({
     type: Number,
     default: 0
   },
- 
+
   password: String,
   earning:{
     type: Number,
