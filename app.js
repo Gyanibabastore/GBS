@@ -36,7 +36,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI, // ✅ Ensure this is set in Render
-    ttl: 24 * 60 * 60 * 1000 * 7
+    ttl: 24 * 60 * 60  * 7
   })
 }));
 

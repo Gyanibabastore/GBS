@@ -68,7 +68,7 @@ exports.signup = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000*7
     });
 
     return res.redirect(`/${role}/dashboard/${newUser._id}`);
@@ -122,7 +122,7 @@ exports.verifyLoginOtp = async (req, res) => {
   res.cookie('token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 1000
+    maxAge: 24 * 60 * 60 * 1000*7
   });
 
   res.status(200).json({ verified: true, token, userId: user._id, role });
@@ -204,7 +204,7 @@ exports.adminlogincontroller = async (req, res) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // Set secure only in production
-      maxAge: 60 * 60 * 1000 // 1 hour
+       maxAge: 24 * 60 * 60 * 1000*7
     });
 
     // ✅ Redirect to admin dashboard

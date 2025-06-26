@@ -1,10 +1,14 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #f4f6f9;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   margin: 0;
-  padding: 0;
+  padding: 1rem;
+  box-sizing: border-box;
 }
-
 .container {
   max-width: 400px;
   margin: 60px auto;
