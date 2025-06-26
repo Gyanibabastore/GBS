@@ -84,13 +84,18 @@ body {
   background-color: #c82333;
 }
 
-@media (max-width: 768px) {
-  .delivery-card {
-    padding: 1rem;
+@media (max-width: 480px) {
+  .out-btn {
+    padding: 12px;
+    font-size: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
   }
 
-  .status-ribbon {
-    font-size: 0.65rem;
-    padding: 6px 14px;
+  .out-btn::before {
+    content: "+";
+    font-size: 20px;
+    color: white;
   }
 }

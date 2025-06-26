@@ -1,84 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
 <%
-  const currentUserId = 
+  const currentUserId =
     (typeof currentUser !== 'undefined' && currentUser._id) ||
     (typeof buyer !== 'undefined' && buyer._id) ||
     (typeof dashboardData !== 'undefined' && dashboardData._id);
 %>
-<!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GBSTORE</title>
 
-  <!-- Bootstrap Icons & Fonts -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Custom Navbar CSS -->
-  <link rel="stylesheet" href="/css/utils/navbar.css">
+  <!-- Icons + Fonts -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/utils/navbar.css" />
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark shadow-sm py-3">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="/buyer/dashboard/<%= currentUserId %>">
-        <img src="/images/logo.png" alt="Logo" class="brand-logo" style="height: 35px;"> GBSTORE
-      </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a class="navbar-brand" href="/buyer/dashboard/<%= currentUserId %>">
+          <img src="/images/logo.png" alt="Logo" class="brand-logo" />
+          <span class="brand-text">GBSTORE</span>
+        </a>
+      </div>
 
-      <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
-        <ul class="navbar-nav align-items-center">
-          <li class="nav-item me-3">
-            <a href="/buyer/out-for-delivery" class="nav-link">
-              <i class="bi bi-truck"></i> OFD
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a href="https://wa.me/91xxxxxxxxxx" target="_blank" class="nav-link">
-              <i class="bi bi-whatsapp"></i> WhatsApp
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a href="https://t.me/yourtelegramchannel" target="_blank" class="nav-link">
-              <i class="bi bi-telegram"></i> Telegram
-            </a>
-          </li>
-          <li class="nav-item me-3">
-            <a href="https://www.youtube.com/@yourchannel" target="_blank" class="nav-link">
-              <i class="bi bi-youtube"></i> YouTube
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-              <img src="https://i.pravatar.cc/300" alt="Profile" class="profile-img me-2 rounded-circle" style="height: 32px; width: 32px;">
-              <span class="d-none d-lg-inline">Profile</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li>
-                <a class="dropdown-item" href="#">
-                  <i class="bi bi-person"></i> My Account
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item" href="/auth/buyer/logout">
-                  <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>
+      <div class="nav-center d-lg-none" id="centerOFD">
+        <a href="/buyer/out-for-delivery" class="nav-link text-warning">
+          <i class="bi bi-truck"></i> OFD
+        </a>
+      </div>
+
+      <div class="nav-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <i class="bi bi-moon-fill"></i>
+        </button>
+        <button class="icon-btn" id="drawerToggle" title="Open menu">
+          <i class="bi bi-list"></i>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- Bootstrap Bundle JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- 📱 MOBILE DRAWER -->
+  <div id="mobileDrawer" class="mobile-drawer">
+    <ul class="drawer-menu">
+      <li><a href="/buyer/out-for-delivery"><i class="bi bi-truck"></i> OFD</a></li>
+      <li><a href="https://wa.me/91xxxxxxxxxx" target="_blank"><i class="bi bi-whatsapp"></i> WhatsApp</a></li>
+      <li><a href="https://t.me/yourtelegramchannel" target="_blank"><i class="bi bi-telegram"></i> Telegram</a></li>
+      <li><a href="https://www.youtube.com/@yourchannel" target="_blank"><i class="bi bi-youtube"></i> YouTube</a></li>
+      <li class="divider"></li>
+      <li class="profile-section">
+        <img src="https://i.pravatar.cc/300" class="profile-img" alt="Profile" />
+        <a href="#">My Account</a>
+        <a href="#">Settings</a>
+        <a href="/auth/buyer/logout">Logout</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 🔲 BACKDROP -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+
+  <!-- JS -->
+  <script>
+    const drawerToggle = document.getElementById('drawerToggle');
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('drawerOverlay');
+
+    function openDrawer() {
+      drawer.classList.add('open');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    drawerToggle.addEventListener('click', openDrawer);
+    overlay.addEventListener('click', closeDrawer);
+
+    // Close on link click
+    document.querySelectorAll('.mobile-drawer .drawer-menu a').forEach(link => {
+      link.addEventListener('click', closeDrawer);
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    // 🌙 Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const setTheme = (mode) => {
+      document.body.dataset.theme = mode;
+      localStorage.setItem('theme', mode);
+    };
+    themeToggle.addEventListener('click', () => {
+      const current = document.body.dataset.theme;
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+    setTheme(localStorage.getItem('theme') || 'light');
+  </script>
 </body>
 </html>
