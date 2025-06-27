@@ -1072,30 +1072,24 @@ exports.createDeal = async (req, res) => {
     console.log("🟠 Final sendToAll value:", sendToAllFinal);
 
     let assignedBuyers = [];
-
-    // 🟢 If "Send to All", fetch all buyers
     if (sendToAllFinal) {
-      const allBuyers = await Buyer.find({}, '_id').lean();
-      assignedBuyers = allBuyers.map(b => b._id.toString());
-      console.log("✅ 'Send to all' selected. Assigned all buyer IDs:", assignedBuyers);
-    } 
-    // 🟠 If specific buyers selected
-    else if (buyerIds) {
+      assignedBuyers = [];
+      console.log("✅ 'Send to all' selected. Will send to all buyers.");
+    } else if (buyerIds) {
       assignedBuyers = Array.isArray(buyerIds) ? buyerIds : [buyerIds];
       console.log("✅ Specific buyers selected:", assignedBuyers);
     }
 
-    // 🎯 Determine final deal quantity
+    // Handle quantity
     let finalQuantity = 'unlimited';
     if (unlimitedCheckbox !== 'on') {
       if (sendToAllFinal && allBuyerQty) {
         finalQuantity = parseInt(allBuyerQty);
       } else {
-        finalQuantity = null; // per-buyer quantity stored separately
+        finalQuantity = null; // Don't store in deal
       }
     }
 
-    // 📝 Construct deal
     const dealData = {
       deviceName: modelName,
       brand,
@@ -1120,7 +1114,7 @@ exports.createDeal = async (req, res) => {
     await newDeal.save();
     console.log("✅ Deal saved to DB");
 
-    // 💾 Store per-buyer quantities if not 'Send to All'
+    // Save buyer-quantity mapping in Buyer schema if not sendToAll
     if (!sendToAllFinal && Array.isArray(buyerIds) && Array.isArray(buyerQuantities)) {
       for (let i = 0; i < buyerIds.length; i++) {
         const buyerId = buyerIds[i];
@@ -1144,12 +1138,14 @@ exports.createDeal = async (req, res) => {
       }
     }
 
-    // 📲 Send WhatsApp Notifications
+    // Send WhatsApp notifications
     let buyersToNotify = [];
-
-    if (assignedBuyers.length > 0) {
+    if (sendToAllFinal) {
+      buyersToNotify = await Buyer.find({}, 'mobile name').lean();
+      console.log(`📨 Found ${buyersToNotify.length} buyers (ALL)`);
+    } else if (assignedBuyers.length > 0) {
       buyersToNotify = await Buyer.find({ _id: { $in: assignedBuyers } }, 'mobile name').lean();
-      console.log(`📨 Notifying ${buyersToNotify.length} buyers`);
+      console.log(`📨 Found ${buyersToNotify.length} buyers (SELECTED)`);
     }
 
     const message =
@@ -1184,6 +1180,7 @@ exports.createDeal = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
 
 
 

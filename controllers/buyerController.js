@@ -319,7 +319,14 @@ exports.updateBuyerOrder = async (req, res) => {
       const parsedQuantity = parseInt(quantity) || 0;
       if (parsedQuantity < 1) continue;
 
-      const deal = await Deal.findOne({ brand, deviceName, variant, color });
+    let deal = await Deal.find({
+      status: 'active',
+      $or: [
+        { buyerIds: { $exists: false } },
+        { buyerIds: { $size: 0 } },
+        { buyerIds: buyer._id }
+      ]
+    }).lean();
         if (!deal) {
       console.warn('⚠️ No matching deal found to update quantity.');
       req.flash('error', 'No matching deal found.');
