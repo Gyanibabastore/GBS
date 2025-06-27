@@ -60,17 +60,18 @@ function addToCart(index) {
       alert("🚫 Out of stock.");
       return;
     }
-    cart.push({
-      _id: model._id,
-      title: model.title,
-      booking: model.booking,
-      returnAmount: model.returnAmount,
-      buyerprice: model.buyerprice,
-      color: model.color,
-      brand: model.brand,
-      image: model.image,
-      quantity: 1
-    });
+   cart.push({
+  _id: model._id,
+  title: model.title,
+  booking: model.discount > 0 ? model.booking - model.discount : model.booking, // ✅ fixed here
+  returnAmount: model.returnAmount,
+  buyerprice: model.buyerprice,
+  color: model.color,
+  brand: model.brand,
+  image: model.image,
+  quantity: 1
+});
+
   }
 
   renderCart();

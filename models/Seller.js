@@ -11,7 +11,12 @@ const SellerSchema = new Schema({
     type: Number,
     default: 0
   },
-
+ discounts: [
+    {
+      stockId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stock' },
+      amount: Number
+    }
+  ],
   password: String,
   earning:{
     type: Number,

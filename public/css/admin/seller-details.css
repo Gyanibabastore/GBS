@@ -136,6 +136,20 @@ h2, h4 {
   background: linear-gradient(135deg, #ff9800, #ffc107);
 }
 
+.btn-discount {
+  background: linear-gradient(to right, #ff6a00, #ee0979);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.btn-discount:hover {
+  transform: scale(1.05);
+}
 
 /* 📱 Responsive Adjustments */
 @media (max-width: 992px) {

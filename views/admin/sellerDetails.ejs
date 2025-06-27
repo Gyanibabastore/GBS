@@ -16,9 +16,18 @@
   <!-- ✅ Admin Navbar Include -->
   <%- include('../partials/adminNavbar') %>
   <div class="overlay">
-    <div class="container py-4">
-      <a href="/admin/sellers" class="btn btn-outline-dark mb-3">⬅ Back to Seller List</a>
-      <h2 class="mb-4">Seller Details: <%= seller.name %></h2>
+      <div class="container py-4">
+    <a href="/admin/sellers" class="btn btn-outline-dark mb-3">⬅ Back to Seller List</a>
+
+    <!-- ✅ Flex row for seller name and discount button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <span class="seller-name h4 mb-0">Seller Details: <%= seller.name %></span>
+
+      <form action="/admin/seller/discounts/<%= seller._id %>" method="GRT" style="margin: 0;">
+        
+        <button type="submit" class="btn btn-discount">🎯 Add Discount</button>
+      </form>
+    </div>
 
       <!-- Seller Info -->
       <div class="row mb-4">

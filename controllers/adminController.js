@@ -1383,7 +1383,7 @@ exports.updateOrdersToSold = async (req, res) => {
     await Seller.findByIdAndUpdate(sellerId, {
       $inc: {
         earning: totalEarning,
-        advance: bookingSellerAmt * limit // ✅ Add total amount to advance
+        advance: bookingSellerAmt  // ✅ Add total amount to advance
       }
     });
 
@@ -1462,3 +1462,100 @@ exports.getPendingDeals = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.sellerdiscount = async (req, res) => {
+  try {
+    const sellerId = req.params.id;
+    console.log("📥 Seller ID:", sellerId);
+
+    // 1️⃣ Get seller & their discounts array
+    const seller = await Seller.findById(sellerId).lean();
+    if (!seller) return res.status(404).send("Seller not found");
+
+    const sellerDiscounts = seller.discounts || [];
+
+    // 2️⃣ Get all stock deals
+    const deals = await Stock.find().lean();
+
+    // 3️⃣ Annotate each deal with a `discount` field (matched or 0)
+    const annotatedDeals = deals.map(deal => {
+      const matched = sellerDiscounts.find(d => d.stockId.toString() === deal._id.toString());
+
+      const discountAmount = matched ? matched.amount : 0;
+
+      if (matched) {
+        console.log(`✅ Discount matched for stockId ${deal._id}: ₹${matched.amount}`);
+      } else {
+        console.log(`⛔ No discount for stockId ${deal._id}, setting discount: 0`);
+      }
+
+      return {
+        ...deal,
+        discount: discountAmount
+      };
+    });
+    console.log(annotatedDeals);
+    // 4️⃣ Render to EJS
+    res.render('admin/sellerdiscount', {
+      deals: annotatedDeals,
+      sellerId
+    });
+
+  } catch (error) {
+    console.error("❌ Error in sellerdiscount:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+
+
+
+exports.updateSellerDiscount = async (req, res) => {
+  try {
+    const { sellerId, stockId, discount } = req.body;
+
+    console.log('Updating Discount:', { sellerId, stockId, discount });
+
+   
+
+    // ✅ Step 2: Push discount into Seller.discounts array
+   await Seller.findOneAndUpdate(
+  { _id: sellerId, "discounts.stockId": stockId },
+  { $set: { "discounts.$.amount": discount } },
+  { new: true }
+).then(async (updatedSeller) => {
+  if (!updatedSeller) {
+    // not found, so push new
+    await Seller.findByIdAndUpdate(sellerId, {
+      $push: {
+        discounts: {
+          stockId,
+          amount: discount
+        }
+      }
+    });
+  }
+});
+
+
+    res.redirect(`/admin/seller/discounts/${sellerId}`);
+  } catch (error) {
+    console.error('Error updating seller discount:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+

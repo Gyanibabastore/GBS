@@ -16,7 +16,7 @@ function groupOrders(orders) {
 
     const key = `${order.brand}|${order.deviceName}|${order.variant}|${order.color}`;
     const modelTitle = `${order.deviceName} (${order.variant})`;
-    const price = order.bookingAmount || order.bookingAmountSeller || 0;
+    const price = order.bookingAmountSeller || 0;
 
     if (!grouped.has(key)) {
       grouped.set(key, {
@@ -25,7 +25,7 @@ function groupOrders(orders) {
         color: order.color,
         quantity: 1,
         totalPrice: price,
-        sellerName: order.sellerName || "You", // 🆕 Include sellerName
+        sellerName: order.sellerName || "You",
         date: order.placedDate || order.deliveryDate || order.createdAt
       });
     } else {
@@ -42,15 +42,29 @@ exports.getSellerDashboard = async (req, res) => {
   try {
     const sellerId = req.user.id;
 
+    // 🔍 Get seller with discounts
     const seller = await Seller.findById(sellerId).lean();
-    const dueAmount = seller?.advance || 0; // 💰 Get advance from seller schema
+    const sellerDiscounts = seller?.discounts || [];
+    const dueAmount = seller?.advance || 0;
 
+    // 🔍 All active deals
     const stockDeals = await Stock.find({ deal: true, availableCount: { $gt: 0 } });
+
     const modelMap = new Map();
 
     for (const stock of stockDeals) {
       const key = `${stock.deviceName}|${stock.variant}|${stock.color}`;
       const isLowStock = stock.availableCount < 2;
+
+      // 🔍 Try to find matching discount
+      const matchingDiscount = sellerDiscounts.find(d => d.stockId.toString() === stock._id.toString());
+      const discountAmount = matchingDiscount ? matchingDiscount.amount : 0;
+
+      if (matchingDiscount) {
+        console.log(`✅ Discount matched for stock ${stock._id}: ₹${discountAmount}`);
+      } else {
+        console.log(`⛔ No discount for stock ${stock._id}`);
+      }
 
       if (!modelMap.has(key)) {
         modelMap.set(key, {
@@ -58,8 +72,9 @@ exports.getSellerDashboard = async (req, res) => {
           brand: stock.brand,
           image: stock.imageUrl,
           color: stock.color,
-          buyerprice:stock.returnAmount,
+          buyerprice: stock.returnAmount,
           booking: stock.bookingAmountSeller,
+          discount: discountAmount, // ✅ Push discount here
           stock: stock.availableCount,
           lowStock: isLowStock
         });
@@ -67,17 +82,22 @@ exports.getSellerDashboard = async (req, res) => {
         const existing = modelMap.get(key);
         existing.stock += stock.availableCount;
         if (stock.availableCount < 2) existing.lowStock = true;
+        existing.discount += discountAmount; // Add if multiple matching
       }
     }
 
     const models = Array.from(modelMap.values());
 
+    // 🔁 Orders
     const rawPending = await Order.find({ sellerId, status: 'out-for-delivery' }).sort({ deliveryDate: -1 });
     const rawDelivered = await Order.find({ sellerId, status: 'sold' }).sort({ deliveryDate: -1 });
 
     const pendingOrders = groupOrders(rawPending);
     const deliveredOrders = groupOrders(rawDelivered);
+
+    console.log("📦 Final models with discount:");
     console.log(models);
+
     res.render('seller/dashboard', {
       sellerId,
       models,
@@ -87,7 +107,7 @@ exports.getSellerDashboard = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Dashboard Error:', err);
+    console.error('❌ Dashboard Error:', err);
     res.status(500).render('error/500', { msg: 'Failed to load seller dashboard.' });
   }
 };

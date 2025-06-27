@@ -38,4 +38,7 @@ router.post('/:id/payments', protect, isAdmin, (req, res, next) => {
 // Deal creation
 router.post('/deals/create', protect, isAdmin, adminController.createDeal);
 router.post('/orders/mark-sold',protect,isAdmin,adminController.updateOrdersToSold);
+router.get('/seller/discounts/:id',protect,isAdmin, adminController.sellerdiscount);
+router.post('/seller/update-discount',protect,isAdmin, adminController.updateSellerDiscount);
+
 module.exports = router;

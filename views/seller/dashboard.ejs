@@ -37,7 +37,18 @@
           <div class="card-body d-flex flex-column">
             <h5 class="card-title"><%= model.brand %> - <%= model.title %></h5>
             <p>Color: <strong><%= model.color %></strong></p>
-            <p>Booking Price: ₹<%= model.booking %></p>
+         <% if (model.discount > 0) { 
+     const discountedPrice = model.booking - model.discount;
+%>
+  <p>
+    Booking Price:
+    <del>₹<%= model.booking %></del><br />
+    <strong>Discounted: ₹<%= discountedPrice %></strong>
+  </p>
+<% } else { %>
+  <p>Booking Price: ₹<%= model.booking %></p>
+<% } %>
+
             <% if (model.stock <= 2) { %>
   <div class="alert alert-danger py-1 px-2 small fw-bold mb-2">
     ⚠ Hurry up! Only <%= model.stock %> piece<%= model.stock === 1 ? '' : 's' %> left
@@ -46,9 +57,11 @@
 <button
   class="btn mt-auto w-100 add-to-cart-btn <%= model.stock === 0 ? 'btn-out-of-stock' : 'btn-primary' %>"
   data-index="<%= index %>"
+  data-price="<%= model.discount > 0 ? model.booking - model.discount : model.booking %>"
   <%= model.stock === 0 ? 'disabled' : '' %>>
   <%= model.stock === 0 ? 'Out of Stock' : 'Add to Cart' %>
 </button>
+
 
 
           </div>
