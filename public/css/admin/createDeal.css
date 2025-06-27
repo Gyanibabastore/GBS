@@ -253,7 +253,21 @@
   border-color: #dc3545;
   background-color: #fff0f0;
 }
+/* Ensure card image has fixed height, maintains aspect ratio, and doesn't distort */
+.card-img-top {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
 
+@media (max-width: 576px) {
+  .card-img-top {
+    height: 150px;
+  }
+}
 
 /* ✅ Responsive Tweaks */
 @media (max-width: 576px) {
