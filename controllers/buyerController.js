@@ -239,7 +239,14 @@ exports.getManageOrders = async (req, res) => {
     }
 
     // Get all active deals
-    let deals = await Deal.find({ status: 'active' }).lean();
+   let deals = await Deal.find({
+      status: 'active',
+      $or: [
+        { buyerIds: { $exists: false } },
+        { buyerIds: { $size: 0 } },
+        { buyerIds: buyer._id }
+      ]
+    }).lean();
 
     // Inject private deal quantities from buyer schema
     if (buyer.dealQuantities && buyer.dealQuantities.length > 0) {
@@ -319,14 +326,7 @@ exports.updateBuyerOrder = async (req, res) => {
       const parsedQuantity = parseInt(quantity) || 0;
       if (parsedQuantity < 1) continue;
 
-    let deal = await Deal.find({
-      status: 'active',
-      $or: [
-        { buyerIds: { $exists: false } },
-        { buyerIds: { $size: 0 } },
-        { buyerIds: buyer._id }
-      ]
-    }).lean();
+      const deal = await Deal.findOne({ brand, deviceName, variant, color });
         if (!deal) {
       console.warn('⚠️ No matching deal found to update quantity.');
       req.flash('error', 'No matching deal found.');
