@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const confirmBtn = document.getElementById('confirmCreateDeal');
   const selectedCount = document.getElementById('selectedCount');
   const sendToAllInput = document.getElementById('sendToAllInput');
-const selectAllQtyInput = document.getElementById('selectAllQtyInput');
+  const selectAllQtyInput = document.getElementById('selectAllQtyInput');
+  const spinner = document.getElementById('dealSpinner');
 
   let isSelectAllActive = false;
 
@@ -33,20 +34,19 @@ const selectAllQtyInput = document.getElementById('selectAllQtyInput');
     if (e.target === buyerModal) hideModal();
   });
 
-selectAllCheckbox.addEventListener('change', () => {
-  isSelectAllActive = selectAllCheckbox.checked;
-  buyerInputs.forEach(input => input.checked = isSelectAllActive);
+  selectAllCheckbox.addEventListener('change', () => {
+    isSelectAllActive = selectAllCheckbox.checked;
+    buyerInputs.forEach(input => input.checked = isSelectAllActive);
 
-  if (isSelectAllActive) {
-    selectAllQtyInput.style.display = 'inline-block';
-  } else {
-    selectAllQtyInput.style.display = 'none';
-    selectAllQtyInput.value = '';
-  }
+    if (isSelectAllActive) {
+      selectAllQtyInput.style.display = 'inline-block';
+    } else {
+      selectAllQtyInput.style.display = 'none';
+      selectAllQtyInput.value = '';
+    }
 
-  updateSelectionUI();
-});
-
+    updateSelectionUI();
+  });
 
   buyerInputs.forEach(input => {
     input.addEventListener('change', () => {
@@ -88,21 +88,19 @@ selectAllCheckbox.addEventListener('change', () => {
     sendToAllInput.value = isSelectAllActive ? 'true' : 'false';
 
     if (isSelectAllActive) {
-  const qty = parseInt(selectAllQtyInput.value);
+      const qty = parseInt(selectAllQtyInput.value);
+      if (isNaN(qty) || qty <= 0) {
+        alert('❌ Please enter a valid quantity for all buyers.');
+        return;
+      }
 
-  if (isNaN(qty) || qty <= 0) {
-    alert('❌ Please enter a valid quantity for all buyers.');
-    return;
-  }
-
-  const qtyInput = document.createElement('input');
-  qtyInput.type = 'hidden';
-  qtyInput.name = 'allBuyerQty';
-  qtyInput.value = qty;
-  qtyInput.classList.add('hidden-buyer-input');
-  dealForm.appendChild(qtyInput);
-}
-else {
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'hidden';
+      qtyInput.name = 'allBuyerQty';
+      qtyInput.value = qty;
+      qtyInput.classList.add('hidden-buyer-input');
+      dealForm.appendChild(qtyInput);
+    } else {
       const selectedBuyers = [];
 
       for (let i = 0; i < buyerInputs.length; i++) {
@@ -144,6 +142,9 @@ else {
         dealForm.appendChild(qtyInput);
       });
     }
+
+    // ✅ Show spinner before submitting
+    if (spinner) spinner.style.display = 'flex';
 
     dealForm.submit();
   });

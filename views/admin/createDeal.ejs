@@ -113,15 +113,20 @@
         <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary w-100 mb-2">🔗 Buy Now</a>
 
         <% if (deal.buyerIds && deal.buyerIds.length > 0) { %>
-          <p class="mt-2 mb-1 text-muted fw-bold">👥 Sent To:</p>
-          <ul class="ps-3 mb-2 small">
-            <% deal.buyerIds.forEach(buyer => { %>
-              <li><%= buyer.name %></li>
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <p class="mt-2 mb-2 text-muted small">👥 Sent to <strong>All Buyers</strong></p>
-        <% } %>
+  <% if (deal.buyerIds.length === buyers.length) { %>
+    <p class="mt-2 mb-2 text-muted small">👥 Sent to <strong>All Buyers</strong></p>
+  <% } else { %>
+    <p class="mt-2 mb-1 text-muted fw-bold">👥 Sent To:</p>
+    <ul class="ps-3 mb-2 small">
+      <% deal.buyerIds.forEach(buyer => { %>
+        <li><%= buyer.name %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+<% } else { %>
+  <p class="mt-2 mb-2 text-muted small">👥 Sent to <strong>All Buyers</strong></p>
+<% } %>
+
 
         <div class="form-check form-switch d-flex align-items-center justify-content-between mt-2">
           <input 
@@ -202,6 +207,12 @@
         <button type="button" class="btn btn-primary" id="confirmCreateDeal">Confirm & Create Deal</button>
       </div>
     </div>
+  </div>
+</div>
+<!-- Spinner Overlay -->
+<div id="dealSpinner" class="deal-spinner" style="display: none;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
   </div>
 </div>
 

@@ -1,10 +1,11 @@
-// Original working code + improved with live password checklist and restricted email editing after verification
+// signup.js with live email validation
+
 let otpVerified = false;
 let sendingOtp = false;
 let verifyingOtp = false;
 let countdownTimer;
 const resendCooldown = 30;
-let resendLocked = false; // ✅ Prevent manual resend early
+let resendLocked = false;
 
 window.onload = () => selectRole('buyer');
 
@@ -12,30 +13,30 @@ function selectRole(role) {
   document.getElementById('selectedRole').value = role;
   document.getElementById('buyerFields').style.display = role === 'buyer' ? 'block' : 'none';
   document.getElementById('sellerFields').style.display = role === 'seller' ? 'block' : 'none';
-
   document.getElementById('buyerBtn').classList.remove('active');
   document.getElementById('sellerBtn').classList.remove('active');
   document.getElementById(role + 'Btn').classList.add('active');
-
-  document.getElementById('formHeading').innerText =
-    role === 'buyer' ? 'Create Buyer Account' : 'Create Seller Account';
+  document.getElementById('formHeading').innerText = role === 'buyer' ? 'Create Buyer Account' : 'Create Seller Account';
 }
-// 👁️ Show/hide password toggle
+
+function isValidEmail(email) {
+  const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
 const togglePassword = document.getElementById('togglePassword');
 const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
 
 togglePassword?.addEventListener('click', () => {
   const pwd = document.querySelector('input[name="password"]');
-  const type = pwd.type === 'password' ? 'text' : 'password';
-  pwd.type = type;
-  togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
+  pwd.type = pwd.type === 'password' ? 'text' : 'password';
+  togglePassword.textContent = pwd.type === 'password' ? '👁️' : '🙈';
 });
 
 toggleConfirmPassword?.addEventListener('click', () => {
   const cpwd = document.querySelector('input[name="confirmPassword"]');
-  const type = cpwd.type === 'password' ? 'text' : 'password';
-  cpwd.type = type;
-  toggleConfirmPassword.textContent = type === 'password' ? '👁️' : '🙈';
+  cpwd.type = cpwd.type === 'password' ? 'text' : 'password';
+  toggleConfirmPassword.textContent = cpwd.type === 'password' ? '👁️' : '🙈';
 });
 
 document.getElementById("signupForm")?.addEventListener("submit", function (event) {
@@ -74,14 +75,14 @@ document.getElementById("signupForm")?.addEventListener("submit", function (even
 
 function startResendTimer(button) {
   let timeLeft = resendCooldown;
-  resendLocked = true; // ✅ Prevent early resend
+  resendLocked = true;
   const info = document.getElementById("resendInfo");
   const countdown = document.getElementById("countdown");
 
   info.style.display = "block";
   countdown.innerText = timeLeft;
   button.disabled = true;
-  button.style.display = 'none'; // ✅ Hide the button completely during countdown
+  button.style.display = 'none';
 
   countdownTimer = setInterval(() => {
     timeLeft--;
@@ -92,7 +93,7 @@ function startResendTimer(button) {
       info.style.display = "none";
       button.disabled = false;
       button.innerText = 'Resend OTP';
-      button.style.display = 'inline-block'; // ✅ Show the button back
+      button.style.display = 'inline-block';
       resendLocked = false;
     }
   }, 1000);
@@ -100,7 +101,7 @@ function startResendTimer(button) {
 
 document.getElementById("otpBtn")?.addEventListener("click", function () {
   const btn = this;
-  if (sendingOtp || btn.disabled || resendLocked) return; // ✅ Lock resend during countdown
+  if (sendingOtp || btn.disabled || resendLocked) return;
 
   const emailInput = document.querySelector('input[name="email"]');
   const email = emailInput.value;
@@ -109,6 +110,11 @@ document.getElementById("otpBtn")?.addEventListener("click", function () {
 
   if (!email || !name) {
     alert("Please enter your name and email first");
+    return;
+  }
+
+  if (!isValidEmail(email) || email.includes('+')) {
+    alert("Please enter a valid email without '+' symbol.");
     return;
   }
 
@@ -126,7 +132,7 @@ document.getElementById("otpBtn")?.addEventListener("click", function () {
       if (data.success) {
         document.getElementById('otpSection').style.display = 'flex';
         btn.innerText = 'Resend OTP';
-        emailInput.readOnly = true; // ✅ Prevent editing after send
+        emailInput.readOnly = true;
         startResendTimer(btn);
         alert("OTP sent to your email");
       } else {
@@ -177,8 +183,10 @@ document.getElementById("verifyOtpBtn")?.addEventListener("click", function () {
 document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.querySelector('input[name="password"]');
   const confirmPasswordInput = document.querySelector('input[name="confirmPassword"]');
+  const emailInput = document.querySelector('input[name="email"]');
   const passwordError = document.getElementById("passwordError");
   const confirmPasswordError = document.getElementById("confirmPasswordError");
+  const emailError = document.getElementById("emailError");
 
   passwordInput?.addEventListener("input", () => {
     const pwd = passwordInput.value;
@@ -188,24 +196,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const specialCheck = /[\W_]/.test(pwd);
 
     let checklist = [];
-    if (lengthCheck) checklist.push('✅ 8+ chars');
-    else checklist.push('❌ 8+ chars');
-    if (uppercaseCheck) checklist.push('✅ Uppercase');
-    else checklist.push('❌ Uppercase');
-    if (numberCheck) checklist.push('✅ Number');
-    else checklist.push('❌ Number');
-    if (specialCheck) checklist.push('✅ Special char');
-    else checklist.push('❌ Special char');
+    checklist.push(lengthCheck ? '✅ 8+ chars' : '❌ 8+ chars');
+    checklist.push(uppercaseCheck ? '✅ Uppercase' : '❌ Uppercase');
+    checklist.push(numberCheck ? '✅ Number' : '❌ Number');
+    checklist.push(specialCheck ? '✅ Special char' : '❌ Special char');
 
     passwordError.innerHTML = checklist.join(' <br> ');
   });
 
   confirmPasswordInput?.addEventListener("input", () => {
-    confirmPasswordError.innerText =
-      confirmPasswordInput.value !== passwordInput.value
-        ? "Passwords do not match."
-        : "";
+    confirmPasswordError.innerText = confirmPasswordInput.value !== passwordInput.value
+      ? "Passwords do not match."
+      : "";
   });
+
+emailInput?.addEventListener("input", () => {
+  const email = emailInput.value.trim();
+
+  if (!email || (isValidEmail(email) && !email.includes('+'))) {
+    emailError.innerHTML = "";
+    emailInput.style.border = "1px solid #ccc"; // default border
+  } else {
+    emailError.innerHTML = "Not a valid email";
+    emailInput.style.border = "2px solid red";
+  }
+});
+
+
 
   document.getElementById('buyerBtn')?.addEventListener('click', () => selectRole('buyer'));
   document.getElementById('sellerBtn')?.addEventListener('click', () => selectRole('seller'));

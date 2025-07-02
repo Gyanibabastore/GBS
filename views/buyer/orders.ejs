@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
+<head>
+  <%- include('../partials/head', { title: "Gyanibaba Store Dashboard" }) %>
   <link href="/css/buyer/myorders.css" rel="stylesheet" />
 </head>
 <body>
@@ -15,6 +16,7 @@
     <div class="controls d-flex gap-3 mb-4 flex-wrap">
       <input type="text" class="form-control search-box" placeholder="Search by model..." id="searchBox" />
       <select class="form-select status-filter" id="statusFilter">
+        <option value="" <%= !defaultStatus ? 'selected' : '' %>>All</option>
         <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
         <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
         <option value="canceled" <%= defaultStatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
@@ -22,36 +24,36 @@
     </div>
 
     <!-- 🧾 Orders List -->
-   <div id="orders-container" class="row">
-  <% orders.forEach(order => { %>
-    <div class="col-md-6 col-lg-4 mb-4 order-card-wrapper <%= order.status !== defaultStatus ? 'd-none' : '' %>"
-         data-status="<%= order.status %>"
-         data-model="<%= order.deviceModel.toLowerCase() %>">
-      <div class="card glass-card position-relative p-3 shadow order-card">
+    <div id="orders-container" class="row">
+      <% orders.forEach(order => { %>
+        <div class="col-md-6 col-lg-4 mb-4 order-card-wrapper"
+             data-status="<%= order.status %>"
+             data-model="<%= order.deviceModel.toLowerCase() %>">
+          <div class="card glass-card position-relative p-3 shadow order-card">
 
-        <!-- 🎀 Sticker -->
-        <div class="sticker <%= order.status %>">
-          <% if (order.status === 'delivered') { %>✅ Delivered<% } %>
-          <% if (order.status === 'pending') { %>⏳ Pending<% } %>
-          <% if (order.status === 'canceled') { %>❌ Canceled<% } %>
+            <!-- 🎀 Sticker -->
+            <div class="sticker <%= order.status %>">
+              <% if (order.status === 'delivered') { %>✅ Delivered<% } %>
+              <% if (order.status === 'pending') { %>⏳ Pending<% } %>
+              <% if (order.status === 'canceled') { %>❌ Canceled<% } %>
+            </div>
+
+            <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid rounded product-img mb-3" />
+
+            <div class="card-body">
+              <h5 class="fw-bold text-primary mb-2"><%= order.deviceModel %></h5>
+              <p><span class="badge bg-primary me-2">Variant</span><%= order.variant %></p>
+              <p><span class="badge bg-dark me-2">Color</span><%= order.color %></p>
+              <p><span class="badge bg-success me-2">Qty</span><%= order.quantity %></p>
+              <p><span class="badge bg-info me-2">Booking</span>₹<%= order.bookingAmount %></p>
+              <p><span class="badge bg-warning text-dark me-2">Return</span>₹<%= order.returnAmount %></p>
+              <p><span class="badge bg-danger me-2">Margin</span>₹<%= order.margin %></p>
+              <p class="text-muted small mt-2">📅 <%= order.orderDate || 'N/A' %></p>
+            </div>
+          </div>
         </div>
-
-        <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid rounded product-img mb-3" />
-
-        <div class="card-body">
-          <h5 class="fw-bold text-primary mb-2"><%= order.deviceModel %></h5>
-          <p><span class="badge bg-primary me-2">Variant</span><%= order.variant %></p>
-          <p><span class="badge bg-dark me-2">Color</span><%= order.color %></p>
-          <p><span class="badge bg-success me-2">Qty</span><%= order.quantity %></p>
-          <p><span class="badge bg-info me-2">Booking</span>₹<%= order.bookingAmount %></p>
-          <p><span class="badge bg-warning text-dark me-2">Return</span>₹<%= order.returnAmount %></p>
-          <p><span class="badge bg-danger me-2">Margin</span>₹<%= order.margin %></p>
-          <p class="text-muted small mt-2">📅 <%= order.orderDate || 'N/A' %></p>
-        </div>
-      </div>
+      <% }) %>
     </div>
-  <% }) %>
-</div>
 
   </div>
 

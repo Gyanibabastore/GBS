@@ -9,20 +9,19 @@ const roleInput = document.getElementById('role');
 const sendOtpBtn = document.getElementById('sendOtpBtn');
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
 const passwordInput = loginForm.querySelector('input[name="password"]');
-const emailInput = loginForm.querySelector('input[name="email"]');
+const emailInput = document.getElementById('emailInput');
 const passwordError = document.getElementById('passwordError');
+const emailError = document.getElementById('emailError');
 const resendInfo = document.getElementById('resendInfo');
 
-// Checklist spans
+// Checklist
 const passwordChecklist = document.getElementById('passwordChecklist');
 const lengthCheck = document.getElementById('lengthCheck');
 const uppercaseCheck = document.getElementById('uppercaseCheck');
 const numberCheck = document.getElementById('numberCheck');
 const specialCheck = document.getElementById('specialCheck');
 
-let resendCooldown = 30;
-let resendTimer = null;
-
+// Role toggle
 buyerBtn.onclick = () => {
   roleInput.value = 'buyer';
   buyerBtn.classList.add('active');
@@ -35,21 +34,7 @@ sellerBtn.onclick = () => {
   buyerBtn.classList.remove('active');
 };
 
-function showLoader(button, text) {
-  button.disabled = true;
-  button.innerHTML = `${text}<span class="spinner"></span>`;
-}
-
-function hideLoader(button, text) {
-  button.disabled = false;
-  button.innerHTML = text;
-}
-
-function validatePassword(password) {
-  return /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
-}
-
-// ✅ Live checklist with color + border
+// Password checklist
 passwordInput.addEventListener('focus', () => {
   passwordChecklist.style.display = 'block';
 });
@@ -73,12 +58,10 @@ passwordInput.addEventListener('input', () => {
   specialCheck.textContent = (specialOK ? "✅" : "❌") + " Special char";
 
   passwordInput.style.border = allOK ? '2px solid green' : '1px solid #ccc';
-  passwordError.innerHTML = allOK
-    ? ''
-    : '<span style="color:red">Password must meet all requirements.</span>';
+  passwordError.innerHTML = allOK ? '' : '<span style="color:red">Password must meet all requirements.</span>';
 });
 
-// 👁️ Show/Hide toggle
+// Password toggle
 const eyeToggle = document.createElement('span');
 eyeToggle.innerHTML = '👁️';
 eyeToggle.style.cursor = 'pointer';
@@ -100,6 +83,21 @@ eyeToggle.addEventListener('click', () => {
   eyeToggle.innerHTML = type === 'password' ? '🙈' : '👁️';
 });
 
+// Validation functions
+function validatePassword(password) {
+  return /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+}
+
+function isValidEmail(email) {
+  // Block '+' in email and validate general format
+  const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
+}
+
+// Send OTP
+let resendCooldown = 30;
+let resendTimer = null;
+
 function startResendCooldown() {
   resendCooldown = 30;
   sendOtpBtn.disabled = true;
@@ -118,14 +116,31 @@ function startResendCooldown() {
   }, 1000);
 }
 
+function showLoader(button, text) {
+  button.disabled = true;
+  button.innerHTML = `${text}<span class="spinner"></span>`;
+}
+
+function hideLoader(button, text) {
+  button.disabled = false;
+  button.innerHTML = text;
+}
+
 sendOtpBtn.addEventListener('click', async () => {
   msg.textContent = '';
   msg.style.color = '';
+  emailError.innerHTML = '';
+  passwordError.innerHTML = '';
 
   const formData = new FormData(loginForm);
   const email = formData.get('email');
   const role = formData.get('role');
   const password = formData.get('password');
+
+  if (!isValidEmail(email)) {
+    emailError.innerHTML = '<span style="color:red">Invalid email format or contains + sign.</span>';
+    return;
+  }
 
   if (!validatePassword(password)) {
     passwordError.innerHTML = '<span style="color:red">Password must meet all requirements.</span>';
@@ -174,6 +189,7 @@ sendOtpBtn.addEventListener('click', async () => {
   }
 });
 
+// Verify OTP
 otpForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   msg.textContent = '';
@@ -205,7 +221,6 @@ otpForm.addEventListener('submit', async (e) => {
       sendOtpBtn.disabled = true;
       clearInterval(resendTimer);
       resendInfo.innerText = 'Verified successfully!';
-
       window.location.href = `/${role}/dashboard/${data.userId}`;
     } else {
       msg.style.color = 'red';
@@ -215,5 +230,22 @@ otpForm.addEventListener('submit', async (e) => {
     hideLoader(verifyOtpBtn, 'Login');
     msg.style.color = 'red';
     msg.textContent = 'Error verifying OTP';
+  }
+});
+emailInput.addEventListener('input', () => {
+  const email = emailInput.value;
+
+  if (!email) {
+    emailError.innerHTML = '';
+    emailInput.style.border = '1px solid #ccc';
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    emailError.innerHTML = '<span style="color:red">Invalid email format or contains + sign.</span>';
+    emailInput.style.border = '2px solid red';
+  } else {
+    emailError.innerHTML = '';
+    emailInput.style.border = '2px solid green';
   }
 });
