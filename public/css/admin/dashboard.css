@@ -28,10 +28,13 @@
 }
 
 .logo {
+  background-color: #000;
+  
   height: 50px;
   margin-right: 10px;
   transition: transform 0.3s ease;
-}
+  border-radius: 50%;
+border: 2px solid #fc8f8f;   }
 
 .logo:hover {
   transform: scale(1.1) rotate(-2deg);
@@ -60,6 +63,7 @@
 #barChart:hover {
   transform: scale(1.03);
 }
+
 /* Make chart containers responsive */
 @media (max-width: 768px) {
   #soldPieChart,

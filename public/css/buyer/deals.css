@@ -5,7 +5,7 @@
     }
 
     .container {
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       padding: 40px;
@@ -14,10 +14,12 @@
     }
 
     .card {
-      border-radius: 18px;
-      transition: all 0.3s ease-in-out;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.3s ease;
+  position: relative;
+}
 
     .card:hover {
       transform: translateY(-5px);
@@ -29,13 +31,15 @@
       font-size: 1.1rem;
     }
 
-    .product-img {
-      height: 180px;
-      object-fit: contain;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 10px;
-    }
+  
+.product-img {
+  height: 150px;
+  object-fit: contain;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
 
     .quantity-controls button {
       width: 38px;

@@ -50,39 +50,48 @@
   <button class="out-btn" id="toggleExpandBtn" title="Add Out for Delivery">+ Out for Delivery</button>
 
 
-    <form class="expand-card" id="expand-card" action="/buyer/out-for-delivery" method="POST" style="display: none;">
-      <h5 class="mb-3">📋 Add Out for Delivery Entry</h5>
-      <input type="text" class="form-control" placeholder="Name" name="name" required />
+    <form class="expand-card needs-validation" id="expand-card" action="/buyer/out-for-delivery" method="POST" style="display: none;" novalidate>
+  <h5 class="mb-3">📋 Add Out for Delivery Entry</h5>
 
-      <select class="form-control" name="brand" id="brandSelect" required>
-        <option selected disabled>Select Brand</option>
-        <% brands.forEach(function(brand) { %>
-          <option value="<%= brand %>"><%= brand %></option>
-        <% }) %>
-      </select>
+  <input type="text" class="form-control" name="name" placeholder="Name" required />
+  <small class="text-danger"></small>
 
-      <select class="form-control" name="model" required>
-        <option selected disabled>Select Model</option>
-      </select>
+  <select class="form-control" name="brand" id="brandSelect" required>
+    <option selected disabled>Select Brand</option>
+    <% brands.forEach(function(brand) { %>
+      <option value="<%= brand %>"><%= brand %></option>
+    <% }) %>
+  </select>
 
-      <select class="form-control" name="variant" required>
-        <option selected disabled>Select Variant</option>
-      </select>
+  <select class="form-control" name="model" required>
+    <option selected disabled>Select Model</option>
+  </select>
 
-      <select class="form-control" name="color" required>
-        <option selected disabled>Select Color</option>
-      </select>
+  <select class="form-control" name="variant" required>
+    <option selected disabled>Select Variant</option>
+  </select>
 
-      <select class="form-control" name="pincode" required>
-        <option selected disabled>Select Pincode</option>
-      </select>
+  <select class="form-control" name="color" required>
+    <option selected disabled>Select Color</option>
+  </select>
 
-      <input type="text" class="form-control" placeholder="OTP" name="otp" required />
-      <input type="text" class="form-control" placeholder="Tracking ID" name="trackingId" required />
-      <input type="text" class="form-control" placeholder="Mobile Last 4 Digit" name="mobileLast4" required />
+  <select class="form-control" name="pincode" required>
+    <option selected disabled>Select Pincode</option>
+  </select>
 
-      <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
-    </form>
+  <input type="text" class="form-control" placeholder="OTP" name="otp" required pattern="\d{4,6}" maxlength="6" />
+  <small class="text-danger"></small>
+
+  <input type="text" class="form-control" placeholder="Tracking ID" name="trackingId" required pattern="[A-Za-z0-9\-]{6,20}" />
+  <small class="text-danger"></small>
+
+  <input type="text" class="form-control" placeholder="Mobile Last 4 Digit" name="mobileLast4" required pattern="\d{4}" maxlength="4" />
+  <small class="text-danger"></small>
+
+  <button type="submit" class="btn btn-success w-100 mt-3">Submit</button>
+</form>
+
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>

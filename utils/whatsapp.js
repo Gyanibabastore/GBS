@@ -1,37 +1,42 @@
 const axios = require('axios');
-const qs = require('qs');
 
-const whatsapp = async (phone, message, imageUrl, buttonText, buttonLink) => {
+// Load credentials from environment
+const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+// Main function
+const sendWhatsApp = async (phone, message, imageUrl, buttonText, buttonLink) => {
+  if (!phone || !message || !imageUrl) {
+    console.error("❌ Missing required fields: phone, message, or imageUrl");
+    return;
+  }
+
   try {
     const payload = {
-      channel: 'whatsapp',
-      source: process.env.GUPSHUP_SOURCE_NUMBER,
-      destination: '91' + phone,
-      'src.name': process.env.GUPSHUP_APP_NAME,
-      message: JSON.stringify({
-        type: 'image',
-        originalUrl: imageUrl,
-        previewUrl: imageUrl,
+      messaging_product: 'whatsapp',
+      to: '91' + phone,
+      type: 'image',
+      image: {
+        link: imageUrl,
         caption: message
-      }),
-      'message-type': 'image'
+      }
     };
 
-    const res = await axios.post(
-      'https://api.gupshup.io/sm/api/v1/msg',
-      qs.stringify(payload),
+    const response = await axios.post(
+      `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
+      payload,
       {
         headers: {
-          apikey: process.env.GUPSHUP_API_KEY,
-          'Content-Type': 'application/x-www-form-urlencoded'
+          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          'Content-Type': 'application/json'
         }
       }
     );
 
-    console.log(`📤 WhatsApp sent to ${phone}`, res.data);
+    console.log(`✅ WhatsApp message sent to ${phone}`, response.data);
   } catch (error) {
-    console.error(`❌ WhatsApp error for ${phone}:`, error.response?.data || error.message);
+    console.error(`❌ WhatsApp send failed for ${phone}:`, error.response?.data || error.message);
   }
 };
 
-module.exports = whatsapp;
+module.exports = sendWhatsApp;

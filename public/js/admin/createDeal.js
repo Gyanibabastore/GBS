@@ -14,6 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendToAllInput = document.getElementById('sendToAllInput');
   const selectAllQtyInput = document.getElementById('selectAllQtyInput');
   const spinner = document.getElementById('dealSpinner');
+const bookingInput = document.getElementById("bookingAmount");
+  const returnInput = document.getElementById("returnAmount");
+  const marginInput = document.getElementById("margin");
+
+  function updateMargin() {
+    const booking = parseFloat(bookingInput.value);
+    const returned = parseFloat(returnInput.value);
+
+    if (!isNaN(booking) && !isNaN(returned)) {
+      const margin = returned - booking;
+      marginInput.value = margin >= 0 ? margin : 0;
+    } else {
+      marginInput.value = '';
+    }
+  }
+
+  bookingInput.addEventListener("input", updateMargin);
+  returnInput.addEventListener("input", updateMargin);
 
   let isSelectAllActive = false;
 
@@ -58,13 +76,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  searchInput.addEventListener('input', () => {
-    const keyword = searchInput.value.toLowerCase();
-    buyerCheckboxes.forEach(div => {
-      const label = div.innerText.toLowerCase();
-      div.style.display = label.includes(keyword) ? 'flex' : 'none';
-    });
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+searchInput.addEventListener('input', debounce(() => {
+  const keyword = searchInput.value.toLowerCase();
+  const buyerCheckboxes = document.querySelectorAll('.buyer-checkbox');
+
+  buyerCheckboxes.forEach(div => {
+    const label = div.innerText.toLowerCase();
+    div.style.display = label.includes(keyword) ? 'flex' : 'none';
   });
+}, 200));
+
+
 
   function updateSelectionUI() {
     let count = 0;
@@ -125,22 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      selectedBuyers.forEach(({ buyerId, qty }) => {
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'buyerIds';
-        idInput.value = buyerId;
-        idInput.classList.add('hidden-buyer-input');
+   selectedBuyers.forEach(({ buyerId, qty }) => {
+  const idInput = document.createElement('input');
+  idInput.type = 'hidden';
+  idInput.name = 'buyerIds[]'; // ✅ Make this an array
+  idInput.value = buyerId;
+  idInput.classList.add('hidden-buyer-input');
 
-        const qtyInput = document.createElement('input');
-        qtyInput.type = 'hidden';
-        qtyInput.name = 'buyerQuantities';
-        qtyInput.value = qty;
-        qtyInput.classList.add('hidden-buyer-input');
+  const qtyInput = document.createElement('input');
+  qtyInput.type = 'hidden';
+  qtyInput.name = 'buyerQuantities[]'; // ✅ Make this an array
+  qtyInput.value = qty;
+  qtyInput.classList.add('hidden-buyer-input');
 
-        dealForm.appendChild(idInput);
-        dealForm.appendChild(qtyInput);
-      });
+  dealForm.appendChild(idInput);
+  dealForm.appendChild(qtyInput);
+});
+
     }
 
     // ✅ Show spinner before submitting

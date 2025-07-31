@@ -11,79 +11,78 @@
     <h2 class="mb-4 text-center text-primary">📦 Create New Deal</h2>
 
     <!-- Deal Form -->
-    <form id="dealForm" method="POST" action="/admin/deals/create">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="brand" class="form-label">Brand</label>
-          <input type="text" class="form-control" id="brand" name="brand" required>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="modelName" class="form-label">Model Name</label>
-          <input type="text" class="form-control" id="modelName" name="modelName" required>
-        </div>
-      </div>
+   <form id="dealForm" method="POST" action="/admin/deals/create">
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="brand" class="form-label">Brand</label>
+      <input type="text" class="form-control" id="brand" name="brand" placeholder="e.g. Samsung, Apple" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="modelName" class="form-label">Model Name</label>
+      <input type="text" class="form-control" id="modelName" name="modelName" placeholder="e.g. iPhone 14 Pro" required>
+    </div>
+  </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="variant" class="form-label">Variant</label>
-          <input type="text" class="form-control" id="variant" name="variant" required>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="color" class="form-label">Color</label>
-          <input type="text" class="form-control" id="color" name="color" required>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label for="buyLink" class="form-label">Buy Now Link</label>
-        <input type="url" class="form-control" id="buyLink" name="buyLink" required>
-      </div>
-      <div class="mb-3">
-        <label for="modelImage" class="form-label">Model Image Link</label>
-        <input type="url" class="form-control" id="modelImage" name="modelImage" required>
-      </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="variant" class="form-label">Variant</label>
+      <input type="text" class="form-control" id="variant" name="variant" placeholder="e.g. 128GB" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="color" class="form-label">Color</label>
+      <input type="text" class="form-control" id="color" name="color" placeholder="e.g. Space Black" required>
+    </div>
+  </div>
 
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label for="bookingAmount" class="form-label">Booking Amount</label>
-          <input type="number" class="form-control" id="bookingAmount" name="bookingAmount" min="0" required>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="returnAmount" class="form-label">Return Amount</label>
-          <input type="number" class="form-control" id="returnAmount" name="returnAmount" min="0" required>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label for="margin" class="form-label">Buyer Margin</label>
-          <input type="number" class="form-control" id="margin" name="margin" min="0" required>
-        </div>
-      </div>
+  <div class="mb-3">
+    <label for="buyLink" class="form-label">Buy Now Link</label>
+    <input type="url" class="form-control" id="buyLink" name="buyLink" placeholder="https://example.com/product" required>
+  </div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="pincode" class="form-label">Pincode</label>
-          <input type="text" class="form-control" id="pincode" name="pincode" pattern="\d{6}" required>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="address" class="form-label">Address</label>
-          <input type="text" class="form-control" id="address" name="address" required>
-        </div>
-      </div>
+  <div class="mb-3">
+    <label for="modelImage" class="form-label">Model Image Link</label>
+    <input type="url" class="form-control" id="modelImage" name="modelImage" placeholder="https://example.com/image.jpg" required>
+  </div>
 
-      <div class="mb-3">
-        <label for="cardWorking" class="form-label">Card Working</label>
-        <input type="text" class="form-control" id="cardWorking" name="cardWorking" required>
-        <div class="col-md-4 mt-3">
-          >
-        
-        </div>
-      </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label for="bookingAmount" class="form-label">Booking Amount</label>
+      <input type="number" class="form-control" id="bookingAmount" name="bookingAmount" min="0" placeholder="e.g. 5000" required>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="returnAmount" class="form-label">Return Amount</label>
+      <input type="number" class="form-control" id="returnAmount" name="returnAmount" min="0" placeholder="e.g. 6000" required>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="margin" class="form-label">Buyer Margin</label>
+      <input type="number" class="form-control" id="margin" name="margin" placeholder="Auto-calculated" readonly>
+    </div>
+  </div>
 
-      <div class="form-check form-switch mb-4">
-        <input class="form-check-input" type="checkbox" id="status" name="status" checked>
-        <label class="form-check-label" for="status">Active</label>
-      </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="pincode" class="form-label">Pincode</label>
+      <input type="text" class="form-control" id="pincode" name="pincode" pattern="\d{6}" placeholder="e.g. 110001" required>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="Full pickup address" required>
+    </div>
+  </div>
 
-      <button type="button" class="btn btn-primary w-100" id="triggerBuyerModal">Create Deal</button>
-    </form>
+  <div class="mb-3">
+    <label for="cardWorking" class="form-label">Card Working</label>
+    <input type="text" class="form-control" id="cardWorking" name="cardWorking" placeholder="e.g. Yes / No / Minor issue" required>
+  </div>
+
+  <div class="form-check form-switch mb-4">
+    <input class="form-check-input" type="checkbox" id="status" name="status" checked>
+    <label class="form-check-label" for="status">Active</label>
+  </div>
+
+  <button type="button" class="btn btn-primary w-100" id="triggerBuyerModal">Create Deal</button>
+</form>
+
 
     <% if (deals.length > 0) { %>
       <div class="mt-5">
@@ -93,7 +92,7 @@
   <div class="col-md-4">
     <div class="card shadow deal-card border-0 rounded-4 h-100">
       <div class="position-relative">
-        <img src="<%= deal.imageUrl %>" class="card-img-top rounded-top-4" alt="Image" style="height: 200px; object-fit: cover;">
+        <img src="<%= deal.imageUrl %>" class="img-fluid rounded product-img mb-3" alt="Image" style="height: 200px; object-fit: cover;">
         <span class="badge position-absolute top-0 end-0 m-2 px-3 py-1 rounded-pill fw-bold fs-6 
           <%= deal.status === 'active' ? 'bg-success text-white' : 'bg-danger text-white' %>">
           <%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %>
@@ -108,7 +107,8 @@
           <div><small class="text-muted">Booking</small><br><span class="fw-semibold text-primary">₹<%= deal.bookingAmount %></span></div>
           <div><small class="text-muted">Return</small><br><span class="fw-semibold text-success">₹<%= deal.returnAmount %></span></div>
           <div><small class="text-muted">Margin</small><br><span class="fw-semibold text-danger">₹<%= deal.margin %></span></div>
-        </div>
+           <div><small class="text-muted">Quantity</small><br><span class="fw-semibold text-danger">₹<%= deal.quantity %></span></div>
+        </div> 
 
         <a href="<%= deal.buyLink %>" target="_blank" class="btn btn-sm btn-outline-primary w-100 mb-2">🔗 Buy Now</a>
 
@@ -135,8 +135,14 @@
             data-id="<%= deal._id %>" 
             data-quantity="<%= deal.quantity === 'unlimited' ? -1 : deal.quantity %>"
             <%= deal.status === 'active' ? 'checked' : '' %>
-          >
+          
           <label class="form-check-label ms-2"><%= deal.status === 'active' ? '🟢 Active' : '🔴 Inactive' %></label>
+          <form action="/admin/deals/<%= deal._id %>?_method=DELETE" method="POST" class="mt-3">
+  <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('Are you sure you want to delete this deal?')">
+    🗑️ Delete Deal
+  </button>
+</form>
+
         </div>
       </div>
     </div>

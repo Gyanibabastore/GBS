@@ -2,7 +2,7 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to right, #e0eafc, #cfdef3); /* pastel blue gradient */
+  background: linear-gradient(to right, #e0eafc, #1d1d1d); /* pastel blue gradient */
   min-height: 100vh;
   margin: 0;
   padding: 0;

@@ -62,6 +62,11 @@ body[data-theme="dark"] {
   font-size: 1.4rem;
   cursor: pointer;
 }
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5rem;
+}
 
 /* Drawer */
 .mobile-drawer {

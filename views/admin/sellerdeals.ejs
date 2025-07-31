@@ -30,8 +30,8 @@
               <li><strong>Brand:</strong> <%= product.brand %></li>
               <li><strong>Variant:</strong> <%= product.variant %></li>
               <li><strong>Color:</strong> <%= product.color %></li>
-              <li><strong>Return amount to buyer:</strong> ₹<%= product.returnAmount %></li>
-              <li><strong>Current Booking Amount:</strong> ₹<%= product.bookingAmountSeller === 0 ? product.returnAmount : product.bookingAmountSeller %></li>
+              <li><strong>Purchase Amount:</strong> ₹<%= product.returnAmount %></li>
+              <li><strong>Selling Amount:</strong> ₹<%= product.bookingAmountSeller === 0 ? product.returnAmount : product.bookingAmountSeller %></li>
 
               <li><strong>Status:</strong> 
                 <span class="badge px-3 py-1 rounded-pill fw-semibold 

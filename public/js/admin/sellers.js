@@ -1,22 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
   try {
-    const searchInput = document.getElementById("searchInput");
+    const inputElement = document.getElementById("searchInput");
     const sellerCards = document.querySelectorAll(".seller-card-container");
 
-    if (!searchInput || sellerCards.length === 0) {
+    if (!inputElement || sellerCards.length === 0) {
       console.warn("🔍 Search input or seller cards not found.");
       alert("Something went wrong while loading seller search. Please refresh.");
       return;
     }
 
-    searchInput.addEventListener("keyup", () => {
+    inputElement.addEventListener("keyup", () => {
       try {
-        const input = searchInput.value.toLowerCase();
+        const input = inputElement.value.toLowerCase();
 
         sellerCards.forEach(card => {
           try {
             const name = card.querySelector(".card-title")?.textContent.toLowerCase() || "";
-            const mobile = card.querySelector(".card-text")?.textContent.toLowerCase() || "";
+            const mobile = card.querySelector(".mobile-text")?.textContent.toLowerCase() || "";
 
             if (name.includes(input) || mobile.includes(input)) {
               card.style.display = "";

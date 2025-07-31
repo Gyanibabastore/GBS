@@ -90,6 +90,7 @@ body {
   color: black;
 }
 
-.sticker.canceled {
+.sticker.cancelled {
   background-color: #dc3545;
+  
 }

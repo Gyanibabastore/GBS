@@ -42,7 +42,7 @@
       <% payments.forEach(function(payment) { %>
         <div class="col-md-6 col-lg-4 mb-4">
           <div class="card">
-            <img src="<%= payment.image %>" class="card-img-top" alt="Proof Image" />
+  <img src="<%= payment.image %>" class="card-img-top payment-img" alt="Proof Image" data-src="<%= payment.image %>" />
             <div class="card-body">
               <h5 class="card-title">Received From: <%= payment.receivedFromName %></h5>
               <p>Amount: ₹<%= payment.amount %></p>
@@ -54,6 +54,11 @@
       <% }); %>
     </div>
   </div>
+<!-- Image modal structure (NO inline JS here) -->
+<div id="imageModal" class="image-modal">
+  <span class="close-btn">&times;</span>
+  <img class="modal-content" id="modalImage" />
+</div>
 
   <script src="/js/buyer/paymentHistory.js"></script>
 </body>

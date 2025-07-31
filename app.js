@@ -1,21 +1,37 @@
-// ✅ APP.JS for GYANIBABA STORE
-// Setup Express, Middleware, Routes, MongoDB Connection
+require('dotenv').config();
 process.traceDeprecation = true;
 
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
-const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
-require('dotenv').config();
 const MongoStore = require('connect-mongo');
+const methodOverride = require('method-override');
+const ngrok = require('ngrok');
+const webhookRoutes = require('./routes/webhook');
+
 
 const connectDB = require('./config/db');
 const app = express();
+
+// -------------------- LOAD ENV VARIABLES --------------------
+const {
+  EMAIL_USER,
+  EMAIL_PASS,
+  JWT_SECRET,
+  PORT = 8080,
+  SESSION_SECRET,
+  MONGO_URI,
+  GUPSHUP_API_KEY,
+  GUPSHUP_SOURCE_NUMBER,
+  GUPSHUP_APP_NAME,
+  NGROK_AUTHTOKEN,
+  NODE_ENV
+} = process.env;
 
 // -------------------- DB CONNECTION --------------------
 connectDB();
@@ -29,54 +45,33 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(methodOverride('_method'));
 
-// -------------------- SESSION & FLASH --------------------
+// -------------------- SESSION --------------------
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'yourSecret',
+  secret: SESSION_SECRET || 'fallbacksecret',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // ✅ Ensure this is set in Render
-    ttl: 24 * 60 * 60  * 7
+    mongoUrl: MONGO_URI,
+    ttl: 24 * 60 * 60 * 7
   })
 }));
 
-// ✅ Connect-flash must come AFTER session
 app.use(flash());
-
-// ✅ Flash Messages for Views
 app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   res.locals.success = req.flash('success');
   next();
 });
 
-// ✅ Helmet with Custom Content Security Policy
-
-
-const { contentSecurityPolicy } = helmet;
-
+// -------------------- HELMET --------------------
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: [
-        "'self'",
-        "'unsafe-inline'", // required for EJS inlined <script>
-        "https://cdn.jsdelivr.net",
-        "https://cdnjs.cloudflare.com" // required for jsPDF
-      ],
-      styleSrc: [
-        "'self'",
-        "'unsafe-inline'", // required for Bootstrap styles
-        "https://cdn.jsdelivr.net",
-        "https://fonts.googleapis.com" // ✅ allow Google Fonts styles
-      ],
-      fontSrc: [
-        "'self'",
-        "https://cdn.jsdelivr.net",
-        "https://fonts.gstatic.com" // ✅ allow Google Fonts font files
-      ],
-      imgSrc: ["'self'", "data:", "https:", "*"], // ✅ allow all image sources
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "*"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
@@ -84,9 +79,7 @@ app.use(
   })
 );
 
-
-
-// ✅ Sanitize user input
+// -------------------- SANITIZE --------------------
 app.use((req, res, next) => {
   if (req.body) mongoSanitize.sanitize(req.body);
   if (req.params) mongoSanitize.sanitize(req.params);
@@ -105,7 +98,7 @@ const authRoutes = require('./routes/authRoutes');
 const buyerRoutes = require('./routes/buyerRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
-
+app.use('/', webhookRoutes);
 app.use('/auth', authRoutes);
 app.use('/buyer', buyerRoutes);
 app.use('/admin', adminRoutes);
@@ -128,7 +121,18 @@ app.use((err, req, res, next) => {
 });
 
 // -------------------- SERVER --------------------
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+
+  if (NODE_ENV !== 'production') {
+    try {
+      const url = await ngrok.connect({
+        addr: PORT,
+        authtoken: NGROK_AUTHTOKEN
+      });
+      console.log(`🌐 Ngrok tunnel available at: ${url}`);
+    } catch (err) {
+      console.error("❌ Ngrok error:", err.message);
+    }
+  }
 });
