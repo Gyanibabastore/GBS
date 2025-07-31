@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: "Cancel Requests" }) %>
+  <link rel="stylesheet" href="/css/buyer/deals.css" />
+</head>
+<body>
+
+  <%- include('../partials/adminNavbar') %> 
+
+  <div class="container">
+    <a href="/admin/dashboard" class="btn btn-warning my-3">⬅ Back to Dashboard</a>
+    <h2 class="text-danger mb-4">📤 Cancel Requests</h2>
+
+    <div class="row">
+      <% orders.forEach(order => { %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card shadow">
+            <div class="card-body">
+              <h5 class="card-title"><%= order.deviceName %> (<%= order.brand %> - <%= order.variant %>, <%= order.color %>)</h5>
+              <p class="card-text">
+                <strong>Buyer:</strong> <%= order.buyerId?.name  %><br />
+                <strong>Order:</strong> <%= order.brand %> &nbsp;<%=order.deviceName%><br />
+                <strong>Cancel Reason:</strong> <%= order.cancelReason || "Not Provided" %><br />
+                <strong>Booking Amount:</strong> ₹<%= order.bookingAmount %><br />
+               
+                
+              </p>
+
+              <form method="POST" action="/admin/cancel-request/action" class="d-flex justify-content-between gap-2">
+                <input type="hidden" name="orderId" value="<%= order._id %>">
+                
+                <button type="submit" name="status" value="approved" class="btn btn-success w-100">Approve</button>
+                <button type="submit" name="status" value="rejected" class="btn btn-danger w-100">Reject</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+</body>
+</html>

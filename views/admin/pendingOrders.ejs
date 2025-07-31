@@ -21,9 +21,14 @@
         <h4><%= order._id.buyerName %></h4>
         <% lastBuyer = order._id.buyerName; %>
       <% } %>
+      
       <p>
         <strong><%= order._id.brand %> - <%= order._id.deviceName %> <%= order._id.variant %> (<%= order._id.color %>)</strong>:
         <%= order.totalOrders %> unit(s)
+        <% if (order.cancelRequests > 0) { %>
+          
+    <span class="badge bg-danger ms-2">🚫 <%= order.cancelRequests %> cancel request(s)</span>
+  <% } %>
       </p>
     <% }) %>
     <hr>

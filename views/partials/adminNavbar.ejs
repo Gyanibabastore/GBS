@@ -25,18 +25,30 @@
         <% } %>
       </a>
     </div>
+    
 
-    <div class="d-flex">
+    <!-- <div class="d-flex">
       <button class="icon-btn" id="themeToggle"><i class="bi bi-moon-fill"></i></button>
       <button class="navbar-toggler" type="button" id="drawerToggle">
         <span class="navbar-toggler-icon"></span>
       </button>
-    </div>
+    </div> -->
 
     <div class="collapse navbar-collapse" id="adminNavbarContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="/admin/sellers"><i class="bi bi-people-fill"></i> Sellers</a></li>
+ <li class="nav-item">
+  <a class="nav-link text-success fw-semibold position-relative" href="/admin/sellers">
+  <i class="bi bi-people-fill"></i> Sellers
+  <% if (typeof selleroutForDeliveryOrders !== 'undefined' && selleroutForDeliveryOrders > 0) { %>
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+      <%= selleroutForDeliveryOrders %>
+    </span>
+  <% } %>
+</a>
+
+</li>
+
         <li class="nav-item"><a class="nav-link" href="/admin/buyers"><i class="bi bi-person-lines-fill"></i> Buyers</a></li>
         <li class="nav-item"><a class="nav-link" href="/admin/deals"><i class="bi bi-stars"></i> Create Deal</a></li>
         <li class="nav-item d-none d-lg-block position-relative">
@@ -49,6 +61,17 @@
             <% } %>
           </a>
         </li>
+        <li class="nav-item d-none d-lg-block position-relative">
+  <a class="nav-link text-danger fw-semibold position-relative" href="/admin/orders/cancel-requests">
+    <i class="bi bi-x-circle"></i> Cancel Requests
+    <% if (typeof cancelRequestCount !== 'undefined' && cancelRequestCount > 0) { %>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark">
+        <%= cancelRequestCount %>
+      </span>
+    <% } %>
+  </a>
+</li>
+
         <li class="nav-item d-flex align-items-center">
           <form method="GET" action="/auth/admin/logout" class="ms-2">
             <button type="submit" class="btn btn-sm btn-light text-primary fw-bold">
@@ -68,6 +91,15 @@
     <li><a href="/admin/buyers"><i class="bi bi-person-lines-fill"></i> Buyers</a></li>
     <li><a href="/admin/deals"><i class="bi bi-stars"></i> Create Deal</a></li>
     <li><a href="/admin/deals/pending"><i class="bi bi-clock-history"></i> Pending Orders</a></li>
+    <li>
+  <a href="/admin/orders/cancel-requests">
+    <i class="bi bi-x-circle"></i> Cancel Requests
+    <% if (typeof cancelRequestCount !== 'undefined' && cancelRequestCount > 0) { %>
+      <span class="badge rounded-pill bg-warning text-dark ms-1"><%= cancelRequestCount %></span>
+    <% } %>
+  </a>
+</li>
+
     <li class="divider"></li>
     <li class="profile-section">
       <img src="https://i.pravatar.cc/300" class="profile-img" alt="Profile" />

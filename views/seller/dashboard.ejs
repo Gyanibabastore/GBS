@@ -33,7 +33,7 @@
     <% models.forEach((model, index) => { %>
       <div class="col-md-4 mb-4">
         <div class="card model-card h-100">
-          <img src="<%= model.image %>" class="card-img-top" alt="<%= model.title %>" />
+          <img src="<%= model.image %>" class="img-fluid rounded product-img mb-3" alt="<%= model.title %>" />
           <div class="card-body d-flex flex-column">
             <h5 class="card-title"><%= model.brand %> - <%= model.title %></h5>
             <p>Color: <strong><%= model.color %></strong></p>

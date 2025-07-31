@@ -60,4 +60,62 @@ document.addEventListener("DOMContentLoaded", () => {
       alert(successMsg);
     }
   }
+});document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("#expand-card");
+
+  const nameInput = form.querySelector("input[name='name']");
+  const otpInput = form.querySelector("input[name='otp']");
+  const trackingIdInput = form.querySelector("input[name='trackingId']");
+  const mobileLast4Input = form.querySelector("input[name='mobileLast4']");
+
+  const nameError = nameInput.nextElementSibling;
+  const otpError = otpInput.nextElementSibling;
+  const trackingError = trackingIdInput.nextElementSibling;
+  const mobileError = mobileLast4Input.nextElementSibling;
+
+  form.addEventListener("submit", (e) => {
+    let valid = true;
+
+    // Clear previous error messages
+    nameError.textContent = "";
+    otpError.textContent = "";
+    trackingError.textContent = "";
+    mobileError.textContent = "";
+
+    const name = nameInput.value.trim();
+    const otp = otpInput.value.trim();
+    const trackingId = trackingIdInput.value.trim();
+    const mobileLast4 = mobileLast4Input.value.trim();
+
+    // Validations
+    const nameValid = /^[A-Za-z]{3,}/.test(name);
+   const otpValid = /^\d{4,6}$/.test(otp);
+
+    const trackingIdValid = /^[A-Za-z0-9\-]{6,20}$/.test(trackingId);
+    const mobileValid = /^\d{4}$/.test(mobileLast4);
+
+    if (!nameValid) {
+      nameError.textContent = "Please enter your full name (at least two words).";
+      valid = false;
+    }
+
+    if (!otpValid) {
+      otpError.textContent = "OTP must be 4 or 6 numeric digits.";
+      valid = false;
+    }
+
+    if (!trackingIdValid) {
+      trackingError.textContent = "Tracking ID must be 6–20 characters using letters, numbers, or dashes.";
+      valid = false;
+    }
+
+    if (!mobileValid) {
+      mobileError.textContent = "Mobile last 4 digits must be exactly 4 numeric digits.";
+      valid = false;
+    }
+
+    if (!valid) {
+      e.preventDefault(); // Prevent form submission
+    }
+  });
 });

@@ -134,8 +134,8 @@ exports.placeSellerOrder = async (req, res) => {
       const quantity = item.quantity || 1;
       const color = item.color || '';
 
-      const booking = item.booking;
-      const buyerprice = item.buyerprice;
+      const booking = item.booking/quantity;
+      const buyerprice = item.buyerprice/quantity;
 
       
       for (let i = 0; i < quantity; i++) {

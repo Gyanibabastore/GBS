@@ -41,4 +41,17 @@ router.post('/orders/mark-sold',protect,isAdmin,adminController.updateOrdersToSo
 router.get('/seller/discounts/:id',protect,isAdmin, adminController.sellerdiscount);
 router.post('/seller/update-discount',protect,isAdmin, adminController.updateSellerDiscount);
 
+router.get('/orders/cancel-requests', protect, isAdmin, adminController.getCancelRequests);
+
+router.post('/cancel-request/action', protect,isAdmin, adminController.handleCancelRequestAction);
+
+
+
+
+
+
+
+
+
+router.delete('/deals/:id', protect,isAdmin,adminController.deleteDeal);
 module.exports = router;

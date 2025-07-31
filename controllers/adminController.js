@@ -31,13 +31,17 @@ exports.getDashboard = async (req, res) => {
 
     const allStocks = await Stock.find(filter);
     const allOrders = await Order.find(filter);
-
+const selleroutForDeliveryOrders = await Order.countDocuments({
+  status: 'out-for-delivery',
+  sellerId: { $exists: true }
+});
+console.log(selleroutForDeliveryOrders);
     const totalOrders = allStocks.reduce((sum, s) => sum + s.availableCount + s.soldCount, 0);
     const soldStock = allStocks.reduce((sum, s) => sum + s.soldCount, 0);
     const availableStock = allStocks.reduce((sum, s) => sum + s.availableCount, 0);
     const outForDeliveryCount = allOrders.filter(o => o.status === 'out-for-delivery' && !o.sellerId).length;
     const pendingOrderCount = allOrders.filter(o => o.status === 'pending').length;
-
+    const cancelRequestCount = await Order.countDocuments({ cancelRequest: true });
     const buyerCount = await Buyer.countDocuments();
     const sellerCount = await Seller.countDocuments();
 
@@ -80,6 +84,8 @@ exports.getDashboard = async (req, res) => {
       totalOrderValue,
       totalDue,
       outForDeliveryCount,
+      cancelRequestCount,
+      selleroutForDeliveryOrders,
       soldBrandData: Object.entries(soldBrandCount).map(([label, count]) => ({ label, count })),
       availableBrandData: Object.entries(availableBrandCount).map(([label, count]) => ({ label, count })),
       barChartData
@@ -92,7 +98,21 @@ exports.getDashboard = async (req, res) => {
   }
 };
 
+exports.getCancelRequests = async (req, res) => {
+  try {
+    const orders = await Order.find({ cancelRequest: true }).populate('buyerId', 'name');
 
+    console.log("📦 Cancel Request Orders:", orders);
+
+    res.render('admin/cancelRequests', {
+      title: 'Cancel Requests',
+      orders
+    });
+  } catch (err) {
+    console.error("❌ Error fetching cancel requests:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 exports.getTotalOrders = async (req, res) => {
   try {
@@ -256,7 +276,9 @@ exports.getAvailableStock = async (req, res) => {
           model: stock.deviceName,
           variant: stock.variant,
           color: stock.color,
-          quantity: 0
+          quantity: 0,
+  
+          amount:stock.returnAmount
         });
       }
 
@@ -337,8 +359,27 @@ exports.getAllSellers = async (req, res) => {
       upi: seller.upi,
       color: getColor(i)
     }));
+   const allOrders = await Order.find();
+const selleroutForDeliveryOrders = allOrders.filter(o => o.status === 'out-for-delivery' && o.sellerId);
 
-    res.render('admin/seller', { sellers: sellerData });
+const pendingCounts = {};
+selleroutForDeliveryOrders.forEach(order => {
+  const sellerId = order.sellerId.toString();
+  if (!pendingCounts[sellerId]) {
+    pendingCounts[sellerId] = 0;
+  }
+  pendingCounts[sellerId]++;
+});
+console.log(pendingCounts);
+console.log(selleroutForDeliveryOrders);
+// ⬇️ pendingCounts ko bhi pass karo
+res.render('admin/seller', {
+  sellers: sellerData,
+  selleroutForDeliveryOrders,
+  pendingCounts // <- Add this
+});
+
+
   } catch (error) {
     console.error("Error fetching sellers:", error);
     req.flash('error', 'Failed to load sellers');
@@ -1058,8 +1099,10 @@ exports.toggleDealStatus = async (req, res) => {
 
 
 
+
 exports.createDeal = async (req, res) => {
   console.log("📩 Raw Request Body:", req.body);
+
   try {
     const {
       brand, modelName, variant, color,
@@ -1071,6 +1114,15 @@ exports.createDeal = async (req, res) => {
     const sendToAllFinal = sendToAll === 'true' || (!buyerIds && !sendToAll);
     console.log("🟠 Final sendToAll value:", sendToAllFinal);
 
+    // ✅ Normalize buyerIds & buyerQuantities to arrays
+    const buyerIdsArray = Array.isArray(buyerIds)
+      ? buyerIds
+      : buyerIds ? [buyerIds] : [];
+
+    const buyerQtyArray = Array.isArray(buyerQuantities)
+      ? buyerQuantities
+      : buyerQuantities ? [buyerQuantities] : [];
+
     let assignedBuyers = [];
 
     // 🟢 If "Send to All", fetch all buyers
@@ -1078,24 +1130,24 @@ exports.createDeal = async (req, res) => {
       const allBuyers = await Buyer.find({}, '_id').lean();
       assignedBuyers = allBuyers.map(b => b._id.toString());
       console.log("✅ 'Send to all' selected. Assigned all buyer IDs:", assignedBuyers);
-    } 
-    // 🟠 If specific buyers selected
-    else if (buyerIds) {
-      assignedBuyers = Array.isArray(buyerIds) ? buyerIds : [buyerIds];
+    } else if (buyerIdsArray.length) {
+      assignedBuyers = buyerIdsArray;
       console.log("✅ Specific buyers selected:", assignedBuyers);
+    } else {
+      return res.status(400).json({ success: false, message: "❌ No buyers selected." });
     }
 
-    // 🎯 Determine final deal quantity
+    // 🎯 Deal quantity (global or null for per-buyer)
     let finalQuantity = 'unlimited';
     if (unlimitedCheckbox !== 'on') {
       if (sendToAllFinal && allBuyerQty) {
         finalQuantity = parseInt(allBuyerQty);
       } else {
-        finalQuantity = null; // per-buyer quantity stored separately
+        finalQuantity = null;
       }
     }
 
-    // 📝 Construct deal
+    // 📝 Create Deal
     const dealData = {
       deviceName: modelName,
       brand,
@@ -1115,16 +1167,15 @@ exports.createDeal = async (req, res) => {
       createdBy: req.user?._id || null
     };
 
-    console.log("📝 Deal to be saved:", dealData);
     const newDeal = new Deal(dealData);
     await newDeal.save();
     console.log("✅ Deal saved to DB");
 
-    // 💾 Store per-buyer quantities if not 'Send to All'
-    if (!sendToAllFinal && Array.isArray(buyerIds) && Array.isArray(buyerQuantities)) {
-      for (let i = 0; i < buyerIds.length; i++) {
-        const buyerId = buyerIds[i];
-        const qty = parseInt(buyerQuantities[i]);
+    // 💾 Per-buyer quantities (if applicable)
+    if (!sendToAllFinal && buyerIdsArray.length && buyerQtyArray.length) {
+      for (let i = 0; i < buyerIdsArray.length; i++) {
+        const buyerId = buyerIdsArray[i];
+        const qty = parseInt(buyerQtyArray[i]);
 
         if (!isNaN(qty) && qty > 0) {
           await Buyer.updateOne(
@@ -1138,21 +1189,17 @@ exports.createDeal = async (req, res) => {
               }
             }
           );
-
           console.log(`🧾 Quantity ${qty} saved for buyer ${buyerId} in deal ${newDeal._id}`);
+        } else {
+          console.warn(`⚠ Skipped invalid quantity for buyer ${buyerId}`);
         }
       }
     }
 
-    // 📲 Send WhatsApp Notifications
-    let buyersToNotify = [];
+    // 📲 WhatsApp Notification
+    const buyersToNotify = await Buyer.find({ _id: { $in: assignedBuyers } }, 'mobile name').lean();
 
-    if (assignedBuyers.length > 0) {
-      buyersToNotify = await Buyer.find({ _id: { $in: assignedBuyers } }, 'mobile name').lean();
-      console.log(`📨 Notifying ${buyersToNotify.length} buyers`);
-    }
-
-    const message =
+    const message = 
       `📢 *New Deal!*\n\n` +
       `📱 *${brand} ${modelName}*\n` +
       `🎨 Variant: *${variant}* | Color: *${color}*\n` +
@@ -1161,7 +1208,6 @@ exports.createDeal = async (req, res) => {
 
     for (const buyer of buyersToNotify) {
       if (buyer.mobile) {
-        console.log(`📞 Sending WhatsApp to ${buyer.name || 'Unnamed'} (${buyer.mobile})`);
         try {
           await sendWhatsApp(
             buyer.mobile,
@@ -1170,7 +1216,7 @@ exports.createDeal = async (req, res) => {
             'Buy Now',
             buyLink || 'https://gyanibabastore.in'
           );
-          console.log(`✅ Sent to ${buyer.mobile}`);
+          console.log(`✅ WhatsApp sent to ${buyer.mobile}`);
         } catch (err) {
           console.warn(`❌ WhatsApp error for ${buyer.mobile}:`, err.message);
         }
@@ -1179,12 +1225,28 @@ exports.createDeal = async (req, res) => {
 
     console.log("✅ All WhatsApp messages processed");
     res.redirect('/admin/deals');
+
   } catch (err) {
     console.error("❌ Error in createDeal:", err);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
+
+
+exports.deleteDeal = async (req, res) => {
+  try {
+    const dealId = req.params.id;
+
+    await Deal.findByIdAndDelete(dealId);
+    console.log(`🗑️ Deal ${dealId} deleted`);
+
+    res.redirect('/admin/deals');
+  } catch (err) {
+    console.error('❌ Error deleting deal:', err.message);
+    res.status(500).send('Server Error');
+  }
+};
 
 
 
@@ -1413,47 +1475,44 @@ exports.updateOrdersToSold = async (req, res) => {
 // Show all pending orders (based on status or flag)
 exports.getPendingDeals = async (req, res) => {
   try {
-    const pendingOrders = await Order.aggregate([
-      {
-        $match: { status: 'pending' }
+ const pendingOrders = await Order.aggregate([
+  {
+    $match: { status: 'pending' }
+  },
+  {
+    $lookup: {
+      from: 'buyers',
+      localField: 'buyerId',
+      foreignField: '_id',
+      as: 'buyerInfo'
+    }
+  },
+  { $unwind: '$buyerInfo' },
+  {
+    $group: {
+      _id: {
+        buyerName: '$buyerInfo.name',
+        brand: '$brand',
+        deviceName: '$deviceName',
+        variant: '$variant',
+        color: '$color'
       },
-      {
-        $lookup: {
-          from: 'buyers',
-          localField: 'buyerId',
-          foreignField: '_id',
-          as: 'buyerInfo'
+      totalOrders: {
+        $sum: {
+          $cond: [{ $ifNull: ['$quantity', false] }, '$quantity', 1]
         }
       },
-      {
-        $unwind: '$buyerInfo'
+      cancelRequests: {
+        $sum: { $cond: [{ $eq: ['$cancelRequest', true] }, 1, 0] }
       },
-      {
-        $group: {
-          _id: {
-            buyerName: '$buyerInfo.name',
-            brand: '$brand',
-            deviceName: '$deviceName',
-            variant: '$variant',
-            color: '$color'
-          },
-          totalOrders: {
-            $sum: {
-              $cond: [
-                { $ifNull: ['$quantity', false] },
-                '$quantity',
-                1
-              ]
-            }
-          },
-          buyers: { $addToSet: '$buyerInfo.name' }
-        }
-      },
-      {
-        $sort: { '_id.buyerName': 1 }
-      }
-    ]);
+      orderIds: { $push: '$_id' }  // 🆕 Order IDs of all orders in this group
+    }
+  },
+  { $sort: { '_id.buyerName': 1 } }
+]);
 
+
+    console.log(pendingOrders);
     res.render('admin/pendingOrders', {
       groupedOrders: pendingOrders
     });
@@ -1562,3 +1621,42 @@ exports.updateSellerDiscount = async (req, res) => {
   }
 };
 
+
+
+
+exports.handleCancelRequestAction = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId || !status) {
+      console.warn("⚠️ Missing orderId or status");
+      return res.redirect("back");
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      console.warn("❌ Order not found:", orderId);
+      return res.redirect("back");
+    }
+
+    if (status === "approved") {
+      order.status = "cancelled";
+      order.cancelRequest = false;
+
+      if (order.outForDelivery) {
+        order.outForDelivery.status = "cancelled";
+      }
+
+    } else if (status === "rejected") {
+      order.cancelRequest = false;
+    }
+
+    await order.save();
+    console.log(`✅ Cancel request ${status} for order ${orderId}`);
+    res.redirect("/admin/orders/cancel-requests");
+
+  } catch (err) {
+    console.error("❌ Error handling cancel request:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};

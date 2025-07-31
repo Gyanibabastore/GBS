@@ -15,17 +15,19 @@
     <!-- 🔍 Filter controls -->
     <div class="controls d-flex gap-3 mb-4 flex-wrap">
       <input type="text" class="form-control search-box" placeholder="Search by model..." id="searchBox" />
-      <select class="form-select status-filter" id="statusFilter">
-        <option value="" <%= !defaultStatus ? 'selected' : '' %>>All</option>
-        <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
-        <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
-        <option value="canceled" <%= defaultStatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
-      </select>
+     <select class="form-select status-filter" id="statusFilter">
+  <option value="" <%= !defaultStatus ? 'selected' : '' %>>All</option>
+  <option value="delivered" <%= defaultStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+  <option value="pending" <%= defaultStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+  <option value="cancelled" <%= defaultStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+</select>
+
     </div>
 
     <!-- 🧾 Orders List -->
     <div id="orders-container" class="row">
       <% orders.forEach(order => { %>
+        
         <div class="col-md-6 col-lg-4 mb-4 order-card-wrapper"
              data-status="<%= order.status %>"
              data-model="<%= order.deviceModel.toLowerCase() %>">
@@ -35,12 +37,13 @@
             <div class="sticker <%= order.status %>">
               <% if (order.status === 'delivered') { %>✅ Delivered<% } %>
               <% if (order.status === 'pending') { %>⏳ Pending<% } %>
-              <% if (order.status === 'canceled') { %>❌ Canceled<% } %>
+              <% if (order.status === 'cancelled') { %>❌ cancelled<% } %>
             </div>
 
             <img src="<%= order.imageUrl %>" alt="<%= order.deviceModel %>" class="img-fluid rounded product-img mb-3" />
 
             <div class="card-body">
+              
               <h5 class="fw-bold text-primary mb-2"><%= order.deviceModel %></h5>
               <p><span class="badge bg-primary me-2">Variant</span><%= order.variant %></p>
               <p><span class="badge bg-dark me-2">Color</span><%= order.color %></p>
@@ -49,6 +52,21 @@
               <p><span class="badge bg-warning text-dark me-2">Return</span>₹<%= order.returnAmount %></p>
               <p><span class="badge bg-danger me-2">Margin</span>₹<%= order.margin %></p>
               <p class="text-muted small mt-2">📅 <%= order.orderDate || 'N/A' %></p>
+               <% if (order.status === 'pending') { %>
+  <% if (order.cancelRequest) { %>
+    <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 m-3" disabled>
+      🚫 Requested
+    </button>
+  <% } else { %>
+    <button class="btn btn-sm btn-danger cancel-btn position-absolute bottom-0 end-0 m-3"
+            data-order-id="<%= order.id %>">
+      ❌ Cancel Order
+    </button>
+  <% } %>
+<% } %>
+
+  
+
             </div>
           </div>
         </div>

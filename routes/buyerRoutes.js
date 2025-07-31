@@ -26,6 +26,7 @@ router.get('/:buyerId/profile/', buyerController.getProfile);
 router.get('/:buyerId/profile/edit', buyerController.editProfileForm);
 router.post('/:buyerId/profile/edit', buyerController.updateProfile);
 // Send OTP before Edit
+router.post('/orders/:orderId/cancel-request', protect, isBuyer, buyerController.cancelOrderRequest);
 
 
 module.exports = router;

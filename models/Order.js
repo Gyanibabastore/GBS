@@ -14,6 +14,11 @@ const OrderSchema = new Schema({
     enum: orderStatusEnum,
     default: 'pending'
   },
+  cancelRequest: {
+  type: Boolean,
+  default: false
+}
+,
    quantity:Number,
   deviceName: String,
   brand: String,

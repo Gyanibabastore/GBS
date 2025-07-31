@@ -25,24 +25,34 @@
 
       <!-- Seller Cards -->
       <div id="sellerCards" class="row">
-        <% sellers.forEach(seller => { %>
-          <div class="col-12 mb-3 seller-card-container">
-            <div class="card seller-card w-100">
-              <div class="card-body">
-                <h5 class="card-title"><%= seller.name %></h5>
-                <p class="card-text">📱 Mobile: <%= seller.mobile %></p>
-                <p class="card-text">📧 Email: <%= seller.email %></p>
-                <p class="card-text">💳 UPI ID: <%= seller.upi %></p>
-                <a href="/admin/sellers-details/<%= seller.id %>" class="btn btn-light">View Details</a>
-              </div>
-            </div>
-          </div>
-        <% }) %>
+  <% sellers.forEach(seller => { %>
+    <% 
+      const count = pendingCounts && pendingCounts[seller.id.toString()] || 0;
+    %>
+    <div class="col-12 mb-3 seller-card-container">
+      <div class="card seller-card w-100">
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            <span><%= seller.name %></span>
+            <% if (count > 0) { %>
+              <span class="badge bg-danger">🚚 <%= count %> Out For Delivery</span>
+            <% } %>
+          </h5>
+          <p class="card-text mobile-text">📱 Mobile: <%= seller.mobile %></p>
+
+          <p class="card-text">📧 Email: <%= seller.email %></p>
+          <p class="card-text">💳 UPI ID: <%= seller.upi %></p>
+          <a href="/admin/sellers-details/<%= seller.id %>" class="btn btn-light">View Details</a>
+        </div>
       </div>
+    </div>
+  <% }) %>
+</div>
+
     </div>
   </div>
 
-  <script src="/js/admin/sellerList.js"></script>
+  <script src="/js/admin/sellers.js"></script>
 </body>
 
 </html>

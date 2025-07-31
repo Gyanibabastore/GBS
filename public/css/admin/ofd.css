@@ -4,6 +4,14 @@ body {
   font-family: 'Poppins', sans-serif;
   background-color: #f9f9f9;
 }
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+body.modal-open {
+  overflow-y: auto !important;
+}
 
 .delivery-card {
   background: #fff;
@@ -104,4 +112,20 @@ body {
     font-size: 0.85rem;
     padding: 10px;
   }
+}
+.custom-floating-modal {
+  position: absolute;
+  z-index: 1055;
+  width: 350px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: none; /* hidden by default */
+}
+
+.custom-floating-modal .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
