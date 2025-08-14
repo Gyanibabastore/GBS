@@ -172,7 +172,7 @@ exports.resetPassword = async (req, res) => {
 
 
 exports.adminlogin = (req, res) => {
-  res.render('auth/adminlogin');
+  res.render('auth/adminLogin');
 };
 
 exports.adminlogincontroller = async (req, res) => {
