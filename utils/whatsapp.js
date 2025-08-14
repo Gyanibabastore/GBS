@@ -1,42 +1,28 @@
+// utils/whatsappSender.js
 const axios = require('axios');
 
-// Load credentials from environment
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
-// Main function
-const sendWhatsApp = async (phone, message, imageUrl, buttonText, buttonLink) => {
-  if (!phone || !message || !imageUrl) {
-    console.error("❌ Missing required fields: phone, message, or imageUrl");
-    return;
-  }
+async function sendWhatsApp(to, messageText, buttonText, buttonUrl) {
+  const apiUrl = `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`;
+  const headers = {
+    'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
+    'Content-Type': 'application/json',
+  };
 
-  try {
-    const payload = {
-      messaging_product: 'whatsapp',
-      to: '91' + phone,
-      type: 'image',
-      image: {
-        link: imageUrl,
-        caption: message
-      }
-    };
+  // Simple text with formatting + link
+  const textMessage = {
+    messaging_product: "whatsapp",
+    to: `91${to}`,
+    type: "text",
+    text: {
+      body: `${messageText}`,
+      preview_url: true, // if URL present, show preview
+    },
+  };
 
-    const response = await axios.post(
-      `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    console.log(`✅ WhatsApp message sent to ${phone}`, response.data);
-  } catch (error) {
-    console.error(`❌ WhatsApp send failed for ${phone}:`, error.response?.data || error.message);
-  }
-};
+  await axios.post(apiUrl, textMessage, { headers });
+}
 
 module.exports = sendWhatsApp;
