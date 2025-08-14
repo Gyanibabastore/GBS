@@ -1197,31 +1197,40 @@ exports.createDeal = async (req, res) => {
     }
 
     // 📲 WhatsApp Notification
-    const buyersToNotify = await Buyer.find({ _id: { $in: assignedBuyers } }, 'mobile name').lean();
 
-    const message = 
+const buyersToNotify = await Buyer.find(
+  { _id: { $in: assignedBuyers } },
+  'mobile name'
+).lean();
+
+for (const buyer of buyersToNotify) {
+  if (buyer.mobile) {
+const message =
       `📢 *New Deal!*\n\n` +
       `📱 *${brand} ${modelName}*\n` +
       `🎨 Variant: *${variant}* | Color: *${color}*\n` +
-      `💰 Booking: ₹${bookingAmount}\n\n` +
-      `🌐 Visit us: https://gyanibabastore.in`;
+      `💰 Booking: ₹${bookingAmount}\n` +
+       `📈 Margin: ₹${margin}\n` +
+  `🔄 Return: ₹${returnAmount}\n` + 
+      `🏬 Address: *${address}*\n` + 
+      `🏬 Pincode: *${pincode}*\n\n` + // ✅ Address added here
+      `🔗 *Buy Now*: ${buyLink}\n\n` +
+      `🌐 Visit us: https://gyanibabastore.com`;
 
-    for (const buyer of buyersToNotify) {
-      if (buyer.mobile) {
-        try {
-          await sendWhatsApp(
-            buyer.mobile,
-            message,
-            modelImage,
-            'Buy Now',
-            buyLink || 'https://gyanibabastore.in'
-          );
-          console.log(`✅ WhatsApp sent to ${buyer.mobile}`);
-        } catch (err) {
-          console.warn(`❌ WhatsApp error for ${buyer.mobile}:`, err.message);
-        }
-      }
+
+    try {
+      await sendWhatsApp(
+        buyer.mobile,
+        message
+      );
+      console.log(`✅ WhatsApp sent to ${buyer.mobile}`);
+    } catch (err) {
+      console.warn(`❌ WhatsApp error for ${buyer.mobile}:`, err.message);
     }
+  }
+}
+
+
 
     console.log("✅ All WhatsApp messages processed");
     res.redirect('/admin/deals');
