@@ -14,9 +14,14 @@ const methodOverride = require('method-override');
 const ngrok = require('ngrok');
 const webhookRoutes = require('./routes/webhook');
 
-
+const sendWhatsApp = require('./utils/whatsapp');
 const connectDB = require('./config/db');
 const app = express();
+
+
+
+
+
 
 // -------------------- LOAD ENV VARIABLES --------------------
 const {
@@ -26,12 +31,64 @@ const {
   PORT = 8080,
   SESSION_SECRET,
   MONGO_URI,
-  GUPSHUP_API_KEY,
-  GUPSHUP_SOURCE_NUMBER,
-  GUPSHUP_APP_NAME,
   NGROK_AUTHTOKEN,
   NODE_ENV
 } = process.env;
+
+
+
+
+// ✅ Verification endpoint (Meta setup requires this)
+app.get('/webhook', (req, res) => {
+  const VERIFY_TOKEN = "your_verify_token"; // You set this on Meta
+
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      console.log('✅ Webhook verified!');
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  }
+});
+
+// ✅ Webhook Receiver
+app.post('/webhook', async (req, res) => {
+  const body = req.body;
+
+  if (body.object === 'whatsapp_business_account') {
+    body.entry.forEach(entry => {
+      entry.changes.forEach(change => {
+        const value = change.value;
+
+        // ✅ Only process actual messages (ignore statuses)
+        if (value.messages) {
+          value.messages.forEach(async (message) => {
+            const from = message.from; // Sender number
+            const text = message.text?.body || '';
+
+            console.log(`📥 Incoming message from ${from}: ${text}`);
+
+            // ✅ Replying to the user (optional)
+            const replyText = `Hi! You said: ${text}`;
+            await sendWhatsApp(from, replyText); // auto-reply using your function
+          });
+        }
+
+        // ❌ Ignore statuses (delivered, read, etc.)
+        if (value.statuses) {
+          // console.log('ℹ️ Ignored status event:', value.statuses);
+        }
+      });
+    });
+  }
+
+  res.sendStatus(200);
+});
 
 // -------------------- DB CONNECTION --------------------
 connectDB();
@@ -124,15 +181,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 
-  if (NODE_ENV !== 'production') {
-    try {
-      const url = await ngrok.connect({
-        addr: PORT,
-        authtoken: NGROK_AUTHTOKEN
-      });
-      console.log(`🌐 Ngrok tunnel available at: ${url}`);
-    } catch (err) {
-      console.error("❌ Ngrok error:", err.message);
-    }
-  }
+
 });
