@@ -36,6 +36,58 @@ const {
 } = process.env;
 
 
+// -------------------- DB CONNECTION --------------------
+connectDB();
+
+// -------------------- MIDDLEWARE --------------------
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(methodOverride('_method'));
+
+// -------------------- SESSION --------------------
+app.use(session({
+  secret: SESSION_SECRET || 'fallbacksecret',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: MONGO_URI,
+    ttl: 24 * 60 * 60 * 7
+  })
+}));
+
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  next();
+});
+
+// -------------------- HELMET --------------------
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "*"],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
+
+// -------------------- SANITIZE --------------------
+app.use((req, res, next) => {
+  if (req.body) mongoSanitize.sanitize(req.body);
+  if (req.params) mongoSanitize.sanitize(req.params);
+  next();
+});
 
 
 // ✅ Verification endpoint (Meta setup requires this)
@@ -90,58 +142,6 @@ app.post('/webhook', async (req, res) => {
   res.sendStatus(200);
 });
 
-// -------------------- DB CONNECTION --------------------
-connectDB();
-
-// -------------------- MIDDLEWARE --------------------
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-app.use(methodOverride('_method'));
-
-// -------------------- SESSION --------------------
-app.use(session({
-  secret: SESSION_SECRET || 'fallbacksecret',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: MONGO_URI,
-    ttl: 24 * 60 * 60 * 7
-  })
-}));
-
-app.use(flash());
-app.use((req, res, next) => {
-  res.locals.error = req.flash('error');
-  res.locals.success = req.flash('success');
-  next();
-});
-
-// -------------------- HELMET --------------------
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://cdn.jsdelivr.net", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:", "*"],
-      connectSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  })
-);
-
-// -------------------- SANITIZE --------------------
-app.use((req, res, next) => {
-  if (req.body) mongoSanitize.sanitize(req.body);
-  if (req.params) mongoSanitize.sanitize(req.params);
-  next();
-});
 
 // -------------------- FILE UPLOAD --------------------
 const storage = multer.diskStorage({
